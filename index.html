@@ -2,571 +2,74 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-<meta name="theme-color" content="#111318" />
-<link rel="manifest" href="manifest.webmanifest" />
-<title>Kotoba Music v1.6.9</title>
-<style>
-:root{--bg:#0f1115;--panel:#171a21;--panel2:#1e232d;--line:#303744;--text:#f5f7fb;--muted:#9da7b7;--accent:#8cb4ff;--good:#7adf9b;--warn:#ffc66d;--danger:#ff7f88}
-*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
-button,input,select{font:inherit} button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
-button:active{transform:translateY(1px)} button.primary{background:#2a4f88;border-color:#4d79ba}.danger{color:#ffb3b8}.small{padding:7px 10px;border-radius:10px;font-size:13px}
-header{position:sticky;top:0;z-index:20;background:rgba(15,17,21,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:10px 14px}
-.top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.brand{font-weight:800;letter-spacing:.03em;margin-right:auto}.brand b{color:var(--accent)}
-main{width:100%;min-width:0;max-width:1100px;margin:auto;padding:14px;display:grid;gap:14px}.card{min-width:0;max-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.grow{flex:1}.muted{color:var(--muted);font-size:13px}.section-title{font-size:13px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
-input[type="text"],input[type="number"],select{background:#11151c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px}
-input[type="range"]{width:100%}.transport{display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:center}.time{font-variant-numeric:tabular-nums}
-.tracks{display:grid;gap:9px}.track{display:grid;grid-template-columns:130px auto auto 1fr 65px;gap:8px;align-items:center;background:#12161d;border:1px solid #262d38;border-radius:14px;padding:10px}
-.track.selected{outline:2px solid #4c78bd}.track-name{font-weight:700}.track-sub{font-size:12px;color:var(--muted)}
-.badge{font-size:11px;padding:3px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted)} .meter{height:8px;background:#0b0d11;border-radius:999px;overflow:hidden;border:1px solid #252b35}.meter>div{height:100%;width:0;background:linear-gradient(90deg,#79d49a,#f8d36f,#ff7f88)}
-.grid2{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
-label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-weight:700}.rec-status.live{color:#ff8790}.notes{display:grid;gap:8px;max-height:420px;overflow:auto}
-.note{display:grid;grid-template-columns:64px 90px 90px 90px 1fr auto;gap:8px;align-items:center;background:#11151c;border:1px solid #252b35;border-radius:12px;padding:8px}.note input,.note select{width:100%;min-width:0}.note.selected{outline:2px solid #8cb4ff}.note .del{min-height:44px;white-space:nowrap}.note-block.selected{background:#e5aa50;color:#10141b;outline:2px solid #fff}.note-tools{padding:10px 0;max-width:100%;background:var(--panel)}.note-tools .grow{flex-basis:100%;min-width:0}.note-tools button{max-width:100%}button:disabled{opacity:.45}
-.piano-roll{width:100%;max-width:100%;min-width:0;height:280px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(#141922,#10141b);position:relative;overflow:auto}.note-block{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab;position:absolute;height:18px;border-radius:6px;background:#628fd5;border:1px solid #91b5eb;font-size:10px;padding:1px 4px;white-space:nowrap;overflow:hidden}
-.note-block.dragging{cursor:grabbing;outline:3px solid #ffd47b;background:#d29b42;z-index:8!important}.footer{color:var(--muted);font-size:12px;text-align:center;padding:4px 0 18px}
-@media(max-width:800px){.grid2{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.track{grid-template-columns:100px auto auto 1fr}.track .voltxt{display:none}.transport{grid-template-columns:auto auto 1fr}.transport .bpm{grid-column:1/-1}.note{grid-template-columns:36px minmax(60px,1fr) minmax(60px,1fr) auto;gap:5px}.note .n-extra{display:none}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>Kotoba Music v1.7</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header><div class="top">
-  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.9</span></div>
-  <button id="saveBtn" class="small">プロジェクト保存</button>
-  <button id="openBtn" class="small">開く</button>
-  <button id="exportBtn" class="small">曲を書き出す</button>
-  <input id="openInput" type="file" accept=".json,application/json" hidden>
-</div></header>
-
+<header>
+  <div class="headerRow">
+    <div class="brand">▥ Kotoba Music <span class="badge">v1.7 WIDE RANGE</span></div>
+    <button id="playBtn" class="primary">▶ 再生</button><button id="stopBtn">■ 停止</button>
+    <span id="time" class="time">00:00.0</span>
+    <label class="small">BPM<input id="bpm" type="number" min="40" max="240" value="100" style="width:82px"></label>
+    <button id="saveBtn">保存</button><button id="exportProjectBtn">プロジェクト書出し</button><button id="importProjectBtn">開く</button>
+    <input id="importFile" type="file" accept="application/json" hidden>
+    <button id="wavBtn">曲を書き出す(WAV)</button>
+  </div>
+</header>
 <main>
-<section class="card">
-  <div class="section-title">MY STUDIO / 01</div>
-  <div class="row">
-    <label class="grow">曲名<input id="title" type="text" value="はじめての曲"></label>
-    <span class="muted">このiPadに自動保存</span>
-  </div>
-  <div class="transport" style="margin-top:12px">
-    <button id="playAll" class="primary">▶ 再生</button>
-    <button id="stopAll">■ 停止</button>
-    <div class="time" id="clock">00:00.0</div>
-    <div class="bpm row"><label>テンポ <input id="bpm" type="number" min="40" max="240" value="100" style="width:90px"></label><button id="soundTestBtn" class="small">🔊 音のテスト</button><button id="demoBtn" class="small">デモを聴く</button></div>
-  </div>
-<div id="playStatus" class="muted" role="status" aria-live="polite" style="margin-top:10px">再生待機中</div></section>
-
-<section class="card">
-  <div class="section-title">トラック</div>
-  <div class="muted" style="margin-bottom:9px">楽器ごとの発音と響きを改良。音量は0〜400%。ヴァイオリンを追加しました。</div>
-  <div class="row" style="margin-bottom:10px"><label>追加する楽器<select id="newTrackType"><option value="piano">ピアノ</option><option value="guitar">ギター</option><option value="bass">ベース</option><option value="violin">ヴァイオリン</option><option value="drums">ドラム</option><option value="voice">ボイス</option></select></label><button id="addTrackBtn">＋ パート追加</button></div><div class="muted" style="margin-bottom:10px">ピアノなど同じ楽器を追加して重ねられます。各パートを別々に録音し、上の「再生」で一緒に聴けます。</div><div id="tracks" class="tracks"></div>
-</section>
-
-<section class="grid2">
+<section class="stack">
   <div class="card">
-    <div class="section-title">RECORDING</div>
-    <div class="row"><div id="selectedName" style="font-size:20px;font-weight:800">ピアノ</div><div class="grow"></div><div id="recStatus" class="rec-status">待機中</div></div>
-    <div class="controls" style="margin-top:12px">
-      <label>開始位置（拍）<input id="startBeat" type="number" min="0" step="0.25" value="0"></label>
-      <label>音の刻み方<select id="gridMode"><option value="free">声のリズムのまま</option><option value="0.5">8分音符</option><option value="0.25">16分音符</option><option value="0.125">32分音符</option></select></label>
-      <label>読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option><option value="32" selected>32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label>
-      <label>入力ブースト<select id="inputBoost"><option value="1">1倍</option><option value="2">2倍</option><option value="4" selected>4倍</option><option value="8">8倍</option></select></label><label>声の震え補正<select id="tremorMode"><option value="off">オフ</option><option value="normal">標準</option><option value="strong" selected>強め</option><option value="ultra">強力フィルター</option></select></label><label>音程補正<select id="pitchMode"><option value="raw">そのまま</option><option value="natural" selected>自然</option><option value="strong">強め</option></select></label>
+    <h2>トラック</h2>
+    <div class="row" style="margin-bottom:10px">
+      <select id="newTrackType">
+        <option value="voice">ボイス</option><option value="piano">ピアノ</option><option value="bass">ベース</option><option value="guitar">ギター</option><option value="violin">ヴァイオリン</option><option value="drums">ドラム</option>
+      </select><button id="addTrackBtn">＋ トラック追加</button>
     </div>
-    <div style="margin-top:12px">
-      <div class="row"><span class="muted">入力レベル</span><div class="meter grow"><div id="levelBar"></div></div><span id="levelText" class="muted">0%</span></div>
-    </div>
-    <div class="row" style="margin-top:12px">
-      <button id="recordBtn" class="primary">● 声を録音</button>
-      <button id="soloPlay">▶ このパートだけ再生</button>
-      <button id="reanalyzeBtn">録音を再変換</button><button id="tremorFilterBtn">強い震えを抑えて再変換</button>
-      <button id="sourcePlay">元の声を聴く</button>
-      <button id="clearTrack" class="danger">パートを消す</button>
-    </div>
-    <div class="muted" style="margin-top:10px">録音中はこの画面を開いたままにしてください。1回の録音は最大5分。感度を上げすぎると雑音も拾います。まず32倍・ブースト4倍で試してください。音程と音の区切りを別々に判定します。大きな震えには「強い震えを抑えて再変換」。強力フィルターは短い音や細かな歌い直しもまとめるため、速いメロディーには「標準」か「オフ」を選んでください。重ね録りはイヤホン推奨。</div>
-    <div class="muted">声の変換は端末内で行います。録音音声をサーバーへ送信しません。</div>
+    <div id="trackList" class="trackList"></div>
   </div>
-
   <div class="card">
-    <div class="section-title">音色強化</div>
-    <div class="muted">各音色をiPadスピーカーでも聞き取りやすいよう倍音とアタックを追加。</div>
-    <div style="margin-top:12px;line-height:1.8">
-      <b>ピアノ</b>：打鍵のアタック・弦のうなり・高音から消える倍音<br>
-      <b>ベース</b>：指弾きの立ち上がり・太い低音・短く減衰する高域<br>
-      <b>ギター</b>：弦をはじく音・胴の共鳴・自然に減衰する弦の響き<br>
-      <b>ドラム</b>：キックの低音・スネアの胴と響き線・ハイハットの金属音<br>
-      <b>ヴァイオリン</b>：弓の柔らかな立ち上がり・伸びる倍音・控えめなビブラート
+    <h3>声 → 音符</h3>
+    <div id="recBox" class="recBox stack">
+      <div class="row"><button id="recBtn" class="recBtn primary">● 声を録音</button><button id="audioImportBtn">音声ファイルから取り込む</button><button id="reconvertBtn">録音を再変換</button><button id="hearVoiceBtn">元の声</button></div>
+      <input id="audioCaptureFile" type="file" accept="audio/*" capture="microphone" hidden>
+      <div id="recStatus" class="muted">録音ボタンを押すとマイクを準備します。</div>
+      <div class="meter"><i id="meterBar"></i></div>
+      <div class="row">
+        <label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option value="8" selected>8倍</option><option value="16">16倍</option><option value="32">32倍</option></select></label>
+        <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option value="2" selected>標準</option><option value="3">強</option><option value="4">超強</option><option value="5">極強</option><option value="6">MAX（かなり固定）</option></select></label>
+        <label class="small">録音開始（拍）<input id="recordStart" type="number" min="0" step="0.125" value="0" style="width:90px"></label>
+        <label class="small">量子化<select id="quantize"><option value="0">声のまま</option><option value="0.5">8分</option><option value="0.25">16分</option><option value="0.125">32分</option></select></label>
+      </div>
+      <div class="muted">震え抑制フィルターは、声の細かいビブラート・震えを同じ音へまとめます。「超強〜MAX」はかなり強く固定するため、短い装飾音は消えることがあります。</div>
     </div>
   </div>
-</section>
-
-<section class="card">
-  <div class="section-title">音を編集</div>
-  <div class="row">
-    <button id="addNote">＋ 音を追加</button>
-    <label>編集単位<select id="editGrid"><option value="0.125">32分</option><option value="0.25">16分</option><option value="0.5">8分</option></select></label>
-    <button id="quantize">リズムを整える</button>
-    <button id="octDown">−1オクターブ</button><button id="semiDown">−半音</button><button id="semiUp">＋半音</button><button id="octUp">＋1オクターブ</button>
+  <div class="card help">
+    <b>操作</b><br>音符を上下ドラッグ＝音程、左右ドラッグ＝開始位置。右端をドラッグ＝長さ。音符タップで数値編集。<br>同じ楽器を何本でも追加できるので、ピアノ＋ピアノ、ギター＋ボイスのように重ねられます。
   </div>
-  <div class="row note-tools"><span id="selectedNoteInfo" class="muted grow">音を選ぶと1音ずつ削除できます</span><button id="deleteNoteBtn" class="danger" disabled>選んだ1音を削除</button><button id="undoNoteBtn" disabled>削除を戻す</button><button id="undoMoveBtn" disabled>移動を戻す</button><button id="showNotesBtn">音符の位置を表示</button></div><div class="muted">音符を上下にドラッグすると音程、左右にドラッグすると開始位置が変わります。横移動は「編集単位」に合わせます。空いている場所はスクロールできます。</div><div id="roll" class="piano-roll" style="margin-top:12px"></div>
-  <div id="notes" class="notes" style="margin-top:12px"></div>
 </section>
-<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.9 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
+<section class="card">
+  <div class="editorTop">
+    <div class="grow"><h2 id="editorTitle">音を編集</h2><div id="editorSub" class="muted"></div></div>
+    <label class="small">表示<select id="labelMode"><option value="letter">CDE</option><option value="solfege">ドレミ</option></select></label>
+    <label class="small">編集単位<select id="snap"><option value="0.125">32分</option><option value="0.25" selected>16分</option><option value="0.5">8分</option><option value="1">4分</option></select></label>
+    <label class="small">音域<select id="rangeMode"><option value="extreme">超広域 C−1〜G9</option><option value="full">広域 C0〜C9</option><option value="normal" selected>C1〜C8</option><option value="vocal">声域 C2〜C6</option></select></label>
+    <button id="addNoteBtn">＋ 音を追加</button><button id="octDown">−1オクターブ</button><button id="octUp">＋1オクターブ</button><button id="deleteNote" class="danger">選択音を削除</button>
+  </div>
+  <div id="rollWrap" class="rollWrap"><div id="roll" class="roll"></div></div>
+  <div class="notePanel">
+    <label class="small">音程<select id="notePitch"></select></label>
+    <label class="small">開始（拍）<input id="noteStart" type="number" step="0.125" min="0"></label>
+    <label class="small">長さ（拍）<input id="noteDur" type="number" step="0.125" min="0.125"></label>
+    <label class="small">強さ<input id="noteVel" type="range" min="0.1" max="1" step="0.05" value="0.75"></label>
+    <button id="previewNote">選んだ音を試聴</button>
+    <button id="demoBtn">デモを入れる</button>
+  </div>
+</section>
 </main>
-
-<script>
-(() => {
-const tracksDef = [
-  ["voice","ボイス","VOICE"],
-  ["piano","ピアノ","PIANO"],
-  ["bass","ベース","BASS"],
-  ["guitar","ギター","GUITAR"],
-  ["drums","ドラム","DRUMS"],
-  ["violin","ヴァイオリン","VIOLIN"],
-];
-let selectedNote=null;const noteDeleteHistory=[];const noteMoveHistory=[];let activeNoteDrag=null;
-const baseTracksDef=tracksDef.map(x=>[...x]);
-const state = {
- title:"はじめての曲", bpm:100, selected:"piano",
- tracks:Object.fromEntries(tracksDef.map(([id])=>[id,{instrument:id,volume:70,mute:false,notes:[],source:null,sourceURL:null}])),
- playing:[], buses:[], playToken:0, busy:false, openingMic:false, recording:null, storageTask:Promise.resolve(), startTime:0, timer:null, recorder:null, stream:null, meterRAF:null, chunks:[], audioCtx:null
-};
-const $ = id => document.getElementById(id);
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const beatSec=()=>60/Number($("bpm").value||100);
-function instrumentOf(id){return state.tracks[id]?.instrument||baseTracksDef.find(x=>x[0]===id)?.[0]||id.split("_")[0]}
-function validTrackId(id){return /^(voice|piano|bass|guitar|drums|violin)(_[1-9][0-9]*)?$/.test(id)}
-function registerTrack(id,type){
- if(!validTrackId(id)||!baseTracksDef.some(x=>x[0]===type))return false;
- if(!state.tracks[id])state.tracks[id]={instrument:type,volume:70,mute:false,notes:[],source:null,sourceURL:null};
- if(!tracksDef.some(x=>x[0]===id)){const base=baseTracksDef.find(x=>x[0]===type),suffix=id.split("_")[1];tracksDef.push([id,base[1]+(suffix?" "+suffix:""),base[2]])}return true;
-}
-function addTrack(){
- if(!canPlay())return;const type=$("newTrackType").value||"piano";if(!baseTracksDef.some(x=>x[0]===type))return;let n=2;while(state.tracks[`${type}_${n}`])n++;const id=`${type}_${n}`;registerTrack(id,type);state.selected=id;renderAll();saveLocal();status(`${tracksDef.find(x=>x[0]===id)[1]}を追加しました。ここへ別のメロディーや和音の音を録音できます。`);return id;
-}
-function makeContext(){return new (window.AudioContext||window.webkitAudioContext)({latencyHint:"interactive"})}
-function ctx(){if(!state.audioCtx||state.audioCtx.state==="closed")state.audioCtx=makeContext();return state.audioCtx}
-function sessionType(type){try{if(navigator.audioSession)navigator.audioSession.type=type}catch(e){}}
-function status(text){$("playStatus").textContent=text}
-function report(e){status("再生できません: "+e.message)}
-function timeout(p,ms){return Promise.race([p,new Promise((_,reject)=>setTimeout(()=>reject(new Error("音声エンジンが応答しません。もう一度再生を押してください。")),ms))])}
-async function ensureAudio(){
- sessionType("playback");
- // マイク停止後や復帰時の interrupted context はタップ中に作り直す。
- if(state.audioCtx&&state.audioCtx.state==="interrupted"){
-  state.audioCtx.close().catch(()=>{});state.audioCtx=null;
- }
- const ac=ctx();const resumed=ac.resume();
- const pulse=ac.createBufferSource();pulse.buffer=ac.createBuffer(1,1,ac.sampleRate);pulse.connect(ac.destination);pulse.onended=()=>pulse.disconnect();pulse.start();
- await timeout(resumed,2000);
- if(ac.state!=="running")throw new Error("音声が停止中です。もう一度再生を押してください。");
- return ac;
-}
-function rememberSource(ac,node){if(ac===state.audioCtx){state.playing.push(node);node.onended=()=>{node.disconnect();const i=state.playing.indexOf(node);if(i>=0)state.playing.splice(i,1)}}return node}
-function oscillator(ac){return rememberSource(ac,ac.createOscillator())}
-function bufferSource(ac){return rememberSource(ac,ac.createBufferSource())}
-const recordingsDB=new Promise((resolve,reject)=>{
- const r=indexedDB.open("kotobaMusic.recordings",1);
- r.onupgradeneeded=()=>r.result.createObjectStore("audio");r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);
-});
-recordingsDB.catch(()=>{});
-async function storeRecording(id,buffer){
- const db=await recordingsDB;
- const data=buffer?{sampleRate:buffer.sampleRate,pcm:new Float32Array(buffer.getChannelData(0))}:null;
- await new Promise((resolve,reject)=>{const tx=db.transaction("audio","readwrite");const st=tx.objectStore("audio");data?st.put(data,id):st.delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)});
-}
-async function restoreRecordings(){
- try{const db=await recordingsDB;const rows=await new Promise((resolve,reject)=>{const tx=db.transaction("audio","readonly"),r=tx.objectStore("audio").getAll();const k=tx.objectStore("audio").getAllKeys();tx.oncomplete=()=>resolve(k.result.map((key,i)=>[key,r.result[i]]));tx.onerror=()=>reject(tx.error)});
- for(const [id,row] of rows){const t=state.tracks[id];if(!t)continue;const b=new AudioBuffer({length:row.pcm.length,sampleRate:row.sampleRate,numberOfChannels:1});b.copyToChannel(row.pcm,0);t.source=b;t.sourceURL=URL.createObjectURL(wavFromBuffer(b))}renderAll();
- }catch(e){status("録音の復元ができませんでした: "+e.message)}
-}
-function persistRecording(id,buffer){
- const task=state.storageTask.then(()=>storeRecording(id,buffer));state.storageTask=task.catch(()=>{});return task;
-}
-const restored=restoreRecordings();
-function midiToFreq(m){return 440*Math.pow(2,(m-69)/12)}
-function midiName(m){const n=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"];return n[(m%12+12)%12]+(Math.floor(m/12)-1)}
-function quant(v,g){g=Number(g);return Math.round(v/g)*g}
-function dbNorm(v){return clamp(v/100,0,4)}
-function saveLocal(){
- state.title=$("title").value; state.bpm=Number($("bpm").value);
- const out={title:state.title,bpm:state.bpm,selected:state.selected,tremorMode:$("tremorMode").value||"strong",tracks:{}};
- for(const [id,t] of Object.entries(state.tracks)) out.tracks[id]={instrument:instrumentOf(id),volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0};
- try{localStorage.setItem("kotobaMusic.v16",JSON.stringify(out))}catch(e){status("自動保存に失敗しました。プロジェクト保存を押してください。")}
-}
-function loadLocal(){
- try{const x=JSON.parse(localStorage.getItem("kotobaMusic.v16")||"null"); if(!x)return;
- $("title").value=x.title||"はじめての曲"; $("bpm").value=x.bpm||100; state.selected=x.selected||"piano";if(["off","normal","strong","ultra"].includes(x.tremorMode))$("tremorMode").value=x.tremorMode;
- for(const [id,t] of Object.entries(x.tracks||{})){const type=t.instrument||id.split("_")[0];if(registerTrack(id,type))Object.assign(state.tracks[id],t,{instrument:type})}if(!state.tracks[state.selected])state.selected="piano";
- }catch(e){}
-}
-function renderTracks(){
- $("tracks").innerHTML="";
- tracksDef.forEach(([id,jp,en])=>{
-  const t=state.tracks[id], d=document.createElement("div"); d.className="track"+(id===state.selected?" selected":""); d.dataset.id=id;
-  d.innerHTML=`<div><div class="track-name">${jp}</div><div class="track-sub">${en} · ${instrumentOf(id)==="voice"?(t.source?"録音あり":"未録音"):`${t.notes.length}音`}</div></div>
-  <button class="small rec">録音</button><button class="small mute">${t.mute?"M解除":"M"}</button>
-  <input class="vol" type="range" min="0" max="400" value="${t.volume}"><div class="voltxt">${t.volume}%</div>`;
-  d.addEventListener("click",e=>{ if(e.target.classList.contains("vol")||e.target.tagName==="BUTTON")return; state.selected=id; renderAll();});
-  d.querySelector(".rec").onclick=()=>{state.selected=id;renderAll();startRecording()};
-  d.querySelector(".mute").onclick=()=>{t.mute=!t.mute;renderTracks();saveLocal()};
-  d.querySelector(".vol").oninput=e=>{t.volume=Number(e.target.value);d.querySelector(".voltxt").textContent=t.volume+"%";saveLocal()};
-  $("tracks").appendChild(d);
- });
-}
-function renderAll(){renderTracks(); const def=tracksDef.find(x=>x[0]===state.selected); $("selectedName").textContent=def[1]; renderNotes(); renderRoll();}
-function updateNoteTools(){
- const t=state.tracks[state.selected];if(!t.notes.includes(selectedNote))selectedNote=null;
- $("deleteNoteBtn").disabled=!selectedNote;$("undoMoveBtn").disabled=!noteMoveHistory.some(h=>h.id===state.selected&&h.notes===t.notes&&t.notes.includes(h.note)&&h.note.start===h.after.start&&h.note.midi===h.after.midi);
- $("undoNoteBtn").disabled=!noteDeleteHistory.some(h=>h.id===state.selected&&h.notes===t.notes);
- $("selectedNoteInfo").textContent=selectedNote?`${t.notes.indexOf(selectedNote)+1}番 · ${midiName(selectedNote.midi)} · ${selectedNote.start.toFixed(2)}拍`:instrumentOf(state.selected)==="voice"?"ボイスは録音音声のため、音符単位の削除には対応していません":"削除したい音をタップしてください";
-}
-function selectNote(note){selectedNote=note;renderNotes();renderRoll();showNotes()}
-function deleteNote(note=selectedNote){
- if(!canPlay())return;const id=state.selected,t=state.tracks[id],index=t.notes.indexOf(note);if(index<0)return;stopAll();
- noteDeleteHistory.push({id,notes:t.notes,note,index});if(noteDeleteHistory.length>100)noteDeleteHistory.shift();t.notes.splice(index,1);selectedNote=null;renderAll();saveLocal();status("1音を削除しました。後ろの音の位置は変わりません。「削除を戻す」で取り消せます。");
-}
-function undoNoteDelete(){
- if(!canPlay())return;const t=state.tracks[state.selected];for(let i=noteDeleteHistory.length-1;i>=0;i--){const h=noteDeleteHistory[i];if(h.id!==state.selected||h.notes!==t.notes)continue;stopAll();noteDeleteHistory.splice(i,1);t.notes.splice(Math.min(h.index,t.notes.length),0,h.note);selectedNote=h.note;renderAll();saveLocal();status("削除した1音を戻しました。");return}
-}
-function renderNotes(){
- const t=state.tracks[state.selected]; const n=$("notes"); n.innerHTML="";updateNoteTools();
- if(instrumentOf(state.selected)==="voice"){n.innerHTML='<div class="muted">ボイスは元音声を再生します。楽器化したい場合は別トラックを選んで録音してください。</div>';return}
- if(!t.notes.length){n.innerHTML='<div class="muted">録音すると、ここに音符が並びます。手で追加することもできます。</div>';return}
- t.notes.sort((a,b)=>a.start-b.start).forEach((note,i)=>{
-  const r=document.createElement("div"); r.className="note"+(selectedNote===note?" selected":"");
-  const pitchOptions=Array.from({length:85},(_,k)=>24+k).map(m=>`<option value="${m}" ${m===note.midi?"selected":""}>${midiName(m)}</option>`).join("");
-  r.innerHTML=`<button class="small choose" aria-label="${i+1}番の音を選ぶ">${i+1}</button><select class="pitch" aria-label="音程">${pitchOptions}</select><input class="start" type="number" step="0.125" value="${note.start.toFixed(3)}"><input class="dur n-extra" type="number" step="0.125" value="${note.duration.toFixed(3)}"><div class="n-extra muted">${Math.round(note.confidence*100)}%</div><button class="small danger del" aria-label="${i+1}番の音を削除">削除</button>`;
-  r.querySelector(".pitch").onchange=e=>{note.midi=Number(e.target.value);saveLocal();renderRoll()};
-  r.querySelector(".start").onchange=e=>{note.start=Math.max(0,Number(e.target.value));saveLocal();renderRoll()};
-  r.querySelector(".dur").onchange=e=>{note.duration=Math.max(.0625,Number(e.target.value));saveLocal();renderRoll()};
-  r.querySelector(".choose").onclick=()=>selectNote(note);r.querySelector(".del").onclick=()=>deleteNote(note);
-  n.appendChild(r);
- });
-}
-function dragPosition(original,dx,dy,step,grid){
- return {start:Math.abs(dx)<4?original.start:Math.max(0,Math.round((original.start+dx/60)/grid)*grid),midi:clamp(original.midi-Math.round(dy/step),24,108)};
-}
-function commitNoteMove(id,notes,note,position){
- if(state.tracks[id]?.notes!==notes||!notes.includes(note))return false;
- const before={start:note.start,midi:note.midi};if(before.start===position.start&&before.midi===position.midi)return false;
- noteMoveHistory.push({id,notes,note,before,after:{...position}});if(noteMoveHistory.length>100)noteMoveHistory.shift();note.start=position.start;note.midi=position.midi;selectedNote=note;renderAll();saveLocal();status(`${midiName(note.midi)}・${note.start.toFixed(3)}拍へ移動しました。`);return true;
-}
-function undoNoteMove(){
- if(!canPlay())return;const t=state.tracks[state.selected];for(let i=noteMoveHistory.length-1;i>=0;i--){const h=noteMoveHistory[i];if(h.id!==state.selected||h.notes!==t.notes||!t.notes.includes(h.note)||h.note.start!==h.after.start||h.note.midi!==h.after.midi)continue;stopAll();noteMoveHistory.splice(i,1);Object.assign(h.note,h.before);selectedNote=h.note;renderAll();showNotes();saveLocal();status("音符の移動を戻しました。");return}
-}
-function attachNoteDrag(button,note,view,inner){
- let drag=null,suppressClick=false;
- const preview=()=>{
-  const roll=$("roll"),dx=drag.x-drag.downX+roll.scrollLeft-drag.left,dy=drag.y-drag.downY+roll.scrollTop-drag.top;
-  drag.position=dragPosition(drag.before,dx,dy,view.step,drag.grid);
-  button.style.left=(54+drag.position.start*60)+"px";button.style.top=(32+(view.highest-drag.position.midi)*view.step)+"px";button.textContent=midiName(drag.position.midi);$("selectedNoteInfo").textContent=`${midiName(drag.position.midi)} · ${drag.position.start.toFixed(3)}拍（移動中）`;
-  inner.style.width=Math.max(view.width,54+drag.position.start*60+note.duration*60+100)+"px";
- };
- const autoScroll=()=>{if(!drag||!drag.moved)return;const roll=$("roll"),box=roll.getBoundingClientRect(),edge=28;let dx=drag.x>box.right-edge?8:drag.x<box.left+edge?-8:0,dy=drag.y>box.bottom-edge?6:drag.y<box.top+edge?-6:0;if(dx||dy){roll.scrollLeft=Math.max(0,roll.scrollLeft+dx);roll.scrollTop=Math.max(0,roll.scrollTop+dy);preview()}drag.raf=requestAnimationFrame(autoScroll)};
- const finish=(event,cancel=false)=>{
-  if(!drag||event.pointerId!==drag.pointer)return;const ended=drag;drag=null;activeNoteDrag=null;if(ended.raf)cancelAnimationFrame(ended.raf);suppressClick=true;button.classList.remove("dragging");try{if(button.hasPointerCapture(ended.pointer))button.releasePointerCapture(ended.pointer)}catch(e){}
-  if(cancel){renderNotes();renderRoll();status("移動を取り消しました。");return}
-  if(ended.moved){commitNoteMove(ended.id,ended.notes,note,ended.position);renderNotes();renderRoll();showNotes()}else{selectNote(note)}
- };
- button.onpointerdown=e=>{
-  if(activeNoteDrag||e.isPrimary===false||e.button>0||!canPlay())return;e.preventDefault();stopAll();selectedNote=note;renderNotes();suppressClick=false;
-  const roll=$("roll");drag={pointer:e.pointerId,id:state.selected,notes:state.tracks[state.selected].notes,before:{start:note.start,midi:note.midi},position:{start:note.start,midi:note.midi},downX:e.clientX,downY:e.clientY,x:e.clientX,y:e.clientY,left:roll.scrollLeft||0,top:roll.scrollTop||0,grid:Number($("editGrid").value)||.125,moved:false,raf:null};activeNoteDrag=drag;
-  try{button.setPointerCapture(e.pointerId)}catch(error){finish(e,true)}
- };
- button.onpointermove=e=>{
-  if(!drag||e.pointerId!==drag.pointer)return;e.preventDefault();drag.x=e.clientX;drag.y=e.clientY;
-  if(!drag.moved&&Math.hypot(drag.x-drag.downX,drag.y-drag.downY)<5)return;
-  if(!drag.moved){drag.moved=true;button.classList.add("dragging");drag.raf=requestAnimationFrame(autoScroll)}preview();
- };
- button.onpointerup=e=>finish(e);button.onpointercancel=e=>finish(e,true);button.onlostpointercapture=e=>finish(e,true);button.oncontextmenu=e=>e.preventDefault();
- button.onclick=()=>{if(suppressClick){suppressClick=false;return}selectNote(note)};
-}
-let rollView=null,rollLastTrack=null,rollLastNotes=null;
-function rollLayout(notes){
- const highest=notes.length?Math.max(...notes.map(n=>n.midi))+1:72,lowest=notes.length?Math.min(...notes.map(n=>n.midi))-1:60,step=Math.max(8,Math.min(28,230/(highest-lowest+1)));
- return {highest,lowest,step,width:Math.max(700,Math.max(16,...notes.map(n=>n.start+n.duration))*60+100),height:Math.max(278,(highest-lowest+1)*step+36)};
-}
-function showNotes(){
- const t=state.tracks[state.selected],note=t.notes.includes(selectedNote)?selectedNote:t.notes[0],roll=$("roll");if(!note||!rollView)return;
- roll.scrollLeft=Math.max(0,54+note.start*60-70);roll.scrollTop=Math.max(0,32+(rollView.highest-note.midi)*rollView.step-65);
-}
-function renderRoll(){
- const t=state.tracks[state.selected],roll=$("roll"),left=roll.scrollLeft||0,top=roll.scrollTop||0,changed=rollLastTrack!==state.selected||rollLastNotes!==t.notes;roll.innerHTML="";roll.style.minWidth="0";rollLastTrack=state.selected;rollLastNotes=t.notes;
- if(instrumentOf(state.selected)==="voice"){roll.innerHTML='<div class="muted" style="padding:14px">ボイスは録音音声です。音符表示は楽器パートを選んでください。</div>';rollView=null;return}
- if(!t.notes.length){roll.innerHTML='<div class="muted" style="padding:14px">このパートには音符がありません。録音・再変換するか「＋ 音を追加」を押してください。</div>';rollView=null;return}
- const view=rollLayout(t.notes);rollView=view;const inner=document.createElement("div");inner.style.position="relative";inner.style.width=view.width+"px";inner.style.height=view.height+"px";roll.appendChild(inner);
- for(let midi=view.lowest;midi<=view.highest;midi++){
-  const line=document.createElement("div");line.style.position="absolute";line.style.top=(32+(view.highest-midi)*view.step)+"px";line.style.left="0";line.style.width="100%";line.style.height=view.step+"px";line.style.borderTop="1px solid #26303e";line.style.color="#aab4c4";line.style.fontSize="11px";line.style.background=midi%12===0?"#1b2533":"transparent";line.textContent=midiName(midi);inner.appendChild(line);
- }
- for(let beat=0;beat*60+54<view.width;beat++){const tick=document.createElement("div");tick.style.position="absolute";tick.style.left=(54+beat*60)+"px";tick.style.top="4px";tick.style.fontSize="11px";tick.style.color="#aab4c4";tick.textContent=beat+"拍";inner.appendChild(tick)}
- for(const [i,note] of t.notes.entries()){
-  const b=document.createElement("button");b.type="button";b.className="note-block"+(selectedNote===note?" selected":"");b.style.left=(54+note.start*60)+"px";b.style.width=Math.max(36,note.duration*60)+"px";b.style.height=Math.max(22,view.step-2)+"px";b.style.top=(32+(view.highest-note.midi)*view.step)+"px";b.style.zIndex="2";b.textContent=`${i+1} ${midiName(note.midi)}`;b.title=`${i+1}番 ${midiName(note.midi)}を選択`;attachNoteDrag(b,note,view,inner);inner.appendChild(b);
- }roll.scrollLeft=left;roll.scrollTop=top;if(changed)showNotes();
-}
-function adsr(gain,when,dur,peak=0.25,a=.01,d=.08,s=.65,r=.15){
- const attack=Math.min(a,dur*.2),decay=Math.min(d,dur*.3),release=Math.min(r,dur*.4);
- gain.gain.setValueAtTime(0,when);gain.gain.linearRampToValueAtTime(peak,when+attack);gain.gain.linearRampToValueAtTime(peak*s,when+attack+decay);gain.gain.setValueAtTime(peak*s,when+dur-release);gain.gain.linearRampToValueAtTime(0,when+dur);
-}
-function instrumentBus(ac,dest,vol){
- const g=ac.createGain(), comp=ac.createDynamicsCompressor();
- g.gain.value=dbNorm(vol)*1.45;
- comp.threshold.value=-14; comp.knee.value=18; comp.ratio.value=4; comp.attack.value=.003; comp.release.value=.12;
- g.connect(comp); comp.connect(dest); if(ac===state.audioCtx)state.buses.push({g,comp}); return g;
-}
-const pluckCache=new Map();
-function pluckedString(ac,midi,duration){
- const seconds=Math.ceil((duration+.15)*50)/50,key=`${ac.sampleRate}:${midi}:${seconds}`;
- if(pluckCache.has(key))return pluckCache.get(key);
- const f=midiToFreq(midi),sr=ac.sampleRate,length=Math.ceil(seconds*sr),buffer=ac.createBuffer(1,length,sr),data=buffer.getChannelData(0),delay=sr/f-.18,seedCount=Math.ceil(delay)+2;
- let random=9173+midi*97;const noise=()=>{random=(Math.imul(random,1664525)+1013904223)>>>0;return random/4294967296*2-1};
- for(let i=0;i<Math.min(seedCount,length);i++){const phase=i*f/sr;data[i]=.3*Math.sin(2*Math.PI*phase)+.18*noise()}
- const damping=Math.exp(-1/(f*1.5));
- for(let i=seedCount;i<length;i++){const x=i-delay,k=Math.floor(x),fraction=x-k;const delayed=data[k]*(1-fraction)+data[k+1]*fraction,previous=data[k-1]*(1-fraction)+data[k]*fraction;data[i]=damping*(.82*delayed+.18*previous)}
- // 弾き始めのクリックを抑え、音符の終わりで指を離す。
- for(let i=0;i<length;i++)data[i]*=Math.min(1,i/(sr*.0015),Math.max(0,(length-i)/(sr*.045)));
- if(length<=3000000){pluckCache.set(key,buffer);let total=0;for(const b of pluckCache.values())total+=b.length;while(pluckCache.size>24||total>3000000){const first=pluckCache.keys().next().value;total-=pluckCache.get(first).length;pluckCache.delete(first)}}return buffer;
-}
-function filteredNoise(ac,dest,when,length,volume,frequency,type="bandpass"){
- const buffer=ac.createBuffer(1,Math.ceil(ac.sampleRate*length),ac.sampleRate),data=buffer.getChannelData(0);let seed=2467;
- for(let i=0;i<data.length;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;data[i]=(seed/4294967296*2-1)*Math.exp(-6*i/data.length)}
- const src=bufferSource(ac),filter=ac.createBiquadFilter(),g=ac.createGain();src.buffer=buffer;filter.type=type;filter.frequency.value=Math.min(frequency,ac.sampleRate*.45);g.gain.value=volume;src.connect(filter);filter.connect(g);g.connect(dest);src.start(when);src.stop(when+length);
-}
-function decayingPartial(ac,dest,freq,when,dur,level,decay,attack=.003,detune=0){
- const o=oscillator(ac),g=ac.createGain();o.type="sine";o.frequency.value=freq;o.detune.value=detune;
- const end=when+dur,a=Math.min(attack,dur*.15),release=Math.min(.035,dur*.25),tail=Math.max(.0001,level*Math.exp(-(dur-release)/decay));
- g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(level,when+a);g.gain.exponentialRampToValueAtTime(tail,end-release);g.gain.linearRampToValueAtTime(0,end);
- o.connect(g);g.connect(dest);o.start(when);o.stop(end+.01);
-}
-function playTone(ac,dest,type,note,when,dur,vol){
- const f=midiToFreq(note.midi),bus=instrumentBus(ac,dest,vol),nyquist=ac.sampleRate*.45;
- if(type==="guitar"){
-  const src=bufferSource(ac),body=ac.createBiquadFilter(),air=ac.createBiquadFilter(),g=ac.createGain();src.buffer=pluckedString(ac,note.midi,dur);
-  body.type="peaking";body.frequency.value=190;body.Q.value=.8;body.gain.value=3;
-  air.type="lowpass";air.frequency.value=Math.min(7500,nyquist);air.Q.value=.5;g.gain.value=1.25;
-  src.connect(body);body.connect(air);air.connect(g);g.connect(bus);src.start(when);src.stop(when+dur+.15);
-  filteredNoise(ac,bus,when,.025,.035,2600);
- }else if(type==="piano"){
-  // 弦のわずかな非整数倍音と、高い倍音ほど早い減衰。
-  const weights=[.3,.16,.085,.052,.035,.022,.014,.008],stiffness=.00008*Math.pow(f/220,.4);
-  weights.forEach((level,i)=>{const h=i+1,freq=f*h*Math.sqrt((1+stiffness*h*h)/(1+stiffness));if(freq<nyquist)decayingPartial(ac,bus,freq,when,dur,level,Math.max(.07,1.9/Math.pow(h,.8)*Math.pow(220/f,.18)))});
-  if(f>100){decayingPartial(ac,bus,f,when,dur,.055,1.4,.003,-2.5);decayingPartial(ac,bus,f,when,dur,.055,1.4,.003,2.5)}
-  filteredNoise(ac,bus,when,.018,.022,Math.min(4500,f*8));
- }else if(type==="bass"){
-  // 指弾きの短い高域と、後まで残る基音。
-  [[1,.37,1.6],[2,.16,.6],[3,.075,.28],[4,.035,.13],[6,.015,.07]].forEach(([h,level,decay])=>{if(f*h<nyquist)decayingPartial(ac,bus,f*h,when,dur,level,decay,.005)});
-  filteredNoise(ac,bus,when,.022,.018,900);
- }else if(type==="violin"){
-  // 弓で維持する倍音。弦・胴の共鳴を倍音の強さに反映。
-  const lfo=oscillator(ac),depth=ac.createGain();lfo.frequency.value=5.1;depth.gain.setValueAtTime(0,when);depth.gain.linearRampToValueAtTime(4,when+Math.min(.35,dur*.65));lfo.connect(depth);
-  for(let h=1;h<=12&&f*h<nyquist;h++){
-   const o=oscillator(ac),g=ac.createGain(),freq=f*h,resonance=1+.8*Math.exp(-Math.pow((freq-650)/360,2))+.6*Math.exp(-Math.pow((freq-2500)/1000,2));
-   o.type="sine";o.frequency.value=freq;depth.connect(o.detune);adsr(g,when,dur,.12*resonance/Math.pow(h,1.15),.055,.07,.9,.09);o.connect(g);g.connect(bus);o.start(when);o.stop(when+dur+.01);
-  }
-  lfo.start(when);lfo.stop(when+dur+.01);filteredNoise(ac,bus,when,Math.min(dur,.12),.009,3500);
- }
-}
-function playDrum(ac,dest,note,when,dur,vol){
- const bus=instrumentBus(ac,dest,vol),kind=note.kind||"kick";
- if(kind==="kick"){
-  const o=oscillator(ac),g=ac.createGain();o.frequency.setValueAtTime(155,when);o.frequency.exponentialRampToValueAtTime(52,when+.055);o.frequency.exponentialRampToValueAtTime(43,when+.3);g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(.65,when+.002);g.gain.exponentialRampToValueAtTime(.0001,when+.38);o.connect(g);g.connect(bus);o.start(when);o.stop(when+.4);filteredNoise(ac,bus,when,.015,.06,2600);
- }else if(kind==="snare"){
-  decayingPartial(ac,bus,185,when,.19,.2,.055,.001);decayingPartial(ac,bus,330,when,.12,.085,.032,.001);filteredNoise(ac,bus,when,.22,.55,1600,"highpass");
- }else{
-  filteredNoise(ac,bus,when,.085,.23,6500,"highpass");
-  [4180,5630,7310,8870].forEach(freq=>{if(freq<ac.sampleRate*.45)decayingPartial(ac,bus,freq,when,.065,.019,.014,.001)});
- }
-}
-function mixDestination(ac){
- const g=ac.createGain(),comp=ac.createDynamicsCompressor();g.gain.value=.85;comp.threshold.value=-8;comp.knee.value=6;comp.ratio.value=12;comp.attack.value=.002;comp.release.value=.12;g.connect(comp);comp.connect(ac.destination);if(ac===state.audioCtx)state.buses.push({g,comp});return g;
-}
-function scheduleTrack(ac,dest,id,t,base=0,solo=false){
- if((t.mute&&!solo)||!t.volume)return;
- if(instrumentOf(id)==="voice"&&t.source){const src=bufferSource(ac);src.buffer=t.source;const g=instrumentBus(ac,dest,t.volume);src.connect(g);src.start(base+(t.sourceStart||0)*beatSec());return}
- if(instrumentOf(id)==="voice")return;
- t.notes.forEach(n=>{const when=base+n.start*beatSec(),dur=Math.max(.06,n.duration*beatSec());if(instrumentOf(id)==="drums")playDrum(ac,dest,n,when,dur,t.volume);else playTone(ac,dest,instrumentOf(id),n,when,dur,t.volume)});
-}
-function trackDuration(id,t){return instrumentOf(id)==="voice"?(t.source?(t.sourceStart||0)*beatSec()+t.source.duration:0):Math.max(0,...t.notes.map(n=>(n.start+n.duration)*beatSec()))}
-function canPlay(){if(state.busy||state.recording||state.openingMic){status("録音・変換が終わってから再生してください。");return false}return true}
-function transportTimer(ac,base,duration,token){
- state.startTime=base;state.timer=setInterval(()=>{if(token!==state.playToken)return;const s=Math.max(0,ac.currentTime-base);$("clock").textContent=fmtTime(s);if(s>=duration+.4){stopAll();status("再生完了")}},100);
-}
-async function playTracks(selected=null){
- if(!canPlay())return;stopAll();const token=state.playToken;
- try{const audio=ensureAudio();await restored;const ac=await audio;if(token!==state.playToken)return;
- const entries=selected?[[selected,state.tracks[selected]]]:Object.entries(state.tracks);
- const audible=entries.filter(([id,t])=>t.volume>0&&(selected||!t.mute)&&trackDuration(id,t)>0);
- if(!audible.length){status("再生できる音がありません。音符・録音・音量・M（ミュート）を確認してください。");return}
- const base=ac.currentTime+.06,destination=mixDestination(ac);for(const [id,t] of audible)scheduleTrack(ac,destination,id,t,base,!!selected);
- transportTimer(ac,base,Math.max(...audible.map(([id,t])=>trackDuration(id,t))),token);status(selected?"このパートを再生中（Mに関係なく再生）":"曲を再生中");
- }catch(e){stopAll();report(e)}
-}
-function playAll(){return playTracks()}
-function playSelected(){return playTracks(state.selected)}
-function stopAll(){state.playToken++;if(state.timer)clearInterval(state.timer);state.timer=null;for(const x of state.playing){try{x.stop();x.disconnect()}catch(e){}}state.playing=[];for(const {g,comp} of state.buses){g.disconnect();comp.disconnect()}state.buses=[];$("clock").textContent="00:00.0";status("停止中")}
-function fmtTime(s){const m=Math.floor(s/60),ss=Math.floor(s%60),d=Math.floor((s%1)*10);return `${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}.${d}`}
-function autoCorrelate(buf,sr,minF=65,maxF=1100,minRms=.00008){
- let mean=0;for(const v of buf)mean+=v;mean/=buf.length;
- let power=0;for(const v of buf)power+=(v-mean)*(v-mean);const rms=Math.sqrt(power/buf.length);if(rms<minRms)return null;
- const minLag=Math.max(2,Math.floor(sr/maxF)),maxLag=Math.min(Math.ceil(sr/minF),Math.floor(buf.length/2)-1),width=buf.length-maxLag-1;
- const difference=new Float32Array(maxLag+2);let total=0;difference[0]=1;
- // 周期の差分を累積平均で正規化。最初の十分深い谷を選ぶ。
- for(let lag=1;lag<=maxLag+1;lag++){let sum=0;for(let i=0;i<width;i++){const d=buf[i]-buf[i+lag];sum+=d*d}total+=sum;difference[lag]=total?sum*lag/total:1}
- let chosen=-1,best=1;for(let lag=minLag;lag<=maxLag;lag++){const v=difference[lag];if(v<best){best=v;chosen=lag}if(v<.15){while(lag<maxLag&&difference[lag+1]<difference[lag])lag++;chosen=lag;break}}
- if(chosen<0||difference[chosen]>.28)return null;
- const left=difference[chosen-1],center=difference[chosen],right=difference[chosen+1],den=left-2*center+right;
- const offset=Math.abs(den)>1e-10?clamp(.5*(left-right)/den,-.5,.5):0;
- return {freq:sr/(chosen+offset),confidence:1-center,rms};
-}
-function median(a){const b=[...a].sort((x,y)=>x-y);return b[Math.floor(b.length/2)]}
-function stabilize(midis,mode){
- // 無音をまたいで音程を混ぜず、一瞬だけの飛びを近傍3点で除く。
- // 実際に歌ったオクターブ跳躍は保持する。
- return midis.map((m,i)=>{if(m==null)return null;const left=midis[i-1],right=midis[i+1];if(left!=null&&right!=null&&Math.abs(left-right)<.6&&Math.abs(m-left)>1.2)return median([left,m,right]);return m});
-}
-function smoothTremor(midis,mode){
- if(mode==="off")return midis;
- if(mode==="ultra"){midis=[...midis];for(let i=0;i<midis.length;i++){if(midis[i]!=null)continue;const start=i;while(i<midis.length&&midis[i]==null)i++;const length=i-start;if(start>0&&i<midis.length&&length<=4&&Math.abs(midis[start-1]-midis[i])<5){for(let j=0;j<length;j++)midis[start+j]=midis[start-1]+(midis[i]-midis[start-1])*(j+1)/(length+1)}}}
- const radius=mode==="ultra"?20:mode==="strong"?5:3;
- // 無音をまたがない中央窓。短い音程変化やビブラートを平滑化。
- const filtered=midis.map((m,i)=>{if(m==null)return null;let lo=i,hi=i;while(lo>0&&i-lo<radius&&midis[lo-1]!=null)lo--;while(hi+1<midis.length&&hi-i<radius&&midis[hi+1]!=null)hi++;return median(midis.slice(lo,hi+1))});
- return filtered.map((m,i)=>{if(m==null)return null;let sum=m,n=1;const r=mode==="ultra"?10:mode==="strong"?4:2;for(let d=1;d<=r;d++){if(filtered[i-d]==null)break;sum+=filtered[i-d];n++}for(let d=1;d<=r;d++){if(filtered[i+d]==null)break;sum+=filtered[i+d];n++}return sum/n});
-}
-function onsetDrums(ch,sr,startBeat,grid,sens=1,boost=1){
- const frame=1024,hop=512,ener=[];for(let p=0;p+frame<ch.length;p+=hop){let e=0,z=0;for(let i=0;i<frame;i++){let v=ch[p+i];e+=v*v;if(i&&Math.sign(ch[p+i-1])!==Math.sign(v))z++}ener.push({t:p/sr,e:Math.sqrt(e/frame)*boost,z:z/frame})}
- const floor=.008/Math.sqrt(Math.max(1,sens*boost));
- let notes=[],last=-1;for(let i=2;i<ener.length;i++){let local=(ener[i-1].e+ener[i-2].e)/2;if(ener[i].e>Math.max(floor,local*1.38)&&ener[i].t-last>.065){last=ener[i].t;let beat=startBeat+ener[i].t/beatSec();if(grid!=="free")beat=quant(beat,grid);let kind=ener[i].z>.22?"hat":(ener[i].e>.065?"kick":"snare");notes.push({start:beat,duration:.15,midi:36,confidence:1,kind})}}
- return notes
-}
-async function analyzeBuffer(buffer,id,settings=null){
- const original=buffer.getChannelData(0),factor=Math.max(1,Math.floor(buffer.sampleRate/12000)),sr=buffer.sampleRate/factor;
- const ch=new Float32Array(Math.ceil(original.length/factor));for(let i=0;i<ch.length;i++){let sum=0,n=0;for(let k=0;k<factor&&i*factor+k<original.length;k++){sum+=original[i*factor+k];n++}ch[i]=sum/n}
- const {startBeat,grid,sens,boost,pitchMode,tremorMode="strong"}=settings||captureSettings();
- if(instrumentOf(id)==="drums")return onsetDrums(ch,sr,startBeat,grid,sens,boost);
- const hop=Math.round(sr*.01),frame=Math.round(sr*.048),ener=[];
- for(let p=0;p<ch.length;p+=hop){let e=0;const end=Math.min(p+hop,ch.length);for(let i=p;i<end;i++)e+=ch[i]*ch[i];ener.push(Math.sqrt(e/(end-p)))}
- if(!ener.length)return [];
- const sorted=[...ener].sort((a,b)=>a-b),peak=sorted[Math.floor((sorted.length-1)*.95)],noise=sorted[Math.floor((sorted.length-1)*.1)];
- const gate=Math.max(.000035,.0035/Math.max(1,sens*boost),Math.min(noise*2.5,peak*.12)),frames=[];
- for(let index=0;index<ener.length;index++){
-  if(index%32===0)await new Promise(r=>setTimeout(r,0));
-  const t=index*hop/sr;if(ener[index]<gate){frames.push({t,midi:null,conf:0,e:ener[index]});continue}
-  const center=index*hop+Math.floor(hop/2),start=Math.max(0,Math.min(ch.length-frame,center-Math.floor(frame/2)));
-  const sample=ch.subarray(start,Math.min(ch.length,start+frame)),r=autoCorrelate(sample,sr,65,1200,gate*.4);
-  frames.push({t,midi:r?69+12*Math.log2(r.freq/440):null,conf:r?r.confidence:0,e:ener[index]});
- }
- const stable=smoothTremor(stabilize(frames.map(f=>f.midi),pitchMode),tremorMode);stable.forEach((m,i)=>frames[i].midi=m);
- const segments=[];let cur=null,change=null,quiet=0;
- const close=end=>{if(cur){cur.end=end;segments.push(cur);cur=null}change=null};
- const begin=f=>({t:f.t,end:f.t+hop/sr,mids:[f.midi],confs:[f.conf],peak:f.e,valley:f.e});
- for(let i=0;i<frames.length;i++){
-  const f=frames[i];
-  if(f.midi==null){quiet++;if(cur&&quiet>=(tremorMode==="ultra"?5:2))close(f.t-(quiet-1)*hop/sr);continue}
-  if(!cur){cur=begin(f);quiet=0;continue}
-  const center=median(cur.mids.slice(tremorMode==="off"?-9:tremorMode==="ultra"?-61:-31));
-  cur.end=f.t+hop/sr;
-  // 同じ高さの「タ・タ」も、音量の谷からの立ち上がりで分ける。
-  const reattack=tremorMode!=="ultra"&&f.t-cur.t>=.06&&cur.valley<cur.peak*(tremorMode==="strong"?.15:tremorMode==="normal"?.25:.48)&&f.e>cur.valley*1.9&&f.e>cur.peak*.4;
-  if(reattack){close(f.t);cur=begin(f);quiet=0;continue}
-  const distance=Math.abs(f.midi-center);
-  if(distance>(tremorMode==="off"?.7:tremorMode==="ultra"?.95:.78)){
-   if(!change||Math.abs(change.midi-f.midi)>.55)change={t:f.t,midi:f.midi,frames:[f]};else change.frames.push(f);
-   const hold=tremorMode==="ultra"?(distance>=3?10:16):tremorMode==="off"?2:distance>=2?(tremorMode==="strong"?4:3):(tremorMode==="strong"?10:6);
-   if(change.frames.length>=hold){const pending=change.frames,boundary=change.t;close(boundary);cur=begin(pending[0]);for(const x of pending.slice(1)){cur.mids.push(x.midi);cur.confs.push(x.conf);cur.end=x.t+hop/sr}}
-  }else{change=null;cur.mids.push(f.midi);cur.confs.push(f.conf);cur.end=f.t+hop/sr}
-  cur.peak=Math.max(cur.peak,f.e);cur.valley=f.e<cur.valley?f.e:Math.min(f.e,cur.valley*1.35);quiet=0;
- }
- if(cur)close(Math.min(buffer.duration,cur.end));
- const notes=segments.filter(n=>n.end-n.t>=.035&&n.mids.length>=3).map(n=>{
-  let midi=Math.round(median(n.mids));if(instrumentOf(id)==="bass"&&midi>60)midi-=12;if(instrumentOf(id)==="violin"&&midi<55)midi+=12;
-  let start=startBeat+n.t/beatSec(),duration=(n.end-n.t)/beatSec();
-  if(grid!=="free"){start=quant(start,grid);duration=Math.max(Number(grid),quant(duration,grid))}
-  return {start,duration:Math.max(.025,duration),midi:clamp(midi,24,108),confidence:median(n.confs)};
- });
- // 丸めによる前の音のはみ出しを抑えて、一音ずつ再発音する。
- for(let i=0;i<notes.length-1;i++){const gap=notes[i+1].start-notes[i].start;if(gap>0)notes[i].duration=Math.min(notes[i].duration,Math.max(.025,gap-.006/beatSec()))}
- return notes;
-}
-function captureSettings(){return {startBeat:Number($("startBeat").value||0),grid:$("gridMode").value,sens:Number($("sensitivity").value),boost:Number($("inputBoost").value||1),pitchMode:$("pitchMode").value,tremorMode:$("tremorMode").value||"strong"}}
-function setRecordingUI(active){$("recordBtn").textContent=active?"■ 録音停止":"● 声を録音";$("recStatus").classList.toggle("live",active)}
-function showLevel(pcm){let r=0;for(const v of pcm)r+=v*v;r=Math.sqrt(r/pcm.length);const level=clamp(r*900*Number($("inputBoost").value||1),0,100);$("levelBar").style.width=level+"%";$("levelText").textContent=Math.round(level)+"%"}
-async function startRecording(){
- if(state.recording){await finishRecording();return}
- if(state.busy||state.openingMic)return;
- state.openingMic=true;stopAll();sessionType("play-and-record");
- let ac,stream;
- try{
-  ac=makeContext();const resumed=ac.resume();
-  const microphone=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:true}});stream=await microphone;await timeout(resumed,2000);await restored;await timeout(ac.resume(),2000);
-  const rec={id:state.selected,settings:captureSettings(),ac,stream,chunks:[],samples:0,src:ac.createMediaStreamSource(stream),node:null,silent:ac.createGain(),tick:null,stopping:false};rec.silent.gain.value=0;
-  const add=pcm=>{if(rec.stopping)return;const remaining=Math.floor(ac.sampleRate*300)-rec.samples;if(remaining<=0)return;const part=pcm.slice(0,remaining);rec.chunks.push(part);rec.samples+=part.length;showLevel(part);if(rec.samples>=ac.sampleRate*300)finishRecording()};
-  if(ac.audioWorklet){try{await ac.audioWorklet.addModule("./recorder-worklet.js");rec.node=new AudioWorkletNode(ac,"kotoba-pcm-recorder");rec.node.port.onmessage=e=>{if(e.data.pcm)add(e.data.pcm);if(e.data.stopped&&rec.flushed)rec.flushed()}}catch(e){}}
-  if(!rec.node){rec.node=ac.createScriptProcessor(2048,1,1);rec.node.onaudioprocess=e=>add(e.inputBuffer.getChannelData(0))}
-  state.recording=rec;rec.src.connect(rec.node);rec.node.connect(rec.silent);rec.silent.connect(ac.destination);
-  setRecordingUI(true);$("recStatus").textContent="録音中 00:00 / 05:00";status("録音中: "+tracksDef.find(x=>x[0]===rec.id)[1]);
-  const started=Date.now();rec.tick=setInterval(()=>{const elapsed=(Date.now()-started)/1000;$("recStatus").textContent=`録音中 ${fmtShort(elapsed)} / 05:00`;if(elapsed>=300)finishRecording()},250);
- }catch(e){if(stream)stream.getTracks().forEach(t=>t.stop());if(ac)await ac.close().catch(()=>{});sessionType("playback");setRecordingUI(false);$("recStatus").textContent="録音開始失敗";status("録音できません: "+e.message)}finally{state.openingMic=false}
-}
-async function finishRecording(){
- const rec=state.recording;if(!rec||rec.finishing)return;rec.finishing=true;state.busy=true;
- // workletの最後の端数も受け取ってからマイクを解放。
- if(rec.node.port){try{await timeout(new Promise(resolve=>{rec.flushed=resolve;rec.node.port.postMessage("stop")}),1000)}catch(e){}}
- rec.stopping=true;state.recording=null;clearInterval(rec.tick);rec.stream.getTracks().forEach(t=>t.stop());rec.src.disconnect();rec.node.disconnect();rec.silent.disconnect();await rec.ac.close().catch(()=>{});if(state.audioCtx){state.audioCtx.close().catch(()=>{});state.audioCtx=null}sessionType("playback");setRecordingUI(false);stopMeter();
- try{
-  if(!rec.samples)throw new Error("マイクから音声を受け取れませんでした。マイクの許可を確認して録音し直してください。");
-  const buffer=new AudioBuffer({numberOfChannels:1,length:rec.samples,sampleRate:rec.ac.sampleRate}),pcm=buffer.getChannelData(0);let offset=0;for(const chunk of rec.chunks){pcm.set(chunk,offset);offset+=chunk.length}rec.chunks=[];
-  const t=state.tracks[rec.id];if(t.sourceURL)URL.revokeObjectURL(t.sourceURL);t.source=buffer;t.sourceStart=rec.settings.startBeat;t.sourceURL=URL.createObjectURL(wavFromBuffer(buffer));
-  let saved=true;try{await persistRecording(rec.id,buffer)}catch(e){saved=false}
-  $("recStatus").textContent="変換中…";await new Promise(r=>setTimeout(r,0));
-  if(instrumentOf(rec.id)!=="voice")t.notes=await analyzeBuffer(buffer,rec.id,rec.settings);
-  $("recStatus").textContent=instrumentOf(rec.id)==="voice"?"録音完了":t.notes.length?`変換完了: ${t.notes.length}音`:"録音あり・音符は0音";
-  if(instrumentOf(rec.id)!=="voice"&&!t.notes.length)status("音程を検出できませんでした。「元の声を聴く」で録音を確認し、長めにハミングするか感度を調整してください。");
-  else status("録音完了。「このパートだけ再生」で聴けます。");renderAll();saveLocal();if(!saved)status("録音はこの画面で再生できますが、自動保存に失敗しました。プロジェクト保存で残してください。");
- }catch(e){$("recStatus").textContent="録音処理失敗";status(e.message)}finally{state.busy=false}
-}
-function fmtShort(s){return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(Math.floor(s%60)).padStart(2,"0")}`}
-function stopMeter(){$("levelBar").style.width="0%";$("levelText").textContent="0%"}
-async function sourcePlay(){
- if(!canPlay())return;stopAll();const id=state.selected,token=state.playToken;
- try{const audio=ensureAudio();await restored;const ac=await audio;if(token!==state.playToken)return;const t=state.tracks[id];if(!t.source){status("元の録音がありません。録音し直してください。");return}if(!t.volume){status("このパートの音量が0%です。音量を上げてください。");return}
- const src=bufferSource(ac);src.buffer=t.source;src.connect(instrumentBus(ac,ac.destination,t.volume));const base=ac.currentTime+.03;src.start(base);transportTimer(ac,base,t.source.duration,token);status("元の声を再生中");
- }catch(e){stopAll();report(e)}
-}
-async function reanalyze(){if(!canPlay())return;await restored;const id=state.selected,t=state.tracks[id];if(!t.source||instrumentOf(id)==="voice"){status("再変換する録音がありません。");return}state.busy=true;try{$("recStatus").textContent="変換中…";t.notes=await analyzeBuffer(t.source,id);$("recStatus").textContent=`変換完了: ${t.notes.length}音`;renderAll();saveLocal();status(t.notes.length?"再変換が完了しました。":"音符が0音です。元の声を確認してください。")}catch(e){status("変換できません: "+e.message)}finally{state.busy=false}}
-function shiftSelected(n){const t=state.tracks[state.selected];t.notes.forEach(x=>x.midi=clamp(x.midi+n,24,108));renderAll();saveLocal()}
-function addNote(){const t=state.tracks[state.selected];if(instrumentOf(state.selected)==="voice")return; t.notes.push({start:Number($("startBeat").value)||0,duration:.5,midi:instrumentOf(state.selected)==="bass"?40:60,confidence:1,kind:instrumentOf(state.selected)==="drums"?"kick":undefined});renderAll();saveLocal()}
-function quantizeAll(){const g=Number($("editGrid").value),t=state.tracks[state.selected];t.notes.forEach(n=>{n.start=quant(n.start,g);n.duration=Math.max(g,quant(n.duration,g))});renderAll();saveLocal()}
-function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
-function encodePCM(buffer){const pcm=buffer.getChannelData(0),bytes=new Uint8Array(pcm.length*4),view=new DataView(bytes.buffer);for(let i=0;i<pcm.length;i++)view.setFloat32(i*4,pcm[i],true);let text="";for(let i=0;i<bytes.length;i+=16384)text+=String.fromCharCode(...bytes.subarray(i,i+16384));return {sampleRate:buffer.sampleRate,pcm:btoa(text)}}
-function decodePCM(x){const bytes=Uint8Array.from(atob(x.pcm),c=>c.charCodeAt(0));if(!bytes.length||bytes.length%4||!Number.isFinite(x.sampleRate))throw new Error("録音データの形式が不正です");const b=new AudioBuffer({numberOfChannels:1,length:bytes.length/4,sampleRate:x.sampleRate}),data=b.getChannelData(0),v=new DataView(bytes.buffer);for(let i=0;i<data.length;i++)data[i]=v.getFloat32(i*4,true);return b}
-async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.9",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={instrument:instrumentOf(id),volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
-async function openProject(file){
- if(!canPlay())return;stopAll();await restored;state.busy=true;
- try{const x=JSON.parse(await file.text()),incoming={},ids=new Set([...baseTracksDef.map(x=>x[0]),...Object.keys(x.tracks||{}).filter(validTrackId)]);
- for(const id of ids){const item=x.tracks?.[id],type=item?.instrument||id.split("_")[0];if(!baseTracksDef.some(x=>x[0]===type))throw new Error("楽器の種類が不正です");incoming[id]=item?{instrument:type,volume:clamp(Number(item.volume??70),0,400),mute:!!item.mute,notes:item.notes||[],sourceStart:Math.max(0,Number(item.sourceStart)||0),source:item.audio?decodePCM(item.audio):null}:{instrument:type,volume:70,mute:false,notes:[],sourceStart:0,source:null}}
- $("title").value=x.title||"曲";$("bpm").value=clamp(Number(x.bpm)||100,40,240);
- const previous=state.tracks;for(const t of Object.values(previous))if(t.sourceURL)URL.revokeObjectURL(t.sourceURL);
- state.tracks=incoming;tracksDef.splice(0,tracksDef.length,...baseTracksDef.map(x=>[...x]));for(const [id,t] of Object.entries(incoming)){registerTrack(id,t.instrument);t.sourceURL=t.source?URL.createObjectURL(wavFromBuffer(t.source)):null;await persistRecording(id,t.source)}
- for(const id of Object.keys(previous))if(!incoming[id])await persistRecording(id,null);
- if(!state.tracks[state.selected])state.selected="piano";renderAll();saveLocal();status("プロジェクトを開きました");
- }catch(e){status("プロジェクトを開けません: "+e.message)}finally{state.busy=false}
-}
-async function soundTest(){
- if(!canPlay())return;stopAll();try{const ac=await ensureAudio(), now=ac.currentTime+.03;
- [440,659.25].forEach((f,i)=>{const o=oscillator(ac),g=ac.createGain();o.type=i?"triangle":"sine";o.frequency.value=f;g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(.22,now+.015);g.gain.exponentialRampToValueAtTime(.001,now+.45);o.connect(g);g.connect(ac.destination);o.start(now);o.stop(now+.5)});status("テスト音を再生しました");}catch(e){report(e)}
-}
-function demo(){if(!canPlay())return;const t=state.tracks.piano;t.notes=[60,64,67,72,67,64].map((m,i)=>({start:i*.5,duration:.45,midi:m,confidence:1}));state.tracks.bass.notes=[36,36,43,43].map((m,i)=>({start:i,duration:.9,midi:m,confidence:1}));state.tracks.guitar.notes=[48,52,55,52].map((m,i)=>({start:i,duration:.8,midi:m,confidence:1}));state.tracks.violin.notes=[72,74,76,79].map((m,i)=>({start:i,duration:.9,midi:m,confidence:1}));state.tracks.drums.notes=Array.from({length:8},(_,i)=>({start:i*.5,duration:.1,midi:36,confidence:1,kind:i%4===0?"kick":i%2===0?"snare":"hat"}));renderAll();playAll()}
-function wavFromBuffer(buffer){
- const n=buffer.length,ch=buffer.numberOfChannels,sr=buffer.sampleRate,ab=new ArrayBuffer(44+n*ch*2),v=new DataView(ab),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,"RIFF");v.setUint32(4,36+n*ch*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*ch*2,true);let o=44;for(let i=0;i<n;i++)for(let c=0;c<ch;c++){let s=clamp(buffer.getChannelData(c)[i],-1,1);v.setInt16(o,s<0?s*32768:s*32767,true);o+=2}return new Blob([ab],{type:"audio/wav"})
-}
-async function exportWav(){
- if(!canPlay())return;await restored;
- const duration=Math.max(0,...Object.entries(state.tracks).filter(([,t])=>!t.mute&&t.volume>0).map(([id,t])=>trackDuration(id,t)));if(!duration){status("書き出す音がありません。");return}
- try{const sr=44100,off=new OfflineAudioContext(2,Math.ceil(sr*(duration+1)),sr);const destination=mixDestination(off);for(const [id,t] of Object.entries(state.tracks))scheduleTrack(off,destination,id,t,0);const b=await off.startRendering();download(($("title").value||"kotoba-music")+".wav",wavFromBuffer(b));status("WAVを書き出しました")}catch(e){status("WAV書き出しに失敗しました: "+e.message)}
-}
-$("playAll").onclick=playAll;$("stopAll").onclick=stopAll;$("recordBtn").onclick=startRecording;$("soloPlay").onclick=playSelected;$("sourcePlay").onclick=sourcePlay;$("reanalyzeBtn").onclick=reanalyze;
-$("clearTrack").onclick=async()=>{if(!canPlay())return;await restored;stopAll();const id=state.selected,t=state.tracks[id];t.notes=[];t.source=null;if(t.sourceURL)URL.revokeObjectURL(t.sourceURL);t.sourceURL=null;renderAll();saveLocal();try{await persistRecording(id,null)}catch(e){status("録音の削除を保存できません: "+e.message)}};
-$("addNote").onclick=addNote;$("quantize").onclick=quantizeAll;$("octDown").onclick=()=>shiftSelected(-12);$("semiDown").onclick=()=>shiftSelected(-1);$("semiUp").onclick=()=>shiftSelected(1);$("octUp").onclick=()=>shiftSelected(12);
-$("saveBtn").onclick=saveProject;$("openBtn").onclick=()=>$("openInput").click();$("openInput").onchange=e=>e.target.files[0]&&openProject(e.target.files[0]);$("exportBtn").onclick=exportWav;$("soundTestBtn").onclick=soundTest;$("demoBtn").onclick=demo;
-$("undoMoveBtn").onclick=undoNoteMove;$("showNotesBtn").onclick=showNotes;$("deleteNoteBtn").onclick=()=>deleteNote();$("undoNoteBtn").onclick=undoNoteDelete;$("addTrackBtn").onclick=addTrack;$("tremorFilterBtn").onclick=()=>{if(!canPlay())return;$("tremorMode").value="ultra";saveLocal();return reanalyze()};$("tremorMode").onchange=saveLocal;$("title").onchange=saveLocal;$("bpm").onchange=saveLocal;
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&state.recording){finishRecording();status("画面を離れたため録音を停止しました")}});
-loadLocal();renderAll(); if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).catch(()=>{});
-})();
-</script>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
 </body>
 </html>
