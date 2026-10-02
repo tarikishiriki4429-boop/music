@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#111318" />
 <link rel="manifest" href="manifest.webmanifest" />
-<title>Kotoba Music v1.6.6</title>
+<title>Kotoba Music v1.6.7</title>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e232d;--line:#303744;--text:#f5f7fb;--muted:#9da7b7;--accent:#8cb4ff;--good:#7adf9b;--warn:#ffc66d;--danger:#ff7f88}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
@@ -22,15 +22,15 @@ input[type="range"]{width:100%}.transport{display:grid;grid-template-columns:aut
 .badge{font-size:11px;padding:3px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted)} .meter{height:8px;background:#0b0d11;border-radius:999px;overflow:hidden;border:1px solid #252b35}.meter>div{height:100%;width:0;background:linear-gradient(90deg,#79d49a,#f8d36f,#ff7f88)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.controls{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px}
 label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-weight:700}.rec-status.live{color:#ff8790}.notes{display:grid;gap:8px;max-height:420px;overflow:auto}
-.note{display:grid;grid-template-columns:64px 90px 90px 90px 1fr auto;gap:8px;align-items:center;background:#11151c;border:1px solid #252b35;border-radius:12px;padding:8px}.note input,.note select{width:100%}
+.note{display:grid;grid-template-columns:64px 90px 90px 90px 1fr auto;gap:8px;align-items:center;background:#11151c;border:1px solid #252b35;border-radius:12px;padding:8px}.note input,.note select{width:100%;min-width:0}.note.selected{outline:2px solid #8cb4ff}.note .del{min-height:44px;white-space:nowrap}.note-block.selected{background:#e5aa50;color:#10141b;outline:2px solid #fff}.note-tools{padding:10px 0;position:sticky;top:66px;background:var(--panel);z-index:5}button:disabled{opacity:.45}
 .piano-roll{height:150px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(#141922,#10141b);position:relative;overflow:auto}.note-block{position:absolute;height:18px;border-radius:6px;background:#628fd5;border:1px solid #91b5eb;font-size:10px;padding:1px 4px;white-space:nowrap;overflow:hidden}
 .footer{color:var(--muted);font-size:12px;text-align:center;padding:4px 0 18px}
-@media(max-width:800px){.grid2{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.track{grid-template-columns:100px auto auto 1fr}.track .voltxt{display:none}.transport{grid-template-columns:auto auto 1fr}.transport .bpm{grid-column:1/-1}.note{grid-template-columns:58px 1fr 1fr}.note .n-extra{display:none}}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.track{grid-template-columns:100px auto auto 1fr}.track .voltxt{display:none}.transport{grid-template-columns:auto auto 1fr}.transport .bpm{grid-column:1/-1}.note{grid-template-columns:36px minmax(60px,1fr) minmax(60px,1fr) auto;gap:5px}.note .n-extra{display:none}}
 </style>
 </head>
 <body>
 <header><div class="top">
-  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.6</span></div>
+  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.7</span></div>
   <button id="saveBtn" class="small">プロジェクト保存</button>
   <button id="openBtn" class="small">開く</button>
   <button id="exportBtn" class="small">曲を書き出す</button>
@@ -103,10 +103,10 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
     <button id="quantize">リズムを整える</button>
     <button id="octDown">−1オクターブ</button><button id="semiDown">−半音</button><button id="semiUp">＋半音</button><button id="octUp">＋1オクターブ</button>
   </div>
-  <div id="roll" class="piano-roll" style="margin-top:12px"></div>
+  <div class="row note-tools"><span id="selectedNoteInfo" class="muted grow">音を選ぶと1音ずつ削除できます</span><button id="deleteNoteBtn" class="danger" disabled>選んだ1音を削除</button><button id="undoNoteBtn" disabled>削除を戻す</button></div><div class="muted">下の音符をタップして選択するか、一覧の「削除」を押してください。</div><div id="roll" class="piano-roll" style="margin-top:12px"></div>
   <div id="notes" class="notes" style="margin-top:12px"></div>
 </section>
-<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.6 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
+<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.7 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
 </main>
 
 <script>
@@ -119,6 +119,7 @@ const tracksDef = [
   ["drums","ドラム","DRUMS"],
   ["violin","ヴァイオリン","VIOLIN"],
 ];
+let selectedNote=null;const noteDeleteHistory=[];
 const baseTracksDef=tracksDef.map(x=>[...x]);
 const state = {
  title:"はじめての曲", bpm:100, selected:"piano",
@@ -209,28 +210,42 @@ function renderTracks(){
  });
 }
 function renderAll(){renderTracks(); const def=tracksDef.find(x=>x[0]===state.selected); $("selectedName").textContent=def[1]; renderNotes(); renderRoll();}
+function updateNoteTools(){
+ const t=state.tracks[state.selected];if(!t.notes.includes(selectedNote))selectedNote=null;
+ $("deleteNoteBtn").disabled=!selectedNote;
+ $("undoNoteBtn").disabled=!noteDeleteHistory.some(h=>h.id===state.selected&&h.notes===t.notes);
+ $("selectedNoteInfo").textContent=selectedNote?`${t.notes.indexOf(selectedNote)+1}番 · ${midiName(selectedNote.midi)} · ${selectedNote.start.toFixed(2)}拍`:instrumentOf(state.selected)==="voice"?"ボイスは録音音声のため、音符単位の削除には対応していません":"削除したい音をタップしてください";
+}
+function selectNote(note){selectedNote=note;renderNotes();renderRoll()}
+function deleteNote(note=selectedNote){
+ if(!canPlay())return;const id=state.selected,t=state.tracks[id],index=t.notes.indexOf(note);if(index<0)return;stopAll();
+ noteDeleteHistory.push({id,notes:t.notes,note,index});if(noteDeleteHistory.length>100)noteDeleteHistory.shift();t.notes.splice(index,1);selectedNote=null;renderAll();saveLocal();status("1音を削除しました。後ろの音の位置は変わりません。「削除を戻す」で取り消せます。");
+}
+function undoNoteDelete(){
+ if(!canPlay())return;const t=state.tracks[state.selected];for(let i=noteDeleteHistory.length-1;i>=0;i--){const h=noteDeleteHistory[i];if(h.id!==state.selected||h.notes!==t.notes)continue;stopAll();noteDeleteHistory.splice(i,1);t.notes.splice(Math.min(h.index,t.notes.length),0,h.note);selectedNote=h.note;renderAll();saveLocal();status("削除した1音を戻しました。");return}
+}
 function renderNotes(){
- const t=state.tracks[state.selected]; const n=$("notes"); n.innerHTML="";
+ const t=state.tracks[state.selected]; const n=$("notes"); n.innerHTML="";updateNoteTools();
  if(instrumentOf(state.selected)==="voice"){n.innerHTML='<div class="muted">ボイスは元音声を再生します。楽器化したい場合は別トラックを選んで録音してください。</div>';return}
  if(!t.notes.length){n.innerHTML='<div class="muted">録音すると、ここに音符が並びます。手で追加することもできます。</div>';return}
  t.notes.sort((a,b)=>a.start-b.start).forEach((note,i)=>{
-  const r=document.createElement("div"); r.className="note";
+  const r=document.createElement("div"); r.className="note"+(selectedNote===note?" selected":"");
   const pitchOptions=Array.from({length:85},(_,k)=>24+k).map(m=>`<option value="${m}" ${m===note.midi?"selected":""}>${midiName(m)}</option>`).join("");
-  r.innerHTML=`<div>${i+1}</div><select class="pitch">${pitchOptions}</select><input class="start" type="number" step="0.125" value="${note.start.toFixed(3)}"><input class="dur n-extra" type="number" step="0.125" value="${note.duration.toFixed(3)}"><div class="n-extra muted">${Math.round(note.confidence*100)}%</div><button class="small danger del">削除</button>`;
+  r.innerHTML=`<button class="small choose" aria-label="${i+1}番の音を選ぶ">${i+1}</button><select class="pitch" aria-label="音程">${pitchOptions}</select><input class="start" type="number" step="0.125" value="${note.start.toFixed(3)}"><input class="dur n-extra" type="number" step="0.125" value="${note.duration.toFixed(3)}"><div class="n-extra muted">${Math.round(note.confidence*100)}%</div><button class="small danger del" aria-label="${i+1}番の音を削除">削除</button>`;
   r.querySelector(".pitch").onchange=e=>{note.midi=Number(e.target.value);saveLocal();renderRoll()};
   r.querySelector(".start").onchange=e=>{note.start=Math.max(0,Number(e.target.value));saveLocal();renderRoll()};
   r.querySelector(".dur").onchange=e=>{note.duration=Math.max(.0625,Number(e.target.value));saveLocal();renderRoll()};
-  r.querySelector(".del").onclick=()=>{t.notes.splice(i,1);renderNotes();renderRoll();saveLocal()};
+  r.querySelector(".choose").onclick=()=>selectNote(note);r.querySelector(".del").onclick=()=>deleteNote(note);
   n.appendChild(r);
  });
 }
 function renderRoll(){
- const t=state.tracks[state.selected], roll=$("roll"); roll.innerHTML="";
+ const t=state.tracks[state.selected],roll=$("roll"),left=roll.scrollLeft,top=roll.scrollTop;roll.innerHTML="";roll.style.minWidth="0";
  if(instrumentOf(state.selected)==="voice")return;
- const maxBeat=Math.max(16,...t.notes.map(n=>n.start+n.duration)); roll.style.minWidth=Math.max(700,maxBeat*50)+"px";
- for(const note of t.notes){
-  const b=document.createElement("div"); b.className="note-block"; b.style.left=(note.start*50)+"px"; b.style.width=Math.max(18,note.duration*50)+"px"; b.style.top=(130-(note.midi-36)*2.1)+"px"; b.textContent=midiName(note.midi); roll.appendChild(b);
- }
+ const maxBeat=Math.max(16,...t.notes.map(n=>n.start+n.duration)),highest=Math.max(72,...t.notes.map(n=>n.midi)),lowest=Math.min(48,...t.notes.map(n=>n.midi)),inner=document.createElement("div");inner.style.position="relative";inner.style.width=Math.max(700,maxBeat*60+50)+"px";inner.style.height=Math.max(150,(highest-lowest+1)*18+44)+"px";roll.appendChild(inner);
+ for(const [i,note] of t.notes.entries()){
+  const b=document.createElement("button");b.type="button";b.className="note-block"+(selectedNote===note?" selected":"");b.style.left=(note.start*60)+"px";b.style.width=Math.max(30,note.duration*60)+"px";b.style.height="28px";b.style.top=((highest-note.midi)*18)+"px";b.textContent=`${i+1} ${midiName(note.midi)}`;b.title=`${i+1}番 ${midiName(note.midi)}を選択`;b.onclick=()=>selectNote(note);inner.appendChild(b);
+ }roll.scrollLeft=left;roll.scrollTop=top;
 }
 function adsr(gain,when,dur,peak=0.25,a=.01,d=.08,s=.65,r=.15){
  const attack=Math.min(a,dur*.2),decay=Math.min(d,dur*.3),release=Math.min(r,dur*.4);
@@ -467,7 +482,7 @@ function quantizeAll(){const g=Number($("editGrid").value),t=state.tracks[state.
 function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 function encodePCM(buffer){const pcm=buffer.getChannelData(0),bytes=new Uint8Array(pcm.length*4),view=new DataView(bytes.buffer);for(let i=0;i<pcm.length;i++)view.setFloat32(i*4,pcm[i],true);let text="";for(let i=0;i<bytes.length;i+=16384)text+=String.fromCharCode(...bytes.subarray(i,i+16384));return {sampleRate:buffer.sampleRate,pcm:btoa(text)}}
 function decodePCM(x){const bytes=Uint8Array.from(atob(x.pcm),c=>c.charCodeAt(0));if(!bytes.length||bytes.length%4||!Number.isFinite(x.sampleRate))throw new Error("録音データの形式が不正です");const b=new AudioBuffer({numberOfChannels:1,length:bytes.length/4,sampleRate:x.sampleRate}),data=b.getChannelData(0),v=new DataView(bytes.buffer);for(let i=0;i<data.length;i++)data[i]=v.getFloat32(i*4,true);return b}
-async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.6",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={instrument:instrumentOf(id),volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
+async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.7",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={instrument:instrumentOf(id),volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
 async function openProject(file){
  if(!canPlay())return;stopAll();await restored;state.busy=true;
  try{const x=JSON.parse(await file.text()),incoming={},ids=new Set([...baseTracksDef.map(x=>x[0]),...Object.keys(x.tracks||{}).filter(validTrackId)]);
@@ -496,7 +511,7 @@ $("playAll").onclick=playAll;$("stopAll").onclick=stopAll;$("recordBtn").onclick
 $("clearTrack").onclick=async()=>{if(!canPlay())return;await restored;stopAll();const id=state.selected,t=state.tracks[id];t.notes=[];t.source=null;if(t.sourceURL)URL.revokeObjectURL(t.sourceURL);t.sourceURL=null;renderAll();saveLocal();try{await persistRecording(id,null)}catch(e){status("録音の削除を保存できません: "+e.message)}};
 $("addNote").onclick=addNote;$("quantize").onclick=quantizeAll;$("octDown").onclick=()=>shiftSelected(-12);$("semiDown").onclick=()=>shiftSelected(-1);$("semiUp").onclick=()=>shiftSelected(1);$("octUp").onclick=()=>shiftSelected(12);
 $("saveBtn").onclick=saveProject;$("openBtn").onclick=()=>$("openInput").click();$("openInput").onchange=e=>e.target.files[0]&&openProject(e.target.files[0]);$("exportBtn").onclick=exportWav;$("soundTestBtn").onclick=soundTest;$("demoBtn").onclick=demo;
-$("addTrackBtn").onclick=addTrack;$("tremorFilterBtn").onclick=()=>{if(!canPlay())return;$("tremorMode").value="ultra";saveLocal();return reanalyze()};$("tremorMode").onchange=saveLocal;$("title").onchange=saveLocal;$("bpm").onchange=saveLocal;
+$("deleteNoteBtn").onclick=()=>deleteNote();$("undoNoteBtn").onclick=undoNoteDelete;$("addTrackBtn").onclick=addTrack;$("tremorFilterBtn").onclick=()=>{if(!canPlay())return;$("tremorMode").value="ultra";saveLocal();return reanalyze()};$("tremorMode").onchange=saveLocal;$("title").onchange=saveLocal;$("bpm").onchange=saveLocal;
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&state.recording){finishRecording();status("画面を離れたため録音を停止しました")}});
 loadLocal();renderAll(); if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).catch(()=>{});
 })();
