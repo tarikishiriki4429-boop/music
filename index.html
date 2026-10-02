@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#111318" />
 <link rel="manifest" href="manifest.webmanifest" />
-<title>Kotoba Music v1.6.7</title>
+<title>Kotoba Music v1.6.8</title>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e232d;--line:#303744;--text:#f5f7fb;--muted:#9da7b7;--accent:#8cb4ff;--good:#7adf9b;--warn:#ffc66d;--danger:#ff7f88}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
@@ -13,24 +13,24 @@ button,input,select{font:inherit} button{background:var(--panel2);color:var(--te
 button:active{transform:translateY(1px)} button.primary{background:#2a4f88;border-color:#4d79ba}.danger{color:#ffb3b8}.small{padding:7px 10px;border-radius:10px;font-size:13px}
 header{position:sticky;top:0;z-index:20;background:rgba(15,17,21,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:10px 14px}
 .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.brand{font-weight:800;letter-spacing:.03em;margin-right:auto}.brand b{color:var(--accent)}
-main{max-width:1100px;margin:auto;padding:14px;display:grid;gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px}
+main{width:100%;min-width:0;max-width:1100px;margin:auto;padding:14px;display:grid;gap:14px}.card{min-width:0;max-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.grow{flex:1}.muted{color:var(--muted);font-size:13px}.section-title{font-size:13px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
 input[type="text"],input[type="number"],select{background:#11151c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px}
 input[type="range"]{width:100%}.transport{display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:center}.time{font-variant-numeric:tabular-nums}
 .tracks{display:grid;gap:9px}.track{display:grid;grid-template-columns:130px auto auto 1fr 65px;gap:8px;align-items:center;background:#12161d;border:1px solid #262d38;border-radius:14px;padding:10px}
 .track.selected{outline:2px solid #4c78bd}.track-name{font-weight:700}.track-sub{font-size:12px;color:var(--muted)}
 .badge{font-size:11px;padding:3px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted)} .meter{height:8px;background:#0b0d11;border-radius:999px;overflow:hidden;border:1px solid #252b35}.meter>div{height:100%;width:0;background:linear-gradient(90deg,#79d49a,#f8d36f,#ff7f88)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.controls{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px}
+.grid2{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
 label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-weight:700}.rec-status.live{color:#ff8790}.notes{display:grid;gap:8px;max-height:420px;overflow:auto}
-.note{display:grid;grid-template-columns:64px 90px 90px 90px 1fr auto;gap:8px;align-items:center;background:#11151c;border:1px solid #252b35;border-radius:12px;padding:8px}.note input,.note select{width:100%;min-width:0}.note.selected{outline:2px solid #8cb4ff}.note .del{min-height:44px;white-space:nowrap}.note-block.selected{background:#e5aa50;color:#10141b;outline:2px solid #fff}.note-tools{padding:10px 0;position:sticky;top:66px;background:var(--panel);z-index:5}button:disabled{opacity:.45}
-.piano-roll{height:150px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(#141922,#10141b);position:relative;overflow:auto}.note-block{position:absolute;height:18px;border-radius:6px;background:#628fd5;border:1px solid #91b5eb;font-size:10px;padding:1px 4px;white-space:nowrap;overflow:hidden}
+.note{display:grid;grid-template-columns:64px 90px 90px 90px 1fr auto;gap:8px;align-items:center;background:#11151c;border:1px solid #252b35;border-radius:12px;padding:8px}.note input,.note select{width:100%;min-width:0}.note.selected{outline:2px solid #8cb4ff}.note .del{min-height:44px;white-space:nowrap}.note-block.selected{background:#e5aa50;color:#10141b;outline:2px solid #fff}.note-tools{padding:10px 0;max-width:100%;background:var(--panel)}.note-tools .grow{flex-basis:100%;min-width:0}.note-tools button{max-width:100%}button:disabled{opacity:.45}
+.piano-roll{width:100%;max-width:100%;min-width:0;height:280px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(#141922,#10141b);position:relative;overflow:auto}.note-block{position:absolute;height:18px;border-radius:6px;background:#628fd5;border:1px solid #91b5eb;font-size:10px;padding:1px 4px;white-space:nowrap;overflow:hidden}
 .footer{color:var(--muted);font-size:12px;text-align:center;padding:4px 0 18px}
 @media(max-width:800px){.grid2{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.track{grid-template-columns:100px auto auto 1fr}.track .voltxt{display:none}.transport{grid-template-columns:auto auto 1fr}.transport .bpm{grid-column:1/-1}.note{grid-template-columns:36px minmax(60px,1fr) minmax(60px,1fr) auto;gap:5px}.note .n-extra{display:none}}
 </style>
 </head>
 <body>
 <header><div class="top">
-  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.7</span></div>
+  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.8</span></div>
   <button id="saveBtn" class="small">プロジェクト保存</button>
   <button id="openBtn" class="small">開く</button>
   <button id="exportBtn" class="small">曲を書き出す</button>
@@ -103,10 +103,10 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
     <button id="quantize">リズムを整える</button>
     <button id="octDown">−1オクターブ</button><button id="semiDown">−半音</button><button id="semiUp">＋半音</button><button id="octUp">＋1オクターブ</button>
   </div>
-  <div class="row note-tools"><span id="selectedNoteInfo" class="muted grow">音を選ぶと1音ずつ削除できます</span><button id="deleteNoteBtn" class="danger" disabled>選んだ1音を削除</button><button id="undoNoteBtn" disabled>削除を戻す</button></div><div class="muted">下の音符をタップして選択するか、一覧の「削除」を押してください。</div><div id="roll" class="piano-roll" style="margin-top:12px"></div>
+  <div class="row note-tools"><span id="selectedNoteInfo" class="muted grow">音を選ぶと1音ずつ削除できます</span><button id="deleteNoteBtn" class="danger" disabled>選んだ1音を削除</button><button id="undoNoteBtn" disabled>削除を戻す</button><button id="showNotesBtn">音符の位置を表示</button></div><div class="muted">下の音符をタップして選択するか、一覧の「削除」を押してください。</div><div id="roll" class="piano-roll" style="margin-top:12px"></div>
   <div id="notes" class="notes" style="margin-top:12px"></div>
 </section>
-<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.7 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
+<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.8 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
 </main>
 
 <script>
@@ -216,7 +216,7 @@ function updateNoteTools(){
  $("undoNoteBtn").disabled=!noteDeleteHistory.some(h=>h.id===state.selected&&h.notes===t.notes);
  $("selectedNoteInfo").textContent=selectedNote?`${t.notes.indexOf(selectedNote)+1}番 · ${midiName(selectedNote.midi)} · ${selectedNote.start.toFixed(2)}拍`:instrumentOf(state.selected)==="voice"?"ボイスは録音音声のため、音符単位の削除には対応していません":"削除したい音をタップしてください";
 }
-function selectNote(note){selectedNote=note;renderNotes();renderRoll()}
+function selectNote(note){selectedNote=note;renderNotes();renderRoll();showNotes()}
 function deleteNote(note=selectedNote){
  if(!canPlay())return;const id=state.selected,t=state.tracks[id],index=t.notes.indexOf(note);if(index<0)return;stopAll();
  noteDeleteHistory.push({id,notes:t.notes,note,index});if(noteDeleteHistory.length>100)noteDeleteHistory.shift();t.notes.splice(index,1);selectedNote=null;renderAll();saveLocal();status("1音を削除しました。後ろの音の位置は変わりません。「削除を戻す」で取り消せます。");
@@ -239,13 +239,27 @@ function renderNotes(){
   n.appendChild(r);
  });
 }
+let rollView=null,rollLastTrack=null,rollLastNotes=null;
+function rollLayout(notes){
+ const highest=notes.length?Math.max(...notes.map(n=>n.midi))+1:72,lowest=notes.length?Math.min(...notes.map(n=>n.midi))-1:60,step=Math.max(8,Math.min(28,230/(highest-lowest+1)));
+ return {highest,lowest,step,width:Math.max(700,Math.max(16,...notes.map(n=>n.start+n.duration))*60+100),height:Math.max(278,(highest-lowest+1)*step+36)};
+}
+function showNotes(){
+ const t=state.tracks[state.selected],note=t.notes.includes(selectedNote)?selectedNote:t.notes[0],roll=$("roll");if(!note||!rollView)return;
+ roll.scrollLeft=Math.max(0,54+note.start*60-70);roll.scrollTop=Math.max(0,32+(rollView.highest-note.midi)*rollView.step-65);
+}
 function renderRoll(){
- const t=state.tracks[state.selected],roll=$("roll"),left=roll.scrollLeft,top=roll.scrollTop;roll.innerHTML="";roll.style.minWidth="0";
- if(instrumentOf(state.selected)==="voice")return;
- const maxBeat=Math.max(16,...t.notes.map(n=>n.start+n.duration)),highest=Math.max(72,...t.notes.map(n=>n.midi)),lowest=Math.min(48,...t.notes.map(n=>n.midi)),inner=document.createElement("div");inner.style.position="relative";inner.style.width=Math.max(700,maxBeat*60+50)+"px";inner.style.height=Math.max(150,(highest-lowest+1)*18+44)+"px";roll.appendChild(inner);
+ const t=state.tracks[state.selected],roll=$("roll"),left=roll.scrollLeft||0,top=roll.scrollTop||0,changed=rollLastTrack!==state.selected||rollLastNotes!==t.notes;roll.innerHTML="";roll.style.minWidth="0";rollLastTrack=state.selected;rollLastNotes=t.notes;
+ if(instrumentOf(state.selected)==="voice"){roll.innerHTML='<div class="muted" style="padding:14px">ボイスは録音音声です。音符表示は楽器パートを選んでください。</div>';rollView=null;return}
+ if(!t.notes.length){roll.innerHTML='<div class="muted" style="padding:14px">このパートには音符がありません。録音・再変換するか「＋ 音を追加」を押してください。</div>';rollView=null;return}
+ const view=rollLayout(t.notes);rollView=view;const inner=document.createElement("div");inner.style.position="relative";inner.style.width=view.width+"px";inner.style.height=view.height+"px";roll.appendChild(inner);
+ for(let midi=view.lowest;midi<=view.highest;midi++){
+  const line=document.createElement("div");line.style.position="absolute";line.style.top=(32+(view.highest-midi)*view.step)+"px";line.style.left="0";line.style.width="100%";line.style.height=view.step+"px";line.style.borderTop="1px solid #26303e";line.style.color="#aab4c4";line.style.fontSize="11px";line.style.background=midi%12===0?"#1b2533":"transparent";line.textContent=midiName(midi);inner.appendChild(line);
+ }
+ for(let beat=0;beat*60+54<view.width;beat++){const tick=document.createElement("div");tick.style.position="absolute";tick.style.left=(54+beat*60)+"px";tick.style.top="4px";tick.style.fontSize="11px";tick.style.color="#aab4c4";tick.textContent=beat+"拍";inner.appendChild(tick)}
  for(const [i,note] of t.notes.entries()){
-  const b=document.createElement("button");b.type="button";b.className="note-block"+(selectedNote===note?" selected":"");b.style.left=(note.start*60)+"px";b.style.width=Math.max(30,note.duration*60)+"px";b.style.height="28px";b.style.top=((highest-note.midi)*18)+"px";b.textContent=`${i+1} ${midiName(note.midi)}`;b.title=`${i+1}番 ${midiName(note.midi)}を選択`;b.onclick=()=>selectNote(note);inner.appendChild(b);
- }roll.scrollLeft=left;roll.scrollTop=top;
+  const b=document.createElement("button");b.type="button";b.className="note-block"+(selectedNote===note?" selected":"");b.style.left=(54+note.start*60)+"px";b.style.width=Math.max(36,note.duration*60)+"px";b.style.height=Math.max(22,view.step-2)+"px";b.style.top=(32+(view.highest-note.midi)*view.step)+"px";b.style.zIndex="2";b.textContent=`${i+1} ${midiName(note.midi)}`;b.title=`${i+1}番 ${midiName(note.midi)}を選択`;b.onclick=()=>selectNote(note);inner.appendChild(b);
+ }roll.scrollLeft=left;roll.scrollTop=top;if(changed)showNotes();
 }
 function adsr(gain,when,dur,peak=0.25,a=.01,d=.08,s=.65,r=.15){
  const attack=Math.min(a,dur*.2),decay=Math.min(d,dur*.3),release=Math.min(r,dur*.4);
@@ -482,7 +496,7 @@ function quantizeAll(){const g=Number($("editGrid").value),t=state.tracks[state.
 function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 function encodePCM(buffer){const pcm=buffer.getChannelData(0),bytes=new Uint8Array(pcm.length*4),view=new DataView(bytes.buffer);for(let i=0;i<pcm.length;i++)view.setFloat32(i*4,pcm[i],true);let text="";for(let i=0;i<bytes.length;i+=16384)text+=String.fromCharCode(...bytes.subarray(i,i+16384));return {sampleRate:buffer.sampleRate,pcm:btoa(text)}}
 function decodePCM(x){const bytes=Uint8Array.from(atob(x.pcm),c=>c.charCodeAt(0));if(!bytes.length||bytes.length%4||!Number.isFinite(x.sampleRate))throw new Error("録音データの形式が不正です");const b=new AudioBuffer({numberOfChannels:1,length:bytes.length/4,sampleRate:x.sampleRate}),data=b.getChannelData(0),v=new DataView(bytes.buffer);for(let i=0;i<data.length;i++)data[i]=v.getFloat32(i*4,true);return b}
-async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.7",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={instrument:instrumentOf(id),volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
+async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.8",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={instrument:instrumentOf(id),volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
 async function openProject(file){
  if(!canPlay())return;stopAll();await restored;state.busy=true;
  try{const x=JSON.parse(await file.text()),incoming={},ids=new Set([...baseTracksDef.map(x=>x[0]),...Object.keys(x.tracks||{}).filter(validTrackId)]);
@@ -511,7 +525,7 @@ $("playAll").onclick=playAll;$("stopAll").onclick=stopAll;$("recordBtn").onclick
 $("clearTrack").onclick=async()=>{if(!canPlay())return;await restored;stopAll();const id=state.selected,t=state.tracks[id];t.notes=[];t.source=null;if(t.sourceURL)URL.revokeObjectURL(t.sourceURL);t.sourceURL=null;renderAll();saveLocal();try{await persistRecording(id,null)}catch(e){status("録音の削除を保存できません: "+e.message)}};
 $("addNote").onclick=addNote;$("quantize").onclick=quantizeAll;$("octDown").onclick=()=>shiftSelected(-12);$("semiDown").onclick=()=>shiftSelected(-1);$("semiUp").onclick=()=>shiftSelected(1);$("octUp").onclick=()=>shiftSelected(12);
 $("saveBtn").onclick=saveProject;$("openBtn").onclick=()=>$("openInput").click();$("openInput").onchange=e=>e.target.files[0]&&openProject(e.target.files[0]);$("exportBtn").onclick=exportWav;$("soundTestBtn").onclick=soundTest;$("demoBtn").onclick=demo;
-$("deleteNoteBtn").onclick=()=>deleteNote();$("undoNoteBtn").onclick=undoNoteDelete;$("addTrackBtn").onclick=addTrack;$("tremorFilterBtn").onclick=()=>{if(!canPlay())return;$("tremorMode").value="ultra";saveLocal();return reanalyze()};$("tremorMode").onchange=saveLocal;$("title").onchange=saveLocal;$("bpm").onchange=saveLocal;
+$("showNotesBtn").onclick=showNotes;$("deleteNoteBtn").onclick=()=>deleteNote();$("undoNoteBtn").onclick=undoNoteDelete;$("addTrackBtn").onclick=addTrack;$("tremorFilterBtn").onclick=()=>{if(!canPlay())return;$("tremorMode").value="ultra";saveLocal();return reanalyze()};$("tremorMode").onchange=saveLocal;$("title").onchange=saveLocal;$("bpm").onchange=saveLocal;
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&state.recording){finishRecording();status("画面を離れたため録音を停止しました")}});
 loadLocal();renderAll(); if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).catch(()=>{});
 })();
