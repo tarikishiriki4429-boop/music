@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#111318" />
 <link rel="manifest" href="manifest.webmanifest" />
-<title>Kotoba Music v1.6.3</title>
+<title>Kotoba Music v1.6.5</title>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e232d;--line:#303744;--text:#f5f7fb;--muted:#9da7b7;--accent:#8cb4ff;--good:#7adf9b;--warn:#ffc66d;--danger:#ff7f88}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
@@ -30,7 +30,7 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
 </head>
 <body>
 <header><div class="top">
-  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.3</span></div>
+  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.5</span></div>
   <button id="saveBtn" class="small">プロジェクト保存</button>
   <button id="openBtn" class="small">開く</button>
   <button id="exportBtn" class="small">曲を書き出す</button>
@@ -54,7 +54,7 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
 
 <section class="card">
   <div class="section-title">トラック</div>
-  <div class="muted" style="margin-bottom:9px">全パート音色を強化。音量は0〜400%。ヴァイオリンを追加しました。</div>
+  <div class="muted" style="margin-bottom:9px">楽器ごとの発音と響きを改良。音量は0〜400%。ヴァイオリンを追加しました。</div>
   <div id="tracks" class="tracks"></div>
 </section>
 
@@ -66,7 +66,7 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
       <label>開始位置（拍）<input id="startBeat" type="number" min="0" step="0.25" value="0"></label>
       <label>音の刻み方<select id="gridMode"><option value="free">声のリズムのまま</option><option value="0.5">8分音符</option><option value="0.25">16分音符</option><option value="0.125">32分音符</option></select></label>
       <label>読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option><option value="32" selected>32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label>
-      <label>入力ブースト<select id="inputBoost"><option value="1">1倍</option><option value="2">2倍</option><option value="4" selected>4倍</option><option value="8">8倍</option></select></label><label>音程補正<select id="pitchMode"><option value="raw">そのまま</option><option value="natural" selected>自然</option><option value="strong">強め</option></select></label>
+      <label>入力ブースト<select id="inputBoost"><option value="1">1倍</option><option value="2">2倍</option><option value="4" selected>4倍</option><option value="8">8倍</option></select></label><label>声の震え補正<select id="tremorMode"><option value="off">オフ</option><option value="normal">標準</option><option value="strong" selected>強め</option></select></label><label>音程補正<select id="pitchMode"><option value="raw">そのまま</option><option value="natural" selected>自然</option><option value="strong">強め</option></select></label>
     </div>
     <div style="margin-top:12px">
       <div class="row"><span class="muted">入力レベル</span><div class="meter grow"><div id="levelBar"></div></div><span id="levelText" class="muted">0%</span></div>
@@ -78,7 +78,7 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
       <button id="sourcePlay">元の声を聴く</button>
       <button id="clearTrack" class="danger">パートを消す</button>
     </div>
-    <div class="muted" style="margin-top:10px">録音中はこの画面を開いたままにしてください。1回の録音は最大5分。感度を上げすぎると雑音も拾います。まず32倍・ブースト4倍で試してください。音程と音の区切りを別々に判定します。同じ音の連続や短い休符も読み取ります。重ね録りはイヤホン推奨。</div>
+    <div class="muted" style="margin-top:10px">録音中はこの画面を開いたままにしてください。1回の録音は最大5分。感度を上げすぎると雑音も拾います。まず32倍・ブースト4倍で試してください。音程と音の区切りを別々に判定します。震えが気になるときは「声の震え補正：強め」。速い細かなメロディーは「標準」か「オフ」を試してください。重ね録りはイヤホン推奨。</div>
     <div class="muted">声の変換は端末内で行います。録音音声をサーバーへ送信しません。</div>
   </div>
 
@@ -86,11 +86,11 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
     <div class="section-title">音色強化</div>
     <div class="muted">各音色をiPadスピーカーでも聞き取りやすいよう倍音とアタックを追加。</div>
     <div style="margin-top:12px;line-height:1.8">
-      <b>ピアノ</b>：基音＋倍音＋短いハンマー成分<br>
-      <b>ベース</b>：基音＋倍音＋軽い歪みで存在感を強化<br>
-      <b>ギター</b>：ピッキング感＋複数倍音でストロークを明瞭化<br>
-      <b>ドラム</b>：キック／スネア／ハイハットの合成音を強化<br>
-      <b>ヴァイオリン</b>：鋸歯状波＋倍音＋自然なビブラートを追加
+      <b>ピアノ</b>：打鍵のアタック・弦のうなり・高音から消える倍音<br>
+      <b>ベース</b>：指弾きの立ち上がり・太い低音・短く減衰する高域<br>
+      <b>ギター</b>：弦をはじく音・胴の共鳴・自然に減衰する弦の響き<br>
+      <b>ドラム</b>：キックの低音・スネアの胴と響き線・ハイハットの金属音<br>
+      <b>ヴァイオリン</b>：弓の柔らかな立ち上がり・伸びる倍音・控えめなビブラート
     </div>
   </div>
 </section>
@@ -106,7 +106,7 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
   <div id="roll" class="piano-roll" style="margin-top:12px"></div>
   <div id="notes" class="notes" style="margin-top:12px"></div>
 </section>
-<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.3 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
+<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.5 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
 </main>
 
 <script>
@@ -173,13 +173,13 @@ function quant(v,g){g=Number(g);return Math.round(v/g)*g}
 function dbNorm(v){return clamp(v/100,0,4)}
 function saveLocal(){
  state.title=$("title").value; state.bpm=Number($("bpm").value);
- const out={title:state.title,bpm:state.bpm,selected:state.selected,tracks:{}};
+ const out={title:state.title,bpm:state.bpm,selected:state.selected,tremorMode:$("tremorMode").value||"strong",tracks:{}};
  for(const [id,t] of Object.entries(state.tracks)) out.tracks[id]={volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0};
  try{localStorage.setItem("kotobaMusic.v16",JSON.stringify(out))}catch(e){status("自動保存に失敗しました。プロジェクト保存を押してください。")}
 }
 function loadLocal(){
  try{const x=JSON.parse(localStorage.getItem("kotobaMusic.v16")||"null"); if(!x)return;
- $("title").value=x.title||"はじめての曲"; $("bpm").value=x.bpm||100; state.selected=x.selected||"piano";
+ $("title").value=x.title||"はじめての曲"; $("bpm").value=x.bpm||100; state.selected=x.selected||"piano";if(["off","normal","strong"].includes(x.tremorMode))$("tremorMode").value=x.tremorMode;
  for(const id of Object.keys(state.tracks)){ if(x.tracks?.[id]) Object.assign(state.tracks[id],x.tracks[id]); }
  }catch(e){}
 }
@@ -231,29 +231,67 @@ function instrumentBus(ac,dest,vol){
  comp.threshold.value=-14; comp.knee.value=18; comp.ratio.value=4; comp.attack.value=.003; comp.release.value=.12;
  g.connect(comp); comp.connect(dest); if(ac===state.audioCtx)state.buses.push({g,comp}); return g;
 }
+const pluckCache=new Map();
+function pluckedString(ac,midi,duration){
+ const seconds=Math.ceil((duration+.15)*50)/50,key=`${ac.sampleRate}:${midi}:${seconds}`;
+ if(pluckCache.has(key))return pluckCache.get(key);
+ const f=midiToFreq(midi),sr=ac.sampleRate,length=Math.ceil(seconds*sr),buffer=ac.createBuffer(1,length,sr),data=buffer.getChannelData(0),delay=sr/f-.18,seedCount=Math.ceil(delay)+2;
+ let random=9173+midi*97;const noise=()=>{random=(Math.imul(random,1664525)+1013904223)>>>0;return random/4294967296*2-1};
+ for(let i=0;i<Math.min(seedCount,length);i++){const phase=i*f/sr;data[i]=.3*Math.sin(2*Math.PI*phase)+.18*noise()}
+ const damping=Math.exp(-1/(f*1.5));
+ for(let i=seedCount;i<length;i++){const x=i-delay,k=Math.floor(x),fraction=x-k;const delayed=data[k]*(1-fraction)+data[k+1]*fraction,previous=data[k-1]*(1-fraction)+data[k]*fraction;data[i]=damping*(.82*delayed+.18*previous)}
+ // 弾き始めのクリックを抑え、音符の終わりで指を離す。
+ for(let i=0;i<length;i++)data[i]*=Math.min(1,i/(sr*.0015),Math.max(0,(length-i)/(sr*.045)));
+ if(length<=3000000){pluckCache.set(key,buffer);let total=0;for(const b of pluckCache.values())total+=b.length;while(pluckCache.size>24||total>3000000){const first=pluckCache.keys().next().value;total-=pluckCache.get(first).length;pluckCache.delete(first)}}return buffer;
+}
+function filteredNoise(ac,dest,when,length,volume,frequency,type="bandpass"){
+ const buffer=ac.createBuffer(1,Math.ceil(ac.sampleRate*length),ac.sampleRate),data=buffer.getChannelData(0);let seed=2467;
+ for(let i=0;i<data.length;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;data[i]=(seed/4294967296*2-1)*Math.exp(-6*i/data.length)}
+ const src=bufferSource(ac),filter=ac.createBiquadFilter(),g=ac.createGain();src.buffer=buffer;filter.type=type;filter.frequency.value=Math.min(frequency,ac.sampleRate*.45);g.gain.value=volume;src.connect(filter);filter.connect(g);g.connect(dest);src.start(when);src.stop(when+length);
+}
+function decayingPartial(ac,dest,freq,when,dur,level,decay,attack=.003,detune=0){
+ const o=oscillator(ac),g=ac.createGain();o.type="sine";o.frequency.value=freq;o.detune.value=detune;
+ const end=when+dur,a=Math.min(attack,dur*.15),release=Math.min(.035,dur*.25),tail=Math.max(.0001,level*Math.exp(-(dur-release)/decay));
+ g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(level,when+a);g.gain.exponentialRampToValueAtTime(tail,end-release);g.gain.linearRampToValueAtTime(0,end);
+ o.connect(g);g.connect(dest);o.start(when);o.stop(end+.01);
+}
 function playTone(ac,dest,type,note,when,dur,vol){
- const f=midiToFreq(note.midi), bus=instrumentBus(ac,dest,vol);
- if(type==="piano"){
-  [ [1,"sine",.42],[2,"sine",.15],[3,"sine",.08],[4,"triangle",.04] ].forEach(([h,w,a])=>{let o=oscillator(ac),g=ac.createGain();o.type=w;o.frequency.value=f*h;adsr(g,when,dur,Math.min(.35,a),.004,.18,.35,.22);o.connect(g);g.connect(bus);o.start(when);o.stop(when+dur+.25)});
-  const o=oscillator(ac), g=ac.createGain();o.type="square";o.frequency.value=f*6;adsr(g,when,Math.min(.06,dur),.025,.001,.015,.1,.03);o.connect(g);g.connect(bus);o.start(when);o.stop(when+.08);
- } else if(type==="bass"){
-  const comp=ac.createDynamicsCompressor();comp.threshold.value=-20;comp.ratio.value=5;comp.connect(bus);
-  [["sine",1,.34],["sawtooth",1,.09],["square",2,.025]].forEach(([w,h,a])=>{let o=oscillator(ac),g=ac.createGain();o.type=w;o.frequency.value=f*h;adsr(g,when,dur,a,.008,.06,.8,.1);o.connect(g);g.connect(comp);o.start(when);o.stop(when+dur+.12)});
- } else if(type==="guitar"){
-  [["triangle",1,.25],["sawtooth",2,.08],["sine",3,.05],["sine",4,.025]].forEach(([w,h,a])=>{let o=oscillator(ac),g=ac.createGain();o.type=w;o.frequency.value=f*h;adsr(g,when,dur,a,.002,.07,.46,.18);o.detune.value=(Math.random()-.5)*7;o.connect(g);g.connect(bus);o.start(when);o.stop(when+dur+.2)});
- } else if(type==="violin"){
-  const master=ac.createGain();master.gain.value=.55;master.connect(bus);
-  [["sawtooth",1,.19],["triangle",2,.07],["sine",3,.035]].forEach(([w,h,a],idx)=>{let o=oscillator(ac),g=ac.createGain(),lfo=oscillator(ac),lg=ac.createGain();o.type=w;o.frequency.value=f*h;lfo.frequency.value=5.2;lg.gain.value=idx===0?8:3;lfo.connect(lg);lg.connect(o.detune);adsr(g,when,dur,a,.08,.16,.88,.18);o.connect(g);g.connect(master);lfo.start(when);o.start(when);o.stop(when+dur+.25);lfo.stop(when+dur+.25)});
+ const f=midiToFreq(note.midi),bus=instrumentBus(ac,dest,vol),nyquist=ac.sampleRate*.45;
+ if(type==="guitar"){
+  const src=bufferSource(ac),body=ac.createBiquadFilter(),air=ac.createBiquadFilter(),g=ac.createGain();src.buffer=pluckedString(ac,note.midi,dur);
+  body.type="peaking";body.frequency.value=190;body.Q.value=.8;body.gain.value=3;
+  air.type="lowpass";air.frequency.value=Math.min(7500,nyquist);air.Q.value=.5;g.gain.value=1.25;
+  src.connect(body);body.connect(air);air.connect(g);g.connect(bus);src.start(when);src.stop(when+dur+.15);
+  filteredNoise(ac,bus,when,.025,.035,2600);
+ }else if(type==="piano"){
+  // 弦のわずかな非整数倍音と、高い倍音ほど早い減衰。
+  const weights=[.3,.16,.085,.052,.035,.022,.014,.008],stiffness=.00008*Math.pow(f/220,.4);
+  weights.forEach((level,i)=>{const h=i+1,freq=f*h*Math.sqrt((1+stiffness*h*h)/(1+stiffness));if(freq<nyquist)decayingPartial(ac,bus,freq,when,dur,level,Math.max(.07,1.9/Math.pow(h,.8)*Math.pow(220/f,.18)))});
+  if(f>100){decayingPartial(ac,bus,f,when,dur,.055,1.4,.003,-2.5);decayingPartial(ac,bus,f,when,dur,.055,1.4,.003,2.5)}
+  filteredNoise(ac,bus,when,.018,.022,Math.min(4500,f*8));
+ }else if(type==="bass"){
+  // 指弾きの短い高域と、後まで残る基音。
+  [[1,.37,1.6],[2,.16,.6],[3,.075,.28],[4,.035,.13],[6,.015,.07]].forEach(([h,level,decay])=>{if(f*h<nyquist)decayingPartial(ac,bus,f*h,when,dur,level,decay,.005)});
+  filteredNoise(ac,bus,when,.022,.018,900);
+ }else if(type==="violin"){
+  // 弓で維持する倍音。弦・胴の共鳴を倍音の強さに反映。
+  const lfo=oscillator(ac),depth=ac.createGain();lfo.frequency.value=5.1;depth.gain.setValueAtTime(0,when);depth.gain.linearRampToValueAtTime(4,when+Math.min(.35,dur*.65));lfo.connect(depth);
+  for(let h=1;h<=12&&f*h<nyquist;h++){
+   const o=oscillator(ac),g=ac.createGain(),freq=f*h,resonance=1+.8*Math.exp(-Math.pow((freq-650)/360,2))+.6*Math.exp(-Math.pow((freq-2500)/1000,2));
+   o.type="sine";o.frequency.value=freq;depth.connect(o.detune);adsr(g,when,dur,.12*resonance/Math.pow(h,1.15),.055,.07,.9,.09);o.connect(g);g.connect(bus);o.start(when);o.stop(when+dur+.01);
+  }
+  lfo.start(when);lfo.stop(when+dur+.01);filteredNoise(ac,bus,when,Math.min(dur,.12),.009,3500);
  }
 }
 function playDrum(ac,dest,note,when,dur,vol){
- const bus=instrumentBus(ac,dest,vol), kind=note.kind||"kick";
+ const bus=instrumentBus(ac,dest,vol),kind=note.kind||"kick";
  if(kind==="kick"){
-  const o=oscillator(ac),g=ac.createGain();o.type="sine";o.frequency.setValueAtTime(135,when);o.frequency.exponentialRampToValueAtTime(48,when+.12);g.gain.setValueAtTime(.55,when);g.gain.exponentialRampToValueAtTime(.001,when+.25);o.connect(g);g.connect(bus);o.start(when);o.stop(when+.28);
+  const o=oscillator(ac),g=ac.createGain();o.frequency.setValueAtTime(155,when);o.frequency.exponentialRampToValueAtTime(52,when+.055);o.frequency.exponentialRampToValueAtTime(43,when+.3);g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(.65,when+.002);g.gain.exponentialRampToValueAtTime(.0001,when+.38);o.connect(g);g.connect(bus);o.start(when);o.stop(when+.4);filteredNoise(ac,bus,when,.015,.06,2600);
+ }else if(kind==="snare"){
+  decayingPartial(ac,bus,185,when,.19,.2,.055,.001);decayingPartial(ac,bus,330,when,.12,.085,.032,.001);filteredNoise(ac,bus,when,.22,.55,1600,"highpass");
  }else{
-  const len=kind==="hat"?.07:.18, buffer=ac.createBuffer(1,Math.floor(ac.sampleRate*len),ac.sampleRate), data=buffer.getChannelData(0);
-  for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);
-  const src=bufferSource(ac);src.buffer=buffer;const hp=ac.createBiquadFilter();hp.type=kind==="hat"?"highpass":"bandpass";hp.frequency.value=kind==="hat"?6000:1800;const g=ac.createGain();g.gain.value=kind==="hat"?.16:.3;src.connect(hp);hp.connect(g);g.connect(bus);src.start(when);
+  filteredNoise(ac,bus,when,.085,.23,6500,"highpass");
+  [4180,5630,7310,8870].forEach(freq=>{if(freq<ac.sampleRate*.45)decayingPartial(ac,bus,freq,when,.065,.019,.014,.001)});
  }
 }
 function scheduleTrack(ac,dest,id,t,base=0,solo=false){
@@ -300,6 +338,13 @@ function stabilize(midis,mode){
  // 実際に歌ったオクターブ跳躍は保持する。
  return midis.map((m,i)=>{if(m==null)return null;const left=midis[i-1],right=midis[i+1];if(left!=null&&right!=null&&Math.abs(left-right)<.6&&Math.abs(m-left)>1.2)return median([left,m,right]);return m});
 }
+function smoothTremor(midis,mode){
+ if(mode==="off")return midis;
+ const radius=mode==="strong"?5:3;
+ // 無音をまたがない中央窓。短い音程変化やビブラートを平滑化。
+ const filtered=midis.map((m,i)=>{if(m==null)return null;let lo=i,hi=i;while(lo>0&&i-lo<radius&&midis[lo-1]!=null)lo--;while(hi+1<midis.length&&hi-i<radius&&midis[hi+1]!=null)hi++;return median(midis.slice(lo,hi+1))});
+ return filtered.map((m,i)=>{if(m==null)return null;let sum=m,n=1;const r=mode==="strong"?4:2;for(let d=1;d<=r;d++){if(filtered[i-d]==null)break;sum+=filtered[i-d];n++}for(let d=1;d<=r;d++){if(filtered[i+d]==null)break;sum+=filtered[i+d];n++}return sum/n});
+}
 function onsetDrums(ch,sr,startBeat,grid,sens=1,boost=1){
  const frame=1024,hop=512,ener=[];for(let p=0;p+frame<ch.length;p+=hop){let e=0,z=0;for(let i=0;i<frame;i++){let v=ch[p+i];e+=v*v;if(i&&Math.sign(ch[p+i-1])!==Math.sign(v))z++}ener.push({t:p/sr,e:Math.sqrt(e/frame)*boost,z:z/frame})}
  const floor=.008/Math.sqrt(Math.max(1,sens*boost));
@@ -309,7 +354,7 @@ function onsetDrums(ch,sr,startBeat,grid,sens=1,boost=1){
 async function analyzeBuffer(buffer,id,settings=null){
  const original=buffer.getChannelData(0),factor=Math.max(1,Math.floor(buffer.sampleRate/12000)),sr=buffer.sampleRate/factor;
  const ch=new Float32Array(Math.ceil(original.length/factor));for(let i=0;i<ch.length;i++){let sum=0,n=0;for(let k=0;k<factor&&i*factor+k<original.length;k++){sum+=original[i*factor+k];n++}ch[i]=sum/n}
- const {startBeat,grid,sens,boost,pitchMode}=settings||captureSettings();
+ const {startBeat,grid,sens,boost,pitchMode,tremorMode="strong"}=settings||captureSettings();
  if(id==="drums")return onsetDrums(ch,sr,startBeat,grid,sens,boost);
  const hop=Math.round(sr*.01),frame=Math.round(sr*.048),ener=[];
  for(let p=0;p<ch.length;p+=hop){let e=0;const end=Math.min(p+hop,ch.length);for(let i=p;i<end;i++)e+=ch[i]*ch[i];ener.push(Math.sqrt(e/(end-p)))}
@@ -323,7 +368,7 @@ async function analyzeBuffer(buffer,id,settings=null){
   const sample=ch.subarray(start,Math.min(ch.length,start+frame)),r=autoCorrelate(sample,sr,65,1200,gate*.4);
   frames.push({t,midi:r?69+12*Math.log2(r.freq/440):null,conf:r?r.confidence:0,e:ener[index]});
  }
- const stable=stabilize(frames.map(f=>f.midi),pitchMode);stable.forEach((m,i)=>frames[i].midi=m);
+ const stable=smoothTremor(stabilize(frames.map(f=>f.midi),pitchMode),tremorMode);stable.forEach((m,i)=>frames[i].midi=m);
  const segments=[];let cur=null,change=null,quiet=0;
  const close=end=>{if(cur){cur.end=end;segments.push(cur);cur=null}change=null};
  const begin=f=>({t:f.t,end:f.t+hop/sr,mids:[f.midi],confs:[f.conf],peak:f.e,valley:f.e});
@@ -331,13 +376,16 @@ async function analyzeBuffer(buffer,id,settings=null){
   const f=frames[i];
   if(f.midi==null){quiet++;if(cur&&quiet>=2)close(f.t-(quiet-1)*hop/sr);continue}
   if(!cur){cur=begin(f);quiet=0;continue}
-  const center=median(cur.mids.slice(-9));
+  const center=median(cur.mids.slice(tremorMode==="off"?-9:-31));
+  cur.end=f.t+hop/sr;
   // 同じ高さの「タ・タ」も、音量の谷からの立ち上がりで分ける。
-  const reattack=f.t-cur.t>=.06&&cur.valley<cur.peak*.48&&f.e>cur.valley*1.9&&f.e>cur.peak*.4;
+  const reattack=f.t-cur.t>=.06&&cur.valley<cur.peak*(tremorMode==="strong"?.15:tremorMode==="normal"?.25:.48)&&f.e>cur.valley*1.9&&f.e>cur.peak*.4;
   if(reattack){close(f.t);cur=begin(f);quiet=0;continue}
-  if(Math.abs(f.midi-center)>.7){
+  const distance=Math.abs(f.midi-center);
+  if(distance>(tremorMode==="off"?.7:.78)){
    if(!change||Math.abs(change.midi-f.midi)>.55)change={t:f.t,midi:f.midi,frames:[f]};else change.frames.push(f);
-   if(change.frames.length>=2){const pending=change.frames,boundary=change.t;close(boundary);cur=begin(pending[0]);for(const x of pending.slice(1)){cur.mids.push(x.midi);cur.confs.push(x.conf);cur.end=x.t+hop/sr}}
+   const hold=tremorMode==="off"?2:distance>=2?(tremorMode==="strong"?4:3):(tremorMode==="strong"?10:6);
+   if(change.frames.length>=hold){const pending=change.frames,boundary=change.t;close(boundary);cur=begin(pending[0]);for(const x of pending.slice(1)){cur.mids.push(x.midi);cur.confs.push(x.conf);cur.end=x.t+hop/sr}}
   }else{change=null;cur.mids.push(f.midi);cur.confs.push(f.conf);cur.end=f.t+hop/sr}
   cur.peak=Math.max(cur.peak,f.e);cur.valley=f.e<cur.valley?f.e:Math.min(f.e,cur.valley*1.35);quiet=0;
  }
@@ -352,7 +400,7 @@ async function analyzeBuffer(buffer,id,settings=null){
  for(let i=0;i<notes.length-1;i++){const gap=notes[i+1].start-notes[i].start;if(gap>0)notes[i].duration=Math.min(notes[i].duration,Math.max(.025,gap-.006/beatSec()))}
  return notes;
 }
-function captureSettings(){return {startBeat:Number($("startBeat").value||0),grid:$("gridMode").value,sens:Number($("sensitivity").value),boost:Number($("inputBoost").value||1),pitchMode:$("pitchMode").value}}
+function captureSettings(){return {startBeat:Number($("startBeat").value||0),grid:$("gridMode").value,sens:Number($("sensitivity").value),boost:Number($("inputBoost").value||1),pitchMode:$("pitchMode").value,tremorMode:$("tremorMode").value||"strong"}}
 function setRecordingUI(active){$("recordBtn").textContent=active?"■ 録音停止":"● 声を録音";$("recStatus").classList.toggle("live",active)}
 function showLevel(pcm){let r=0;for(const v of pcm)r+=v*v;r=Math.sqrt(r/pcm.length);const level=clamp(r*900*Number($("inputBoost").value||1),0,100);$("levelBar").style.width=level+"%";$("levelText").textContent=Math.round(level)+"%"}
 async function startRecording(){
@@ -404,7 +452,7 @@ function quantizeAll(){const g=Number($("editGrid").value),t=state.tracks[state.
 function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 function encodePCM(buffer){const pcm=buffer.getChannelData(0),bytes=new Uint8Array(pcm.length*4),view=new DataView(bytes.buffer);for(let i=0;i<pcm.length;i++)view.setFloat32(i*4,pcm[i],true);let text="";for(let i=0;i<bytes.length;i+=16384)text+=String.fromCharCode(...bytes.subarray(i,i+16384));return {sampleRate:buffer.sampleRate,pcm:btoa(text)}}
 function decodePCM(x){const bytes=Uint8Array.from(atob(x.pcm),c=>c.charCodeAt(0));if(!bytes.length||bytes.length%4||!Number.isFinite(x.sampleRate))throw new Error("録音データの形式が不正です");const b=new AudioBuffer({numberOfChannels:1,length:bytes.length/4,sampleRate:x.sampleRate}),data=b.getChannelData(0),v=new DataView(bytes.buffer);for(let i=0;i<data.length;i++)data[i]=v.getFloat32(i*4,true);return b}
-async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.3",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
+async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.5",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
 async function openProject(file){
  if(!canPlay())return;stopAll();await restored;state.busy=true;
  try{const x=JSON.parse(await file.text());const incoming={};for(const id of Object.keys(state.tracks)){const item=x.tracks?.[id];incoming[id]=item?{volume:clamp(Number(item.volume??70),0,400),mute:!!item.mute,notes:item.notes||[],sourceStart:Math.max(0,Number(item.sourceStart)||0),source:item.audio?decodePCM(item.audio):null}:{volume:70,mute:false,notes:[],sourceStart:0,source:null}}
@@ -429,7 +477,7 @@ $("playAll").onclick=playAll;$("stopAll").onclick=stopAll;$("recordBtn").onclick
 $("clearTrack").onclick=async()=>{if(!canPlay())return;await restored;stopAll();const id=state.selected,t=state.tracks[id];t.notes=[];t.source=null;if(t.sourceURL)URL.revokeObjectURL(t.sourceURL);t.sourceURL=null;renderAll();saveLocal();try{await persistRecording(id,null)}catch(e){status("録音の削除を保存できません: "+e.message)}};
 $("addNote").onclick=addNote;$("quantize").onclick=quantizeAll;$("octDown").onclick=()=>shiftSelected(-12);$("semiDown").onclick=()=>shiftSelected(-1);$("semiUp").onclick=()=>shiftSelected(1);$("octUp").onclick=()=>shiftSelected(12);
 $("saveBtn").onclick=saveProject;$("openBtn").onclick=()=>$("openInput").click();$("openInput").onchange=e=>e.target.files[0]&&openProject(e.target.files[0]);$("exportBtn").onclick=exportWav;$("soundTestBtn").onclick=soundTest;$("demoBtn").onclick=demo;
-$("title").onchange=saveLocal;$("bpm").onchange=saveLocal;
+$("tremorMode").onchange=saveLocal;$("title").onchange=saveLocal;$("bpm").onchange=saveLocal;
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&state.recording){finishRecording();status("画面を離れたため録音を停止しました")}});
 loadLocal();renderAll(); if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).catch(()=>{});
 })();
