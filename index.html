@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#111318" />
 <link rel="manifest" href="manifest.webmanifest" />
-<title>Kotoba Music v1.6.2</title>
+<title>Kotoba Music v1.6.3</title>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e232d;--line:#303744;--text:#f5f7fb;--muted:#9da7b7;--accent:#8cb4ff;--good:#7adf9b;--warn:#ffc66d;--danger:#ff7f88}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
@@ -30,7 +30,7 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
 </head>
 <body>
 <header><div class="top">
-  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.2</span></div>
+  <div class="brand">▥ <b>Kotoba Music</b> <span class="badge">v1.6.3</span></div>
   <button id="saveBtn" class="small">プロジェクト保存</button>
   <button id="openBtn" class="small">開く</button>
   <button id="exportBtn" class="small">曲を書き出す</button>
@@ -78,7 +78,7 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
       <button id="sourcePlay">元の声を聴く</button>
       <button id="clearTrack" class="danger">パートを消す</button>
     </div>
-    <div class="muted" style="margin-top:10px">録音中はこの画面を開いたままにしてください。1回の録音は最大5分。小さい声向けに感度128倍＋入力ブースト8倍まで対応。音程は複数フレームの中央値＋オクターブ飛び補正で安定化します。重ね録りはイヤホン推奨。</div>
+    <div class="muted" style="margin-top:10px">録音中はこの画面を開いたままにしてください。1回の録音は最大5分。感度を上げすぎると雑音も拾います。まず32倍・ブースト4倍で試してください。音程と音の区切りを別々に判定します。同じ音の連続や短い休符も読み取ります。重ね録りはイヤホン推奨。</div>
     <div class="muted">声の変換は端末内で行います。録音音声をサーバーへ送信しません。</div>
   </div>
 
@@ -106,7 +106,7 @@ label{font-size:12px;color:var(--muted);display:grid;gap:5px}.rec-status{font-we
   <div id="roll" class="piano-roll" style="margin-top:12px"></div>
   <div id="notes" class="notes" style="margin-top:12px"></div>
 </section>
-<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.2 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
+<div class="footer">録音 → 楽器に変換 → 音を直す → 重ねて一曲に / v1.6.3 · 録音・再生修正 · 超高感度入力 · 5分録音 · 全音色強化 · VIOLIN</div>
 </main>
 
 <script>
@@ -281,27 +281,24 @@ function playAll(){return playTracks()}
 function playSelected(){return playTracks(state.selected)}
 function stopAll(){state.playToken++;if(state.timer)clearInterval(state.timer);state.timer=null;for(const x of state.playing){try{x.stop();x.disconnect()}catch(e){}}state.playing=[];for(const {g,comp} of state.buses){g.disconnect();comp.disconnect()}state.buses=[];$("clock").textContent="00:00.0";status("停止中")}
 function fmtTime(s){const m=Math.floor(s/60),ss=Math.floor(s%60),d=Math.floor((s%1)*10);return `${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}.${d}`}
-function autoCorrelate(buf,sr,minF=60,maxF=1100,minRms=.00008,minCorr=.34){
+function autoCorrelate(buf,sr,minF=65,maxF=1100,minRms=.00008){
  let mean=0;for(const v of buf)mean+=v;mean/=buf.length;
- let energy=0;for(const v of buf)energy+=(v-mean)*(v-mean);const rms=Math.sqrt(energy/buf.length);if(rms<minRms)return null;
- const minLag=Math.max(2,Math.floor(sr/maxF)),maxLag=Math.min(Math.ceil(sr/minF),buf.length-2),corrs=new Float32Array(maxLag+2);let best=-1,bestLag=-1;
- for(let lag=minLag-1;lag<=maxLag+1;lag++){let corr=0,norm1=0,norm2=0;for(let i=0;i<buf.length-lag;i++){const a=buf[i]-mean,b=buf[i+lag]-mean;corr+=a*b;norm1+=a*a;norm2+=b*b}corr/=Math.sqrt(norm1*norm2)+1e-20;corrs[lag]=corr;if(lag>=minLag&&lag<=maxLag&&corr>best){best=corr;bestLag=lag}}
- if(best<minCorr||bestLag<0)return null;
- // 同じ周期の2倍・3倍の山ではなく、十分高い最初の山を採用する。
- const threshold=Math.max(minCorr,best-.035);for(let lag=minLag;lag<=maxLag;lag++){if(corrs[lag]>=threshold&&corrs[lag]>corrs[lag-1]&&corrs[lag]>=corrs[lag+1]){bestLag=lag;break}}
- const left=corrs[bestLag-1],center=corrs[bestLag],right=corrs[bestLag+1],den=left-2*center+right;
+ let power=0;for(const v of buf)power+=(v-mean)*(v-mean);const rms=Math.sqrt(power/buf.length);if(rms<minRms)return null;
+ const minLag=Math.max(2,Math.floor(sr/maxF)),maxLag=Math.min(Math.ceil(sr/minF),Math.floor(buf.length/2)-1),width=buf.length-maxLag-1;
+ const difference=new Float32Array(maxLag+2);let total=0;difference[0]=1;
+ // 周期の差分を累積平均で正規化。最初の十分深い谷を選ぶ。
+ for(let lag=1;lag<=maxLag+1;lag++){let sum=0;for(let i=0;i<width;i++){const d=buf[i]-buf[i+lag];sum+=d*d}total+=sum;difference[lag]=total?sum*lag/total:1}
+ let chosen=-1,best=1;for(let lag=minLag;lag<=maxLag;lag++){const v=difference[lag];if(v<best){best=v;chosen=lag}if(v<.15){while(lag<maxLag&&difference[lag+1]<difference[lag])lag++;chosen=lag;break}}
+ if(chosen<0||difference[chosen]>.28)return null;
+ const left=difference[chosen-1],center=difference[chosen],right=difference[chosen+1],den=left-2*center+right;
  const offset=Math.abs(den)>1e-10?clamp(.5*(left-right)/den,-.5,.5):0;
- return {freq:sr/(bestLag+offset),confidence:center,rms};
+ return {freq:sr/(chosen+offset),confidence:1-center,rms};
 }
 function median(a){const b=[...a].sort((x,y)=>x-y);return b[Math.floor(b.length/2)]}
 function stabilize(midis,mode){
- const out=[]; let prev=null;
- for(let i=0;i<midis.length;i++){let m=midis[i];if(m==null){out.push(null);continue}
-  const win=midis.slice(Math.max(0,i-2),i+3).filter(x=>x!=null);m=median(win);
-  if(prev!=null){while(m-prev>7)m-=12;while(prev-m>7)m+=12}
-  if(mode==="strong")m=Math.round(m); else if(mode==="natural"){const r=Math.round(m); if(Math.abs(m-r)<.32)m=r}
-  prev=m;out.push(m);
- } return out
+ // 無音をまたいで音程を混ぜず、一瞬だけの飛びを近傍3点で除く。
+ // 実際に歌ったオクターブ跳躍は保持する。
+ return midis.map((m,i)=>{if(m==null)return null;const left=midis[i-1],right=midis[i+1];if(left!=null&&right!=null&&Math.abs(left-right)<.6&&Math.abs(m-left)>1.2)return median([left,m,right]);return m});
 }
 function onsetDrums(ch,sr,startBeat,grid,sens=1,boost=1){
  const frame=1024,hop=512,ener=[];for(let p=0;p+frame<ch.length;p+=hop){let e=0,z=0;for(let i=0;i<frame;i++){let v=ch[p+i];e+=v*v;if(i&&Math.sign(ch[p+i-1])!==Math.sign(v))z++}ener.push({t:p/sr,e:Math.sqrt(e/frame)*boost,z:z/frame})}
@@ -314,21 +311,46 @@ async function analyzeBuffer(buffer,id,settings=null){
  const ch=new Float32Array(Math.ceil(original.length/factor));for(let i=0;i<ch.length;i++){let sum=0,n=0;for(let k=0;k<factor&&i*factor+k<original.length;k++){sum+=original[i*factor+k];n++}ch[i]=sum/n}
  const {startBeat,grid,sens,boost,pitchMode}=settings||captureSettings();
  if(id==="drums")return onsetDrums(ch,sr,startBeat,grid,sens,boost);
- const minRms=Math.max(.000035,.0035/(sens*boost));
- const minCorr=Math.max(.26,.43-Math.log2(Math.max(1,sens*boost))*.018);
- const frame=1024,hop=256,frames=[];for(let p=0;p+frame<ch.length;p+=hop){if(p%(hop*24)===0)await new Promise(r=>setTimeout(r,0));const slice=ch.subarray(p,p+frame);const r=autoCorrelate(slice,sr,id==="bass"?45:70,1200,minRms,minCorr);const thr=.006/(sens*boost);if(r&&r.rms>thr){let midi=69+12*Math.log2(r.freq/440);frames.push({t:p/sr,midi,conf:r.confidence,rms:r.rms})}else frames.push({t:p/sr,midi:null,conf:0,rms:0})}
- const stable=stabilize(frames.map(x=>x.midi),pitchMode); stable.forEach((m,i)=>frames[i].midi=m);
- let notes=[],cur=null;const tolerance=pitchMode==="raw"?.9:.55;
- for(let i=0;i<frames.length;i++){const f=frames[i],m=f.midi;
-  if(m==null){if(cur&&f.t-cur.t>.08){cur.end=f.t;notes.push(cur);cur=null}continue}
-  if(!cur){cur={t:f.t,end:f.t,mids:[m],confs:[f.conf]};continue}
-  const cm=median(cur.mids.slice(-7));if(Math.abs(m-cm)>tolerance||f.t-cur.end>.12){cur.end=f.t;notes.push(cur);cur={t:f.t,end:f.t,mids:[m],confs:[f.conf]}}else{cur.mids.push(m);cur.confs.push(f.conf);cur.end=f.t}
- } if(cur)notes.push(cur);
- return notes.filter(n=>n.end-n.t>.045).map(n=>{
-  let midi=Math.round(median(n.mids)); if(id==="bass"&&midi>60)midi-=12; if(id==="violin"&&midi<55)midi+=12;
-  let st=startBeat+n.t/beatSec(),dur=Math.max(.125,(n.end-n.t)/beatSec()); if(grid!=="free"){st=quant(st,grid);dur=Math.max(Number(grid),quant(dur,grid))}
-  return {start:st,duration:dur,midi:clamp(midi,24,108),confidence:median(n.confs)}
+ const hop=Math.round(sr*.01),frame=Math.round(sr*.048),ener=[];
+ for(let p=0;p<ch.length;p+=hop){let e=0;const end=Math.min(p+hop,ch.length);for(let i=p;i<end;i++)e+=ch[i]*ch[i];ener.push(Math.sqrt(e/(end-p)))}
+ if(!ener.length)return [];
+ const sorted=[...ener].sort((a,b)=>a-b),peak=sorted[Math.floor((sorted.length-1)*.95)],noise=sorted[Math.floor((sorted.length-1)*.1)];
+ const gate=Math.max(.000035,.0035/Math.max(1,sens*boost),Math.min(noise*2.5,peak*.12)),frames=[];
+ for(let index=0;index<ener.length;index++){
+  if(index%32===0)await new Promise(r=>setTimeout(r,0));
+  const t=index*hop/sr;if(ener[index]<gate){frames.push({t,midi:null,conf:0,e:ener[index]});continue}
+  const center=index*hop+Math.floor(hop/2),start=Math.max(0,Math.min(ch.length-frame,center-Math.floor(frame/2)));
+  const sample=ch.subarray(start,Math.min(ch.length,start+frame)),r=autoCorrelate(sample,sr,65,1200,gate*.4);
+  frames.push({t,midi:r?69+12*Math.log2(r.freq/440):null,conf:r?r.confidence:0,e:ener[index]});
+ }
+ const stable=stabilize(frames.map(f=>f.midi),pitchMode);stable.forEach((m,i)=>frames[i].midi=m);
+ const segments=[];let cur=null,change=null,quiet=0;
+ const close=end=>{if(cur){cur.end=end;segments.push(cur);cur=null}change=null};
+ const begin=f=>({t:f.t,end:f.t+hop/sr,mids:[f.midi],confs:[f.conf],peak:f.e,valley:f.e});
+ for(let i=0;i<frames.length;i++){
+  const f=frames[i];
+  if(f.midi==null){quiet++;if(cur&&quiet>=2)close(f.t-(quiet-1)*hop/sr);continue}
+  if(!cur){cur=begin(f);quiet=0;continue}
+  const center=median(cur.mids.slice(-9));
+  // 同じ高さの「タ・タ」も、音量の谷からの立ち上がりで分ける。
+  const reattack=f.t-cur.t>=.06&&cur.valley<cur.peak*.48&&f.e>cur.valley*1.9&&f.e>cur.peak*.4;
+  if(reattack){close(f.t);cur=begin(f);quiet=0;continue}
+  if(Math.abs(f.midi-center)>.7){
+   if(!change||Math.abs(change.midi-f.midi)>.55)change={t:f.t,midi:f.midi,frames:[f]};else change.frames.push(f);
+   if(change.frames.length>=2){const pending=change.frames,boundary=change.t;close(boundary);cur=begin(pending[0]);for(const x of pending.slice(1)){cur.mids.push(x.midi);cur.confs.push(x.conf);cur.end=x.t+hop/sr}}
+  }else{change=null;cur.mids.push(f.midi);cur.confs.push(f.conf);cur.end=f.t+hop/sr}
+  cur.peak=Math.max(cur.peak,f.e);cur.valley=f.e<cur.valley?f.e:Math.min(f.e,cur.valley*1.35);quiet=0;
+ }
+ if(cur)close(Math.min(buffer.duration,cur.end));
+ const notes=segments.filter(n=>n.end-n.t>=.035&&n.mids.length>=3).map(n=>{
+  let midi=Math.round(median(n.mids));if(id==="bass"&&midi>60)midi-=12;if(id==="violin"&&midi<55)midi+=12;
+  let start=startBeat+n.t/beatSec(),duration=(n.end-n.t)/beatSec();
+  if(grid!=="free"){start=quant(start,grid);duration=Math.max(Number(grid),quant(duration,grid))}
+  return {start,duration:Math.max(.025,duration),midi:clamp(midi,24,108),confidence:median(n.confs)};
  });
+ // 丸めによる前の音のはみ出しを抑えて、一音ずつ再発音する。
+ for(let i=0;i<notes.length-1;i++){const gap=notes[i+1].start-notes[i].start;if(gap>0)notes[i].duration=Math.min(notes[i].duration,Math.max(.025,gap-.006/beatSec()))}
+ return notes;
 }
 function captureSettings(){return {startBeat:Number($("startBeat").value||0),grid:$("gridMode").value,sens:Number($("sensitivity").value),boost:Number($("inputBoost").value||1),pitchMode:$("pitchMode").value}}
 function setRecordingUI(active){$("recordBtn").textContent=active?"■ 録音停止":"● 声を録音";$("recStatus").classList.toggle("live",active)}
@@ -382,7 +404,7 @@ function quantizeAll(){const g=Number($("editGrid").value),t=state.tracks[state.
 function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 function encodePCM(buffer){const pcm=buffer.getChannelData(0),bytes=new Uint8Array(pcm.length*4),view=new DataView(bytes.buffer);for(let i=0;i<pcm.length;i++)view.setFloat32(i*4,pcm[i],true);let text="";for(let i=0;i<bytes.length;i+=16384)text+=String.fromCharCode(...bytes.subarray(i,i+16384));return {sampleRate:buffer.sampleRate,pcm:btoa(text)}}
 function decodePCM(x){const bytes=Uint8Array.from(atob(x.pcm),c=>c.charCodeAt(0));if(!bytes.length||bytes.length%4||!Number.isFinite(x.sampleRate))throw new Error("録音データの形式が不正です");const b=new AudioBuffer({numberOfChannels:1,length:bytes.length/4,sampleRate:x.sampleRate}),data=b.getChannelData(0),v=new DataView(bytes.buffer);for(let i=0;i<data.length;i++)data[i]=v.getFloat32(i*4,true);return b}
-async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.2",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
+async function saveProject(){if(!canPlay())return;await restored;const out={version:"1.6.3",title:$("title").value,bpm:Number($("bpm").value),tracks:{}};for(const [id,t] of Object.entries(state.tracks))out.tracks[id]={volume:t.volume,mute:t.mute,notes:t.notes,sourceStart:t.sourceStart||0,audio:t.source?encodePCM(t.source):null};download((out.title||"kotoba-music")+".json",new Blob([JSON.stringify(out)],{type:"application/json"}));status("元の録音を含めて保存しました")}
 async function openProject(file){
  if(!canPlay())return;stopAll();await restored;state.busy=true;
  try{const x=JSON.parse(await file.text());const incoming={};for(const id of Object.keys(state.tracks)){const item=x.tracks?.[id];incoming[id]=item?{volume:clamp(Number(item.volume??70),0,400),mute:!!item.mute,notes:item.notes||[],sourceStart:Math.max(0,Number(item.sourceStart)||0),source:item.audio?decodePCM(item.audio):null}:{volume:70,mute:false,notes:[],sourceStart:0,source:null}}
