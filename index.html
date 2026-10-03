@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>Kotoba Music v3.7.0</title>
+<title>Kotoba Music v3.7.2</title>
 <style>
 :root{--bg:#0b0d12;--panel:#141821;--panel2:#1b202b;--line:#2d3442;--text:#f5f7fa;--sub:#9aa6b8;--accent:#7ad7ff;--danger:#ff6f7d;--ok:#86e39b;--cellW:30px;--cellH:24px;--keysW:74px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -79,7 +79,7 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 <body>
 <header>
 <div class="headerRow">
-<div class="brand">▥ Kotoba Music <span class="badge">v3.7.0</span></div>
+<div class="brand">▥ Kotoba Music <span class="badge">v3.7.2</span></div>
 <button class="primary" id="playBtn">▶ 再生</button><button id="stopBtn">■ 停止</button>
 
 <span class="time" id="time">00:00.0</span>
@@ -119,14 +119,14 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 </section><div class="card" id="recordCard">
 <h3>録音 → 音符</h3>
 <div class="recBox stack" id="recBox">
-<div class="row"><button class="recBtn primary" id="recBtn">● 録音</button><button id="continueRecBtn">● 続きから録音</button><button id="audioImportBtn">音声ファイルから取り込む</button><button id="reconvertBtn">全体を再変換</button><button id="hearVoiceBtn">元の声</button></div>
+<div class="row"><button class="recBtn primary" id="recBtn">● 録音</button><button id="continueRecBtn">● 選択した音から録音</button><button id="audioImportBtn">音声ファイルから取り込む</button><button id="reconvertBtn">全体を再変換</button><button id="hearVoiceBtn">元の声</button></div>
 <div class="row" style="margin-top:8px"><label class="small">設定を反映する開始（拍）<input id="analysisStart" type="number" min="0" step="0.001" value="0" style="width:100px"/></label><label class="small">終了（拍）<input id="analysisEnd" type="number" min="0" step="0.001" placeholder="終了位置" style="width:100px"/></label><button id="selectionToRange">選択音から区間を指定</button><button id="reconvertRangeBtn">この区間に設定を反映</button></div><div class="muted">下の読み取り設定を指定区間だけに適用します。複数選択では最初〜最後の間も含みます。全体を再変換すると全区間が現在の設定になります。</div>
 <input accept="audio/*" capture="microphone" hidden="" id="audioCaptureFile" type="file"/>
 <div class="muted" id="recStatus">録音ボタンを押すとマイクを準備します。</div>
 <div id="micStatus" class="muted" role="status" aria-live="polite">録音開始後にマイク入力を表示します。</div><div class="meter"><i id="meterBar"></i></div>
 <div class="row">
 <label class="small">音程の追従<select id="trackingMode"><option value="fast" selected>高速追従（速い音階・跳躍）</option><option value="balanced">安定優先（従来）</option></select></label>
-<label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option selected="" value="8">8倍（推奨）</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">最短音長<select id="minNoteMs"><option selected="" value="30">30ms（速い旋律）</option><option value="50">50ms（標準）</option><option value="80">80ms</option><option value="120">120ms（長い音中心）</option></select></label><label class="small">声の揺れをまとめる<select id="pitchCoreFilter"><option value="0">OFF（細かな動きを残す）</option><option value="1">弱</option><option selected value="2">標準（音の芯を優先）</option><option value="3">強（伸ばす音向け）</option></select></label><label class="small">中間音除去<select id="intermediateFilter"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">近い音をまとめる<select id="mergeNearby"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">認識音域<select id="recognitionRange"><option selected="" value="auto">精度優先 50Hz〜2.2kHz</option><option value="low">低音優先 35〜900Hz</option><option value="high">高音優先 100Hz〜3kHz</option><option value="wide">広域 35Hz〜3.5kHz</option></select></label><label class="small">入力メーター／モニターブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option selected="" value="2">2倍（推奨）</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option></select></label>
+<label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option selected="" value="8">8倍（推奨）</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">最短音長<select id="minNoteMs"><option selected="" value="30">30ms（速い旋律）</option><option value="50">50ms（標準）</option><option value="80">80ms</option><option value="120">120ms（長い音中心）</option></select></label><label class="small">声の揺れをまとめる<select id="pitchCoreFilter"><option value="0">OFF（細かな動きを残す）</option><option value="1">弱</option><option selected value="2">標準（音の芯を優先）</option><option value="3">強（伸ばす音向け）</option><option value="4">最大（ゆっくりした旋律）</option></select></label><label class="small">中間音除去<select id="intermediateFilter"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">近い音をまとめる<select id="mergeNearby"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">認識音域<select id="recognitionRange"><option selected="" value="auto">精度優先 50Hz〜2.2kHz</option><option value="low">低音優先 35〜900Hz</option><option value="high">高音優先 100Hz〜3kHz</option><option value="wide">広域 35Hz〜3.5kHz</option></select></label><label class="small">入力メーター／モニターブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option selected="" value="2">2倍（推奨）</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option></select></label>
 <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label>
 <label class="small">ドラム入力<select id="drumInputMode"><option selected="" value="mouth">口ドラム（ドン・タッ・チッ・シャー）</option><option value="real">実ドラム／打楽器</option></select></label>
 <label class="small">チッ／シャー判定<select id="drumHatBias"><option selected="" value="closed">チッ優先（推奨）</option><option value="balanced">標準</option><option value="open">シャー優先</option></select></label>
@@ -142,10 +142,10 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 </div>
 <div class="muted">パートごとに解析を自動最適化します。ピアノ／ベース／ギター／ヴァイオリン／ボイスは音程解析、ドラムは時間変化つきアタック＋音色解析です。速い音階・大きな跳躍は「高速追従」＋30ms推奨。「近い音をまとめる」は同音の震えや極短い誤検出を整理します。弱い入力は自動で解析しやすいレベルまで追従し、高速解析が失敗した場合は互換解析へ自動切替します。設定変更後は「録音を再変換」を押してください。</div>
 <progress aria-label="音程解析の進捗" hidden="" id="analysisProgress" max="100" value="0"></progress><button hidden="" id="cancelAnalysis">解析を中止</button></div>
-</div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。旋律パートの音程解析は1つのメロディー向けです。ドラムは「口ドラム」と「実ドラム」で解析方式を切り替えます。標準は声の「ドン／タッ／チッ／シャー」に最適化されています。「高域音の拾いやすさ」は高が推奨です。「チッ／シャー判定」はチッ優先が推奨です。選択したドラム音は編集欄で「ドン／タッ／チッ／シャー」に変更できます。和音・伴奏の混じる録音は音程がずれることがあります。「続きから録音」は選択パートの末尾から追加します。録音終了（拍）を指定するとその位置で自動停止し、前後を残して録り直します。録音前カウントはBPMに合わせて4拍・8拍から選べます。録音中の伴奏は録音するパートを除いて再生します（M／S設定に従います）。伴奏・録音モニターはイヤホンで使ってください。</div></main>
+</div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。旋律パートの音程解析は1つのメロディー向けです。ドラムは「口ドラム」と「実ドラム」で解析方式を切り替えます。標準は声の「ドン／タッ／チッ／シャー」に最適化されています。「高域音の拾いやすさ」は高が推奨です。「チッ／シャー判定」はチッ優先が推奨です。選択したドラム音は編集欄で「ドン／タッ／チッ／シャー」に変更できます。和音・伴奏の混じる録音は音程がずれることがあります。「選択した音から録音」は選択音の開始位置から録り直します。複数選択では最も早い音から開始します。終了位置が空欄なら手動停止です。録音終了（拍）を指定するとその位置で自動停止し、前後を残して録り直します。録音前カウントはBPMに合わせて4拍・8拍から選べます。録音中の伴奏は録音するパートを除いて再生します（M／S設定に従います）。伴奏・録音モニターはイヤホンで使ってください。</div></main>
 <div class="toast" id="toast"></div>
 <script>
-/* Kotoba Music 3.7.0 — stronger closed/open hi-hat duration discrimination for mouth drums. No network calls. */
+/* Kotoba Music 3.7.2 — stronger closed/open hi-hat duration discrimination for mouth drums. No network calls. */
 (function installPitchEngine(root){
 'use strict';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));let options={};
@@ -357,6 +357,17 @@ function joinWeakPitchFragments(notes,level){
   // Merge only touching same-pitch regions, keeping deliberate reattacks separate.
   return mergeNearbyNotes(a,1);
 }
+function holdDominantPitch(frames,hop){
+ const out=frames.map(f=>f?{...f}:null);let center=null,pending=[],gap=0;
+ const restore=()=>{for(const k of pending)out[k].m=center;pending=[];};
+ for(let i=0;i<out.length;i++){const f=out[i];if(!f){gap+=hop;if(gap>.024){restore();center=null;}continue;}gap=0;
+   const pitch=Math.round(f.m);if(center===null){const votes=new Map();for(let j=i;j<Math.min(out.length,i+Math.ceil(.09/hop));j++){const n=frames[j];if(!n)break;const m=Math.round(n.m);votes.set(m,(votes.get(m)||0)+n.r*n.r*n.c);}center=pitch;let best=0;for(const [m,w] of votes)if(w>best){center=m;best=w;}f.m=center;continue;}
+   if(pitch===center){restore();f.m=center;continue;}
+   if(pending.length&&Math.round(frames[pending[0]].m)!==pitch)restore();
+   pending.push(i);f.m=center;const distance=Math.abs(pitch-center),hold=distance<=2?.125:.040;
+   if(pending.length*hop>=hold){center=pitch;for(const k of pending)out[k].m=center;pending=[];}
+ }restore();return out;
+}
 function weightedMedianPitch(frames){
   const a=[];for(const f of frames)if(f)for(let n=0;n<Math.max(1,Math.round((f.c||.5)*4));n++)a.push(f.m);
   if(!a.length)return null;a.sort((x,y)=>x-y);return a[Math.floor(a.length/2)];
@@ -410,7 +421,7 @@ function segmentFrames(frames,hop,gate,opt){
     if(!f){pending=[];missing++;if(missing*hop>gapLimit){close();last=null}continue}
     const previousGap=missing*hop;if(previousGap>gapLimit)last=null;missing=0;
     let m=Math.round(f.m);if(cur&&Math.abs(f.m-cur.midi)<=.5+dead)m=cur.midi;
-    const onset=(opt.trackType!=='violin'||previousGap>=.016)&&cur&&last&&m===cur.midi&&f.r>last.r*2.05&&last.r<Math.max(gate*2.2,f.r*.46)&&f.t-cur.start>.075;
+    const onset=(!( +opt.pitchCoreFilter>=4)||previousGap>=.020)&&(opt.trackType!=='violin'||previousGap>=.016)&&cur&&last&&m===cur.midi&&f.r>last.r*2.05&&last.r<Math.max(gate*2.2,f.r*.46)&&f.t-cur.start>.075;
     if(!cur){begin(f,m);pending=[]}
     else if(onset){close();begin(f,m,true);pending=[]}
     else if(m===cur.midi){for(const p of pending)add(p);pending=[];add(f)}
@@ -452,13 +463,14 @@ async function analyze(samples,sampleRate,opt={},progress=()=>{}){
   if(+opt.stabilize>0){const original=frames;frames=original.map((f,i)=>{const a=original[i-1],b=original[i+1];if(!f||!a||!b)return f;const center=(a.m+b.m)/2,dist=Math.abs(f.m-center);return Math.abs(a.m-b.m)<.4&&Math.abs(dist-12)<.6?{...f,m:center}:f;});}
   if(+opt.stabilize>=3||(+opt.stabilize>0&&opt.trackingMode!=='fast'))frames=repairPitchTrack(frames);
   frames=focusPitchCore(frames,hop/sr,opt.pitchCoreFilter);
+  if(+opt.pitchCoreFilter>=4)frames=holdDominantPitch(frames,hop/sr);
   if((opt.trackType==='voice'||opt.trackType==='violin')&&+opt.stabilize>0)frames=stabilizeVoiceTrack(frames,opt);
   const notes=joinWeakPitchFragments(segmentFrames(frames,hop/sr,gate,opt),opt.pitchCoreFilter).map(n=>({...n,end:Math.min(n.end,samples.length/sampleRate)}));
   progress(100);
   return {notes,gate,frames:frames.length,duration:samples.length/sampleRate,lowConfidence:notes.filter(n=>n.confidence<.80||n.uncertain).length};
 }
 async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
-  // v3.7.0: classify the *whole hit over time*, with dedicated high-band persistence for チッ vs シャー.
+  // v3.7.2: classify the *whole hit over time*, with dedicated high-band persistence for チッ vs シャー.
   // Default "mouth" mode is tuned for spoken/beatbox ドン・タッ・チッ・シャー.
   const mode=opt.drumInputMode||'mouth',target=22050,factor=Math.max(1,Math.floor(sampleRate/target));
   const pre=factor>1?lowpassMono(samples,sampleRate,sampleRate/factor*.44):samples,sr=sampleRate/factor,x=downsampleMono(pre,factor);
@@ -613,7 +625,7 @@ function recognitionBoundsFromOpt(opt){
   return opt.trackType==='bass'?[35,650]:opt.trackType==='guitar'?[55,1500]:opt.trackType==='violin'?[50,3000]:opt.trackType==='voice'?[55,1800]:opt.trackType==='piano'?[35,3500]:[50,2200];
 }
 function recognitionBounds(){return recognitionBoundsFromOpt(options)}
-const api={analyze,analyzeDrums,focusPitchCore,joinWeakPitchFragments,segmentFrames,filterIntermediate,mergeNearbyNotes,yinCandidates};
+const api={analyze,analyzeDrums,focusPitchCore,holdDominantPitch,joinWeakPitchFragments,segmentFrames,filterIntermediate,mergeNearbyNotes,yinCandidates};
 api.workerSource='('+installPitchEngine.toString()+')(self);self.onmessage=async e=>{try{const fn=e.data.mode==="drums"?self.KotobaPitch.analyzeDrums:self.KotobaPitch.analyze;const result=await fn(e.data.samples,e.data.sampleRate,e.data.opt,p=>self.postMessage({progress:p}));self.postMessage({result})}catch(err){self.postMessage({error:err.message})}};';
 root.KotobaPitch=api;
 if(typeof module!=='undefined')module.exports=api;
@@ -909,7 +921,7 @@ function joinRecordingAudio(tr,fresh,start,end,bpm){
  function copy(source,offset,replace){if(!source)return;const a=Math.max(0,Math.round(offset*sr)),b=Math.min(out.length,a+Math.ceil(source.duration*sr));for(let c=0;c<source.numberOfChannels;c++){const x=source.getChannelData(c);for(let i=a;i<b;i++){const t=i/sr;if(!replace&&t>=from&&t<to)continue;const pos=(i-a)*source.sampleRate/sr,k=Math.floor(pos),f=pos-k;out[i]+=((x[k]||0)*(1-f)+(x[k+1]||0)*f)/source.numberOfChannels;}}}
  copy(old,oldStart,false);copy(fresh,from,true);return joined;
 }
-function continueRecording(){if(recordPreparing||analysisBusy||mediaRecorder?.state==='recording')return;const tr=currentTrack();if(!tr)return;const spb=60/state.bpm,last=Math.max(0,...tr.notes.map(n=>n.start+n.dur),tr.recordBuffer?(tr.recordStart||0)+tr.recordBuffer.duration/spb:0);$('#recordStart').value=+last.toFixed(4);$('#recordEnd').value='';$('#recordMode').value='range';startRecording();}
+function recordFromSelection(){if(recordPreparing||analysisBusy||mediaRecorder?.state==='recording')return;const notes=selectedNotes();if(!notes.length){toast('録音を始めたい音程バーを選択してください');return;}const start=Math.min(...notes.map(n=>n.start));$('#recordStart').value=String(start);const end=$('#recordEnd');if(end.value!==''&&(!Number.isFinite(+end.value)||+end.value<=start))end.value='';$('#recordMode').value='range';startRecording();}
 function preferredRecorderOptions(){
   if(!window.MediaRecorder)return null;
   const candidates=['audio/mp4;codecs=mp4a.40.2','audio/mp4','audio/webm;codecs=opus','audio/webm'];
@@ -1107,7 +1119,7 @@ function initAdvancedUI(){
 $('#playBtn').onclick=()=>{if(recordPreparing||mediaRecorder?.state==='recording')return toast('録音中の伴奏は録音設定で選んでください');play(0);};$('#stopBtn').onclick=()=>{cancelRecordPreparation();if(mediaRecorder?.state==='recording')stopRecording();cancelMix();stop();};$('#testC4Btn').onclick=()=>testExactPitch(60);$('#testToneBtn').onclick=testTone;$('#testC5Btn').onclick=()=>testExactPitch(72);$('#outputMode').onchange=e=>{state.outputMode=e.target.value;saveSilent();setAudioStatus(e.target.value==='compat'?'iPad互換再生を使用':'Web Audio再生を使用')};$('#masterBoost').onchange=e=>{state.masterBoost=+e.target.value||2;saveSilent();toast('全体音量 '+Math.round(state.masterBoost*100)+'%')};$('#instrumentBoost').onchange=e=>{state.instrumentBoost=+e.target.value||2.5;saveSilent();toast('ボイス以外の楽器 '+Math.round(state.instrumentBoost*100)+'%')};$('#monitorLevel').onchange=e=>{state.monitorLevel=+e.target.value||0;saveSilent();if(recordGraph){if(!recordGraph.monitor){recordGraph.monitor=ensureAudio().createGain();recordGraph.lim.connect(recordGraph.monitor);recordGraph.monitor.connect(ensureAudio().destination)}recordGraph.monitor.gain.value=state.monitorLevel;}if(state.monitorLevel>0)toast('録音モニターはイヤホン推奨')};$('#autoHearRecording').onchange=e=>{state.autoHearRecording=e.target.value;saveSilent()};$('#recordLimit').onchange=e=>{state.recordLimitSec=[60,180,300].includes(+e.target.value)?+e.target.value:300;const el=$('#recClock');if(el)el.textContent='00:00 / '+fmtMMSS(state.recordLimitSec);saveSilent();toast('最大録音時間 '+Math.round(state.recordLimitSec/60)+'分')};$('#bpm').onchange=e=>{state.bpm=clamp(+e.target.value||100,40,240);saveSilent()};
 $('#saveBtn').onclick=saveLocal;$('#exportProjectBtn').onclick=exportProject;$('#importProjectBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>e.target.files[0]&&importProject(e.target.files[0]);$('#wavBtn').onclick=exportWav;
 $('#addTrackBtn').onclick=()=>{const type=$('#newTrackType').value,count=state.tracks.filter(t=>t.type===type).length+1,tr=defaultTrack(type,count);state.tracks.push(tr);state.selectedTrack=tr.id;state.selectedNote=null;selectedNoteIds=[];syncSelectedRecording();renderAll();focusTrackNotes();saveSilent()};
-$('#recBtn').onclick=startRecording;$('#continueRecBtn').onclick=continueRecording;$('#audioImportBtn').onclick=openAudioImport;$('#audioCaptureFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;if(recordPreparing||mediaRecorder?.state==='recording'||analysisBusy)return;recordPreparing=true;const tr=currentTrack();try{setRecStatus('音声を読み込み中…');await attachRecordedBlob(file,tr,'音声ファイル');renderAll()}catch(err){console.error(err);setRecStatus('この音声を読み込めませんでした。m4a / mp4 / wav などで試してください。');toast('音声を読み込めませんでした')}finally{recordPreparing=false;syncSelectedRecording();focusTrackNotes();saveSilent()}};$('#reconvertBtn').onclick=reconvert;$('#reconvertRangeBtn').onclick=reconvertRange;$('#selectionToRange').onclick=selectAnalysisRange;$('#hearVoiceBtn').onclick=hearVoice;$('#recordStart').onchange=e=>{e.target.value=Math.max(0,+e.target.value||0);};$('#recognitionRange').onchange=()=>{toast('認識音域を変更しました。録音を再変換してください')};
+$('#recBtn').onclick=startRecording;$('#continueRecBtn').onclick=recordFromSelection;$('#audioImportBtn').onclick=openAudioImport;$('#audioCaptureFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;if(recordPreparing||mediaRecorder?.state==='recording'||analysisBusy)return;recordPreparing=true;const tr=currentTrack();try{setRecStatus('音声を読み込み中…');await attachRecordedBlob(file,tr,'音声ファイル');renderAll()}catch(err){console.error(err);setRecStatus('この音声を読み込めませんでした。m4a / mp4 / wav などで試してください。');toast('音声を読み込めませんでした')}finally{recordPreparing=false;syncSelectedRecording();focusTrackNotes();saveSilent()}};$('#reconvertBtn').onclick=reconvert;$('#reconvertRangeBtn').onclick=reconvertRange;$('#selectionToRange').onclick=selectAnalysisRange;$('#hearVoiceBtn').onclick=hearVoice;$('#recordStart').onchange=e=>{e.target.value=Math.max(0,+e.target.value||0);};$('#recognitionRange').onchange=()=>{toast('認識音域を変更しました。録音を再変換してください')};
 $('#labelMode').onchange=e=>{state.labelMode=e.target.value;renderAll();saveSilent()};$('#snap').onchange=e=>{state.snap=+e.target.value;saveSilent()};$('#lengthStep').onchange=e=>{state.lengthStep=+e.target.value;saveSilent()};$('#halveNotes').onclick=()=>{for(const n of selectedNotes())n.dur=Math.max(.001,+(n.dur/2).toFixed(6));renderRoll();renderNotePanel();saveSilent();};$('#rangeMode').onchange=e=>{state.rangeMode=e.target.value;renderAll();saveSilent()};$('#zoomOutBtn').onclick=()=>applyZoom((state.zoom||1)-.25);$('#zoomInBtn').onclick=()=>applyZoom((state.zoom||1)+.25);$('#zoomResetBtn').onclick=()=>applyZoom(1);$('#expandEditorBtn').onclick=toggleEditorExpand;
 $('#addNoteBtn').onclick=()=>{const tr=currentTrack();addNote(tr.type==='drums'?36:tr.type==='bass'?40:tr.type==='violin'?67:60)};$('#deleteNote').onclick=deleteSelectedNotes;
 $('#octDown').onclick=()=>{const tr=currentTrack(),targets=selectedNotes().length?selectedNotes():tr.notes;targets.forEach(n=>n.midi=clamp(n.midi-12,0,127));renderAll();saveSilent()};$('#octUp').onclick=()=>{const tr=currentTrack(),targets=selectedNotes().length?selectedNotes():tr.notes;targets.forEach(n=>n.midi=clamp(n.midi+12,0,127));renderAll();saveSilent()};
