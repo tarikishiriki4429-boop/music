@@ -1,4 +1,4 @@
-/* Kotoba Music 3.0 — local monophonic pitch analysis. No network calls. */
+/* Kotoba Music 3.1 — local monophonic pitch analysis. No network calls. */
 (function installPitchEngine(root){
 'use strict';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));let options={};
@@ -118,12 +118,12 @@ function choosePitchPath(raw){
     for(let t=0;t<block.length;t++){
       const cs=block[t].candidates,sc=new Float64Array(cs.length),bk=new Int16Array(cs.length);bk.fill(-1);
       for(let k=0;k<cs.length;k++){
-        const emit=cs[k].q-(cs[k].y||0)*.035+(cs[k].oct||0)+(cs[k].spec||0)*.10+(cs[k].first?.04:0);
+        const emit=(cs[k].resolution==='short'?.035:0)+cs[k].q-(cs[k].y||0)*.035+(cs[k].oct||0)+(cs[k].spec||0)*.10+(cs[k].first?.04:0);
         if(t===0){sc[k]=emit;continue}
         let best=-1e9,bi=-1;const pcs=block[t-1].candidates,ps=scores[t-1];
         for(let p=0;p<pcs.length;p++){
           const d=Math.abs(cs[k].midi-pcs[p].midi),oct=Math.abs(d-12)<1.25||Math.abs(d-24)<1.4;
-          let penalty=Math.min(.22,d*.012);if(d<1.2)penalty*=.32;else if(d<3)penalty*=.62;if(oct)penalty+=.07;
+          let penalty=Math.min(.22,d*.012);if(d<1.2)penalty*=.32;else if(d<3)penalty*=.62;if(oct)penalty+=.07;if(options.trackingMode==='fast'){penalty*=.35;if(cs[k].q>.92&&cs[k].spec>.6)penalty*=.35;}
           const v=ps[p]-penalty;if(v>best){best=v;bi=p}
         }
         sc[k]=best+emit;bk[k]=bi;
@@ -163,7 +163,7 @@ function filterIntermediate(notes,level){
     let changed=false;
     for(let i=1;i<a.length-1;i++){
       const p=a[i-1],c=a[i],n=a[i+1];
-      if(c.end-c.start>cfg.max||c.start-p.end>.035||n.start-c.end>.035||c.reattack||n.reattack)continue;
+      if(c.protectShort||c.end-c.start>cfg.max||c.start-p.end>.035||n.start-c.end>.035||c.reattack||n.reattack)continue;
       if(p.end-p.start<cfg.anchor||n.end-n.start<cfg.anchor)continue;
       const same=p.midi===n.midi&&Math.abs(c.midi-p.midi)<=cfg.step+1;
       const between=(c.midi-p.midi)*(n.midi-c.midi)>0&&Math.abs(c.midi-p.midi)<=cfg.step&&Math.abs(n.midi-c.midi)<=cfg.step;
@@ -177,9 +177,9 @@ function filterIntermediate(notes,level){
   return a;
 }
 function segmentFrames(frames,hop,gate,opt){
-  const level=clamp(+opt.stabilize||0,0,3),hold=[0,.030,.055,.085][level],dead=[0,.08,.14,.20][level],min=+opt.minNoteMs/1000||.050;
+  const fast=opt.trackingMode==='fast',level=clamp(+opt.stabilize||0,0,3),hold=(fast?[0,.010,.020,.035]:[0,.030,.055,.085])[level],dead=[0,.08,.14,.20][level],min=+opt.minNoteMs/1000||.050;
   const notes=[];let cur=null,pending=[],missing=0,last=null;
-  function close(){if(!cur)return;if(cur.end-cur.start>=min){const med=weightedMedianPitch(cur.frames),pitches=cur.frames.map(x=>x.m),spread=Math.max(...pitches)-Math.min(...pitches);notes.push({start:cur.start,end:cur.end,midi:cur.midi,vel:clamp(.3+Math.sqrt(cur.energy/cur.frames.length)*1.8,.3,1),confidence:cur.frames.reduce((a,f)=>a+f.c,0)/cur.frames.length,uncertain:spread>1.3,reattack:cur.reattack})}cur=null;}
+  function close(){if(!cur)return;if(cur.end-cur.start+1e-8>=min){const med=weightedMedianPitch(cur.frames),pitches=cur.frames.map(x=>x.m),spread=Math.max(...pitches)-Math.min(...pitches);notes.push({start:cur.start,end:cur.end,midi:cur.midi,vel:clamp(.3+Math.sqrt(cur.energy/cur.frames.length)*1.8,.3,1),confidence:cur.frames.reduce((a,f)=>a+f.c,0)/cur.frames.length,uncertain:spread>1.3,protectShort:fast&&cur.frames.filter(f=>f.c>.90&&Math.abs(f.m-cur.midi)<.22).length*hop>=.025,reattack:cur.reattack})}cur=null;}
   function begin(f,m,reattack=false){cur={midi:m,start:f.t,end:f.t+hop,frames:[f],energy:f.r*f.r,reattack};}
   function add(f){cur.end=f.t+hop;cur.frames.push(f);cur.energy+=f.r*f.r;}
   for(let i=0;i<frames.length;i++){
@@ -194,7 +194,7 @@ function segmentFrames(frames,hop,gate,opt){
     else{
       if(pending.length&&Math.round(pending[0].m)!==m){for(const p of pending)add(p);pending=[]}
       pending.push(f);
-      if(pending.length*hop>=hold){const first=pending[0];close();begin(first,m);for(let j=1;j<pending.length;j++)add(pending[j]);pending=[]}
+      if(pending.length*hop+1e-8>=hold){const first=pending[0];close();begin(first,m);for(let j=1;j<pending.length;j++)add(pending[j]);pending=[]}
     }
     last=f;
   }
@@ -209,18 +209,23 @@ async function analyze(samples,sampleRate,opt={},progress=()=>{}){
   const pre=factor>1?lowpassMono(lowpassMono(samples,sampleRate,sampleRate/factor*.4),sampleRate,sampleRate/factor*.4):samples;
   const sr=sampleRate/factor,down=downsampleMono(pre,factor),[minFreq,maxFreq]=recognitionBoundsFromOpt(opt);
   const filtered=lowpassMono(highpassMono(down,sr,Math.max(24,minFreq*.55)),sr,Math.min(sr*.42,maxFreq*2.6));
-  const frame=Math.max(512,Math.pow(2,Math.ceil(Math.log2(sr/minFreq*2.5)))),hop=Math.round(sr*.01),gate=estimateNoiseGate(filtered,Math.min(frame,filtered.length),hop);
-  const raw=[],window=new Float32Array(frame),half=Math.floor(frame/2);
+  const frame=Math.max(512,Math.pow(2,Math.ceil(Math.log2(sr/minFreq*2.5)))),hop=Math.round(sr*(opt.trackingMode==='fast'?.005:.01)),gate=estimateNoiseGate(filtered,Math.min(frame,filtered.length),hop);
+  const raw=[],window=new Float32Array(frame),half=Math.floor(frame/2),shortSize=Math.max(256,2**Math.round(Math.log2(sr*.024))),shortWindow=new Float32Array(shortSize),shortHalf=shortSize/2;
   for(let pos=0,count=0;pos<filtered.length;pos+=hop,count++){
     window.fill(0);const start=Math.max(0,pos-half),end=Math.min(filtered.length,pos+half);window.set(filtered.subarray(start,end),Math.max(0,half-pos));
     const energy=frameRms(filtered.subarray(pos,Math.min(filtered.length,pos+hop)),1);
     let p=energy>gate?yinCandidates(window,sr,gate):null;
+    if(opt.trackingMode==='fast'&&energy>gate){
+      shortWindow.fill(0);const a=Math.max(0,pos-shortHalf),b=Math.min(filtered.length,pos+shortHalf);shortWindow.set(filtered.subarray(a,b),Math.max(0,shortHalf-pos));
+      const short=yinCandidates(shortWindow,sr,gate);
+      if(short){const merged=short.candidates.map(c=>({...c,resolution:'short'}));if(p)for(const c of p.candidates)if(!merged.some(v=>Math.abs(v.midi-c.midi)<.25))merged.push(c);p={rms:energy,candidates:merged};}
+    }
     raw.push(p?{t:pos/sr,rms:energy,candidates:p.candidates}:null);
     if(count%160===0){progress(Math.round(pos/filtered.length*82));await new Promise(r=>setTimeout(r,0))}
   }
   progress(85);
   let frames=choosePitchPath(raw);
-  if(+opt.stabilize>0)frames=repairPitchTrack(frames);
+  if(+opt.stabilize>0&&opt.trackingMode!=='fast')frames=repairPitchTrack(frames);
   const notes=segmentFrames(frames,hop/sr,gate,opt).map(n=>({...n,end:Math.min(n.end,samples.length/sampleRate)}));
   progress(100);
   return {notes,gate,frames:frames.length,duration:samples.length/sampleRate,lowConfidence:notes.filter(n=>n.confidence<.82||n.uncertain).length};

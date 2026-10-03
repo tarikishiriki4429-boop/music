@@ -5,13 +5,13 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>Kotoba Music v3.0</title>
-<link href="styles.css?v=3.0.0" rel="stylesheet"/>
+<title>Kotoba Music v3.1</title>
+<link href="styles.css?v=3.1.0" rel="stylesheet"/>
 </head>
 <body>
 <header>
 <div class="headerRow">
-<div class="brand">▥ Kotoba Music <span class="badge">v3.0</span></div>
+<div class="brand">▥ Kotoba Music <span class="badge">v3.1</span></div>
 <button class="primary" id="playBtn">▶ 再生</button><button id="stopBtn">■ 停止</button>
 
 <span class="time" id="time">00:00.0</span>
@@ -55,6 +55,7 @@
 <div class="muted" id="recStatus">録音ボタンを押すとマイクを準備します。</div>
 <div class="meter"><i id="meterBar"></i></div>
 <div class="row">
+<label class="small">音程の追従<select id="trackingMode"><option value="fast" selected>高速追従（速い音階・跳躍）</option><option value="balanced">安定優先（従来）</option></select></label>
 <label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option selected="" value="4">4倍（推奨）</option><option value="8">8倍</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">最短音長<select id="minNoteMs"><option value="30">30ms（速い旋律）</option><option selected="" value="50">50ms（標準）</option><option value="80">80ms</option><option value="120">120ms（長い音中心）</option></select></label><label class="small">中間音除去<select id="intermediateFilter"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">認識音域<select id="recognitionRange"><option selected="" value="auto">精度優先 50Hz〜2.2kHz</option><option value="low">低音優先 35〜900Hz</option><option value="high">高音優先 100Hz〜3kHz</option><option value="wide">広域 35Hz〜3.5kHz</option></select></label><label class="small">入力メーター／モニターブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option selected="" value="2">2倍（推奨）</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option></select></label>
 <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label>
 <label class="small">録音中モニター<select id="monitorLevel"><option selected="" value="0">OFF</option><option value="0.25">25%</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select></label>
@@ -63,11 +64,11 @@
 <label class="small">録音開始（拍）<input id="recordStart" min="0" step="0.125" style="width:90px" type="number" value="0"/></label>
 <label class="small">量子化<select id="quantize"><option value="0">声のまま</option><option value="0.5">8分</option><option value="0.25">16分</option><option value="0.125">32分</option></select></label>
 </div>
-<div class="muted">声を1音ずつ歌って変換。震え抑制と中間音除去は独立して調整できます。黄色の音符は要確認。「声のまま」は元のタイミングを保ちます。設定変更後は「録音を再変換」を押してください。</div>
+<div class="muted">速い音階や高低への跳躍には「高速追従」＋最短音長30ms。安定した短音は中間音除去から保護します。声を1音ずつ歌って変換。震え抑制と中間音除去は独立して調整できます。黄色の音符は要確認。「声のまま」は元のタイミングを保ちます。設定変更後は「録音を再変換」を押してください。</div>
 <progress aria-label="音程解析の進捗" hidden="" id="analysisProgress" max="100" value="0"></progress><button hidden="" id="cancelAnalysis">解析を中止</button></div>
 </div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。音程解析は1つのメロディー向けです。和音・伴奏の混じる録音は音程がずれることがあります。録音モニターはイヤホンで使ってください。</div></main>
 <div class="toast" id="toast"></div>
-<script src="pitch-engine.js?v=3.0.0"></script><script src="mixer.js?v=3.0.0"></script>
-<script src="app.js?v=3.0.0"></script>
+<script src="pitch-engine.js?v=3.1.0"></script><script src="mixer.js?v=3.1.0"></script>
+<script src="app.js?v=3.1.0"></script>
 </body>
 </html>
