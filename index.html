@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>Kotoba Music v3.7.3</title>
+<title>Kotoba Music v3.8.0</title>
 <style>
 :root{--bg:#0b0d12;--panel:#141821;--panel2:#1b202b;--line:#2d3442;--text:#f5f7fa;--sub:#9aa6b8;--accent:#7ad7ff;--danger:#ff6f7d;--ok:#86e39b;--cellW:30px;--cellH:24px;--keysW:74px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -126,7 +126,7 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 <div id="micStatus" class="muted" role="status" aria-live="polite">録音開始後にマイク入力を表示します。</div><div class="meter"><i id="meterBar"></i></div>
 <div class="row">
 <label class="small">音程の追従<select id="trackingMode"><option value="fast" selected>高速追従（速い音階・跳躍）</option><option value="balanced">安定優先（従来）</option></select></label>
-<label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option selected="" value="8">8倍（推奨）</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">最短音長<select id="minNoteMs"><option selected="" value="30">30ms（速い旋律）</option><option value="50">50ms（標準）</option><option value="80">80ms</option><option value="120">120ms（長い音中心）</option></select></label><label class="small">声の揺れをまとめる<select id="pitchCoreFilter"><option value="0">OFF（細かな動きを残す）</option><option value="1">弱</option><option selected value="2">標準（音の芯を優先）</option><option value="3">強（伸ばす音向け）</option><option value="4">最大（ゆっくりした旋律）</option></select></label><label class="small">中間音除去<select id="intermediateFilter"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">近い音をまとめる<select id="mergeNearby"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">認識音域<select id="recognitionRange"><option selected="" value="auto">精度優先 50Hz〜2.2kHz</option><option value="low">低音優先 35〜900Hz</option><option value="high">高音優先 100Hz〜3kHz</option><option value="wide">広域 35Hz〜3.5kHz</option></select></label><label class="small">入力メーター／モニターブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option selected="" value="2">2倍（推奨）</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option></select></label>
+<label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option selected="" value="8">8倍（推奨）</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">最短音長<select id="minNoteMs"><option value="15">15ms（超細かい音）</option><option value="20">20ms（かなり速い）</option><option selected="" value="30">30ms（速い旋律）</option><option value="50">50ms（標準）</option><option value="80">80ms</option><option value="120">120ms（長い音中心）</option></select></label><label class="small">声の揺れをまとめる<select id="pitchCoreFilter"><option value="0">OFF（細かな動きを残す）</option><option value="1">弱</option><option selected value="2">標準（音の芯を優先）</option><option value="3">強（伸ばす音向け）</option><option value="4">最大（ゆっくりした旋律）</option></select></label><label class="small">中間音除去<select id="intermediateFilter"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">近い音をまとめる<select id="mergeNearby"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">認識音域<select id="recognitionRange"><option selected="" value="auto">パート別自動（広め）</option><option value="low">低音優先 25Hz〜1.2kHz</option><option value="high">高音優先 70Hz〜4.2kHz</option><option value="wide">超広域 25Hz〜4.2kHz</option></select></label><label class="small">入力メーター／モニターブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option selected="" value="2">2倍（推奨）</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option></select></label>
 <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label>
 <label class="small">ドラム入力<select id="drumInputMode"><option selected="" value="mouth">口ドラム（ドン・タッ・チッ・シャー）</option><option value="real">実ドラム／打楽器</option></select></label>
 <label class="small">チッ／シャー判定<select id="drumHatBias"><option selected="" value="closed">チッ優先（推奨）</option><option value="balanced">標準</option><option value="open">シャー優先</option></select></label>
@@ -140,12 +140,12 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 <label class="small">録音方法<select id="recordMode"><option value="replace">全体を録り直す</option><option value="range">指定位置から録音（前後を残す）</option></select></label><label class="small">録音終了（拍）<input id="recordEnd" type="number" min="0" step="0.125" placeholder="空欄＝手動停止" style="width:130px"/></label><label class="small">録音開始（拍）<input id="recordStart" min="0" step="0.125" style="width:90px" type="number" value="0"/></label>
 <label class="small">量子化<select id="quantize"><option value="0">声のまま</option><option value="0.5">8分</option><option value="0.25">16分</option><option value="0.125">32分</option></select></label>
 </div>
-<div class="muted">パートごとに解析を自動最適化します。ピアノ／ベース／ギター／ヴァイオリン／ボイスは音程解析、ドラムは時間変化つきアタック＋音色解析です。速い音階・大きな跳躍は「高速追従」＋30ms推奨。「近い音をまとめる」は同音の震えや極短い誤検出を整理します。弱い入力は自動で解析しやすいレベルまで追従し、高速解析が失敗した場合は互換解析へ自動切替します。設定変更後は「録音を再変換」を押してください。</div>
+<div class="muted">パートごとに解析を自動最適化します。ピアノ／ベース／ギター／ヴァイオリン／ボイスは低域・高域を広げた音程解析、ドラムは時間変化つきアタック＋音色解析です。速い音階・大きな跳躍は「高速追従」＋20〜30ms推奨。「近い音をまとめる」は同音の震えや極短い誤検出を整理します。弱い入力は自動で解析しやすいレベルまで追従し、高速解析が失敗した場合は互換解析へ自動切替します。設定変更後は「録音を再変換」を押してください。</div>
 <progress aria-label="音程解析の進捗" hidden="" id="analysisProgress" max="100" value="0"></progress><button hidden="" id="cancelAnalysis">解析を中止</button></div>
 </div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。旋律パートの音程解析は1つのメロディー向けです。ドラムは「口ドラム」と「実ドラム」で解析方式を切り替えます。標準は声の「ドン／タッ／チッ／シャー」に最適化されています。「高域音の拾いやすさ」は高が推奨です。「チッ／シャー判定」はチッ優先が推奨です。選択したドラム音は編集欄で「ドン／タッ／チッ／シャー」に変更できます。和音・伴奏の混じる録音は音程がずれることがあります。「選択した音から録音」は選択音の開始位置から録り直します。複数選択では最も早い音から開始します。終了位置が空欄なら手動停止です。録音終了（拍）を指定するとその位置で自動停止し、前後を残して録り直します。録音前カウントはBPMに合わせて4拍・8拍から選べます。録音中の伴奏は録音するパートを除いて再生します（M／S設定に従います）。伴奏・録音モニターはイヤホンで使ってください。</div></main>
 <div class="toast" id="toast"></div>
 <script>
-/* Kotoba Music 3.7.3 — stronger closed/open hi-hat duration discrimination for mouth drums. No network calls. */
+/* Kotoba Music 3.8.0 — wider melodic range, faster large-jump tracking, and edge-pitch rescue. No network calls. */
 (function installPitchEngine(root){
 'use strict';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));let options={};
@@ -237,7 +237,8 @@ function yinCandidates(buf,sr,noiseGate){
   for(const tau0 of pool){
     const tau=parabolicMinimum(cmnd,tau0),freq=sr/tau;if(freq<minFreq||freq>maxFreq)continue;
     const corr=normalizedCorr(buf,tau,mean,4),q=clamp((1-cmnd[tau0])*.72+Math.max(0,corr)*.28,0,1);
-    if(q<.65)continue;
+    const edgePitch=freq<85||freq>1350,qFloor=edgePitch?(options.trackType==='violin'?.56:options.trackType==='guitar'?.58:.59):.63;
+    if(q<qFloor)continue;
     const midi=69+12*Math.log2(freq/440);if(!Number.isFinite(midi))continue;
     if(candidates.some(c=>Math.abs(c.midi-midi)<.22))continue;
     const sp=spectralSupport(buf,sr,freq,mean);candidates.push({freq,midi,q,y:cmnd[tau0],corr,tau,first:firstGood!=null&&Math.abs(tau0-firstGood)<=1,specRaw:sp.raw,base:sp.base,p1:sp.p1});
@@ -258,8 +259,10 @@ function yinCandidates(buf,sr,noiseGate){
     const lo=candidates.find(c=>{const d=hi.midi-c.midi;return d>11.45&&d<12.55});if(!lo||hi.p1<.001)continue;
     const ratio=(lo.p1||0)/Math.max(1e-9,hi.p1||0);
     if(ratio<.0035)hi.oct+=.245;
-    else if(ratio<.015)hi.oct+=.245*(.015-ratio)/.0115;
-    else if(ratio>.024)lo.oct+=Math.min(.09,.025+(ratio-.024)*1.35);
+    else if(ratio<.020)hi.oct+=.245*(.020-ratio)/.0165;
+    // Do not prefer a half-frequency candidate from tiny spectral leakage.
+    // Only reward the lower octave when its own fundamental is clearly present.
+    else if(ratio>.14)lo.oct+=Math.min(.09,.018+(ratio-.14)*.55);
   }
   return {rms,candidates};
 }
@@ -315,6 +318,9 @@ function stabilizeVoiceTrack(frames,opt){
     if(center==null){center=Math.round(f.m);f.m=center;continue}
     const d=f.m-center;
     if(Math.abs(d)<=lock){cancel();f.m=center;continue}
+    // Strong octave / register jumps should be followed immediately instead of being flattened as vibrato.
+    // This is important when the user jumps from a low sung note to a high note (or the reverse).
+    if(Math.abs(d)>=5&&f.c>=.84){pending=[];center=Math.round(f.m);f.m=center;continue}
     const target=Math.round(f.m),prevTarget=pending.length?Math.round(raw[pending[pending.length-1]]):target;
     if(pending.length&&Math.abs(target-prevTarget)>1){cancel()}
     pending.push(i);
@@ -470,7 +476,7 @@ async function analyze(samples,sampleRate,opt={},progress=()=>{}){
   return {notes,gate,frames:frames.length,duration:samples.length/sampleRate,lowConfidence:notes.filter(n=>n.confidence<.80||n.uncertain).length};
 }
 async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
-  // v3.7.3: classify the *whole hit over time*, with dedicated high-band persistence for チッ vs シャー.
+  // v3.8.0: keep v3.7.3 whole-hit drum classification; melodic changes below do not alter drum detection.
   // Default "mouth" mode is tuned for spoken/beatbox ドン・タッ・チッ・シャー.
   const mode=opt.drumInputMode||'mouth',target=22050,factor=Math.max(1,Math.floor(sampleRate/target));
   const pre=factor>1?lowpassMono(samples,sampleRate,sampleRate/factor*.44):samples,sr=sampleRate/factor,x=downsampleMono(pre,factor);
@@ -621,8 +627,9 @@ async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
   progress(100);return {notes:clean,gate,frames:frames.length,duration:samples.length/sampleRate,lowConfidence:clean.filter(n=>n.confidence<.72).length};
 }
 function recognitionBoundsFromOpt(opt){
-  if(opt.recognitionRange==='low')return [35,900];if(opt.recognitionRange==='high')return [100,3000];if(opt.recognitionRange==='wide')return [35,3500];
-  return opt.trackType==='bass'?[35,650]:opt.trackType==='guitar'?[55,1500]:opt.trackType==='violin'?[50,3000]:opt.trackType==='voice'?[55,1800]:opt.trackType==='piano'?[35,3500]:[50,2200];
+  if(opt.recognitionRange==='low')return [25,1200];if(opt.recognitionRange==='high')return [70,4200];if(opt.recognitionRange==='wide')return [25,4200];
+  // Wider per-part defaults. These are input-recognition bounds, not the playback instrument's physical range.
+  return opt.trackType==='bass'?[25,1400]:opt.trackType==='guitar'?[30,3500]:opt.trackType==='violin'?[35,4200]:opt.trackType==='voice'?[35,3800]:opt.trackType==='piano'?[27,4200]:[30,3800];
 }
 function recognitionBounds(){return recognitionBoundsFromOpt(options)}
 const api={analyze,analyzeDrums,focusPitchCore,holdDominantPitch,joinWeakPitchFragments,segmentFrames,filterIntermediate,mergeNearbyNotes,yinCandidates};
@@ -760,7 +767,7 @@ function normalizeState(x){
   const allowed=Object.keys(TYPES);const out={...state,...x,bpm:clamp(+x.bpm||100,40,240),zoom:clamp(+x.zoom||1,.5,3),snap:[.001,.01,.03125,.0625,.125,.25,.5,1].includes(+x.snap)?+x.snap:.25};
   out.tracks=x.tracks.map(t=>{if(!allowed.includes(t.type)||!Array.isArray(t.notes)||t.notes.length>100000)throw new Error('音符データが不正です');return {...defaultTrack(t.type),...t,id:typeof t.id==='string'?t.id:uid(),name:String(t.name||TYPES[t.type]).slice(0,100),volume:clamp(+t.volume||0,0,4),recordBlob:null,recordBuffer:null,recordStart:clamp(+t.recordStart||0,0,7200),notes:t.notes.map(n=>{if(!Number.isFinite(+n.start)||!Number.isFinite(+n.dur)||+n.start<0||+n.start>7200||+n.dur<=0||+n.dur>7200)throw new Error('音符の時刻が不正です');return {...n,id:typeof n.id==='string'?n.id:uid(),midi:clamp(Math.round(Number.isFinite(+n.midi)?+n.midi:60),0,127),start:+n.start,dur:+n.dur,vel:clamp(+n.vel||.75,.05,1)}})}});
   if(!out.tracks.some(t=>t.id===out.selectedTrack))out.selectedTrack=out.tracks[0].id;
-  if(!['full','normal','vocal','extreme'].includes(out.rangeMode))out.rangeMode='normal';out.stabilize=clamp(+out.stabilize||0,0,3);out.intermediateFilter=clamp(+out.intermediateFilter||0,0,3);out.mergeNearby=clamp(out.mergeNearby==null?2:+out.mergeNearby,0,3);out.minNoteMs=[30,50,80,120].includes(+out.minNoteMs)?+out.minNoteMs:50;out.trackingMode=['fast','balanced'].includes(out.trackingMode)?out.trackingMode:'fast';if(x.trackingMode==null)out.minNoteMs=30;if(!['auto','low','high','wide'].includes(out.recognitionRange))out.recognitionRange='auto';return out;
+  if(!['full','normal','vocal','extreme'].includes(out.rangeMode))out.rangeMode='normal';out.stabilize=clamp(+out.stabilize||0,0,3);out.intermediateFilter=clamp(+out.intermediateFilter||0,0,3);out.mergeNearby=clamp(out.mergeNearby==null?2:+out.mergeNearby,0,3);out.minNoteMs=[15,20,30,50,80,120].includes(+out.minNoteMs)?+out.minNoteMs:50;out.trackingMode=['fast','balanced'].includes(out.trackingMode)?out.trackingMode:'fast';if(x.trackingMode==null)out.minNoteMs=30;if(!['auto','low','high','wide'].includes(out.recognitionRange))out.recognitionRange='auto';return out;
 }
 
 function renderTracks(){const box=$('#trackList');box.innerHTML='';state.tracks.forEach(tr=>{const d=document.createElement('div');d.className='track'+(tr.id===state.selectedTrack?' selected':'');d.innerHTML=`<div class="trackTop"><button data-sel="${tr.id}" class="trackName ghost">${escapeHTML(tr.name)}</button><button data-solo="${tr.id}" aria-label="このパートだけ再生" class="${tr.solo?'primary':''}" style="padding:5px 8px">S${tr.solo?'✓':''}</button><button data-mute="${tr.id}" style="padding:5px 8px">${tr.mute?'M✓':'M'}</button><button data-deltrack="${tr.id}" class="danger" style="padding:5px 8px">×</button></div><label class="small">音量 ${Math.round(tr.volume*100)}%<input data-vol="${tr.id}" class="slider" type="range" min="0" max="4" step="0.05" value="${tr.volume}"></label><div class="muted">${tr.notes.length}音${tr.recordBlob?' · 録音あり':''}</div>`;box.appendChild(d)});
@@ -1084,7 +1091,7 @@ function demo(){const tr=currentTrack(),base=tr.type==='bass'?40:tr.type==='viol
 function blobToBase64(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=()=>reject(r.error);r.readAsDataURL(blob)})}
 async function exportProject(){
   try{setAudioStatus('録音を含むプロジェクトを作成中…');const recordings=[];for(const tr of state.tracks)if(tr.recordBlob)recordings.push({id:tr.id,mime:tr.recordBlob.type,base64:await blobToBase64(tr.recordBlob)});
-  const out={version:'3.3.0',state:metadata(),recordings};downloadBlob(new Blob([JSON.stringify(out)],{type:'application/json'}),'Kotoba-Music-v3.3.0-project.json');setAudioStatus('録音を含め書き出しました')}catch(e){toast('書出しに失敗しました。 '+e.message)}
+  const out={version:'3.8.0',state:metadata(),recordings};downloadBlob(new Blob([JSON.stringify(out)],{type:'application/json'}),'Kotoba-Music-v3.8.0-project.json');setAudioStatus('録音を含め書き出しました')}catch(e){toast('書出しに失敗しました。 '+e.message)}
 }
 async function importProject(file){
   if(recordPreparing||analysisBusy||mediaRecorder?.state==='recording')return toast('録音・解析が終わってから開いてください');
