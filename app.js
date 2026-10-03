@@ -200,15 +200,15 @@ function cancelMix(){if(!mixBusy)return;mixSerial++;mixWorker?.terminate();mixWo
 async function playCompat(){stop(false);setAudioStatus('曲を作成中…');const blob=await renderSongAsync();if(!blob){setAudioStatus('再生できる音がありません');toast('音符または録音がありません');return}await playCompatBlob(blob,'曲')}
 
 function setRecStatus(t){const el=$('#recStatus');if(el)el.textContent=t}
-async function attachRecordedBlob(blob,tr,sourceLabel='録音'){
-  if(!blob||!blob.size)throw new Error('empty audio');
-  currentRecordingBlob=blob;tr.recordBlob=blob;tr.recordStart=Math.max(0,+$('#recordStart').value||0);
-  setRecStatus(`${sourceLabel}を解析中…`);
-  const ab=await blob.arrayBuffer();
-  const actx=await unlockAudio();currentRecordingBuffer=await actx.decodeAudioData(ab.slice(0));
-  tr.recordBuffer=currentRecordingBuffer;saveSilent();
-  const converted=await convertBufferToNotes(currentRecordingBuffer,tr);
-  if(converted)setRecStatus(`${sourceLabel}OK：${currentRecordingBuffer.duration.toFixed(1)}秒 / ${tr.notes.length}音${tr.analysisSummary?' / '+tr.analysisSummary:''}`);
+async function attachRecordedBlob(blob,tr,sourceLabel='録音',startBeat=Math.max(0,+$('#recordStart').value||0)){
+ if(!blob||!blob.size)throw new Error('録音データが空です。');
+ setRecStatus(`${sourceLabel}を読み込み中…`);
+ // Decoding does not require the output context to be running.
+ const buffer=await ensureAudio().decodeAudioData(await blob.arrayBuffer());
+ let peak=0;for(let c=0;c<buffer.numberOfChannels;c++){const x=buffer.getChannelData(c);for(let i=0;i<x.length;i++)peak=Math.max(peak,Math.abs(x[i]));}
+ if(!buffer.length||peak<.000001){setMicStatus('録音データは無音です');setRecStatus('音が入っていませんでした。マイクの許可・接続を確認して録り直してください。既存の音符と録音は残しています。');return false;}
+ currentRecordingBlob=blob;currentRecordingBuffer=buffer;tr.recordBlob=blob;tr.recordBuffer=buffer;tr.recordStart=startBeat;saveSilent();setMicStatus('録音データに音声が入っています');
+ const converted=await convertBufferToNotes(buffer,tr);if(converted)setRecStatus(`${sourceLabel}OK：${buffer.duration.toFixed(1)}秒 / ${tr.notes.length}音${tr.analysisSummary?' / '+tr.analysisSummary:''}`);return true;
 }
 function preferredRecorderOptions(){
   if(!window.MediaRecorder)return null;
@@ -224,57 +224,76 @@ function selectedRecordLimit(){const v=+($('#recordLimit')?.value||state.recordL
 function fmtMMSS(sec){sec=Math.max(0,Math.floor(sec));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
 function stopRecClock(finalize=false){if(recClockTimer){clearInterval(recClockTimer);recClockTimer=null}if(recLimitTimer){clearTimeout(recLimitTimer);recLimitTimer=null}const el=$('#recClock');if(el&&finalize){const elapsed=Math.min(selectedRecordLimit(),Math.max(0,(performance.now()-recStart)/1000));el.textContent=fmtMMSS(elapsed)+' / '+fmtMMSS(selectedRecordLimit())}}
 function startRecClock(limit){stopRecClock(false);const el=$('#recClock');const update=()=>{const elapsed=Math.min(limit,Math.max(0,(performance.now()-recStart)/1000));if(el)el.textContent=fmtMMSS(elapsed)+' / '+fmtMMSS(limit)};update();recClockTimer=setInterval(update,250);recLimitTimer=setTimeout(()=>{if(mediaRecorder?.state==='recording'){setRecStatus('最大録音時間 '+Math.round(limit/60)+'分に達したので停止します…');stopRecording()}},limit*1000)}
-async function startRecording(){
-  if(mediaRecorder?.state==='recording')return stopRecording();
-  if(recordPreparing||analysisBusy)return;recordPreparing=true;recordingTrack=currentTrack();stop();setRecStatus('マイクを準備中…');
-  if(!canDirectRecord()){
-    setRecStatus('この開き方では直接マイクを使えません。音声録音/音声ファイル選択を開きます。');
-    toast('直接録音不可 → 音声取り込みを開きます');
-    recordPreparing=false;openAudioImport();
-    return;
-  }
-  try{
-    const ctx=await unlockAudio();
-    rawMediaStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:1}});
-    const boost=clamp(+($('#inputBoost')?.value||1),1,16);
-    mediaStream=rawMediaStream;
-    recordAnalyser=null;recordGraph=null;
-    try{
-      const src=ctx.createMediaStreamSource(rawMediaStream),hp=ctx.createBiquadFilter(),lp=ctx.createBiquadFilter(),gain=ctx.createGain(),lim=ctx.createDynamicsCompressor(),dst=ctx.createMediaStreamDestination(),an=ctx.createAnalyser();
-      hp.type='highpass';hp.frequency.value=45;hp.Q.value=.7;lp.type='lowpass';lp.frequency.value=3800;lp.Q.value=.7;
-      gain.gain.value=boost;lim.threshold.value=-12;lim.knee.value=10;lim.ratio.value=8;lim.attack.value=.004;lim.release.value=.10;an.fftSize=512;
-      src.connect(hp);hp.connect(lp);lp.connect(gain);gain.connect(lim);lim.connect(an);src.connect(dst);
-      const monitorLevel=clamp(+($('#monitorLevel')?.value||state.monitorLevel||0),0,1);let monitor=null;
-      if(monitorLevel>0){monitor=ctx.createGain();monitor.gain.value=monitorLevel;lim.connect(monitor);monitor.connect(ctx.destination)}
-      mediaStream=dst.stream;recordAnalyser=an;recordGraph={src,hp,lp,gain,lim,dst,an,monitor};
-      setRecStatus(`● 録音中… 入力ブースト ${boost}倍${monitorLevel>0?` / モニター ${Math.round(monitorLevel*100)}%`:''}`);
-    }catch(err){console.warn('processed mic fallback',err);mediaStream=rawMediaStream}
-    chunks=[];
-    const opts=preferredRecorderOptions();
-    mediaRecorder=opts?new MediaRecorder(mediaStream,opts):new MediaRecorder(mediaStream);
-    mediaRecorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-    mediaRecorder.onerror=e=>{console.error(e);setRecStatus('録音エラー。音声ファイル取り込みを使ってください。')};
-    mediaRecorder.onstop=async()=>{
-      recordPreparing=true;stopRecClock(true);cleanupMic();setRecUI(false);
-      const mime=mediaRecorder?.mimeType||opts?.mimeType||'audio/mp4';
-      const blob=new Blob(chunks,{type:mime});
-      const tr=recordingTrack;let ok=false;
-      try{await attachRecordedBlob(blob,tr,'マイク録音');ok=true}
-      catch(e){console.error(e);setRecStatus('録音はできましたが解析できませんでした。別形式の音声で試してください。');toast('録音解析に失敗しました')}
-      finally{recordPreparing=false;renderAll();syncSelectedRecording();focusTrackNotes();saveSilent()}
-      if(ok&&($('#autoHearRecording')?.value||state.autoHearRecording||'on')==='on'){await new Promise(r=>setTimeout(r,120));await playCompatBlob(blob,'録音した元の声')}
-    };
-    mediaRecorder.start(250);recordPreparing=false;recStart=performance.now();const limit=selectedRecordLimit();state.recordLimitSec=limit;setRecUI(true);if(!recordGraph)setRecStatus(`● 録音中… 最大 ${Math.round(limit/60)}分 / もう一度押すと停止`);startRecClock(limit);meterLoop();
-  }catch(e){
-    recordPreparing=false;console.error(e);mediaStream?.getTracks().forEach(t=>t.stop());rawMediaStream?.getTracks().forEach(t=>t.stop());mediaStream=null;rawMediaStream=null;recordGraph=null;recordAnalyser=null;setRecUI(false);
-    const msg=e?.name==='NotAllowedError'?'マイク権限が拒否されています。Safariのサイト設定でマイクを許可してください。':'直接録音できません。音声ファイル取り込みを使ってください。';
-    setRecStatus(msg);toast(msg);
-  }
+function setMicStatus(t){const el=$('#micStatus');if(el)el.textContent=t;}
+function makeMicRecorder(stream){
+ const formats=['audio/mp4','audio/webm;codecs=opus','audio/webm',null];let last;
+ for(const mimeType of formats){try{if(mimeType&&!MediaRecorder.isTypeSupported?.(mimeType))continue;return mimeType?new MediaRecorder(stream,{mimeType}):new MediaRecorder(stream)}catch(e){last=e}}
+ throw last||new Error('録音形式に対応していません');
 }
-function stopRecording(){if(mediaRecorder?.state==='recording'){if(recLimitTimer){clearTimeout(recLimitTimer);recLimitTimer=null}setRecStatus('録音を停止して解析中…');mediaRecorder.stop()}}
-function cleanupMic(){cancelAnimationFrame(recMeterRAF);mediaStream?.getTracks().forEach(t=>t.stop());rawMediaStream?.getTracks().forEach(t=>t.stop());if(recordGraph)for(const n of Object.values(recordGraph)){try{n?.disconnect?.()}catch{}}mediaStream=null;rawMediaStream=null;recordGraph=null;recordAnalyser=null;}
-function setRecUI(on){for(const id of ['reconvertBtn','audioImportBtn','importProjectBtn','recordLimit'])$('#'+id).disabled=on;$('#recBox').classList.toggle('recording',on);$('#recBtn').classList.toggle('recording',on);$('#recBtn').textContent=on?'■ 録音停止':'● 声を録音';if(!on)cancelAnimationFrame(recMeterRAF)}
-async function meterLoop(){if(!mediaStream&&!rawMediaStream)return;const ctx=ensureAudio();let an=recordAnalyser;if(!an){const src=ctx.createMediaStreamSource(rawMediaStream||mediaStream);an=ctx.createAnalyser();an.fftSize=512;src.connect(an)}const d=new Uint8Array(an.fftSize);function loop(){if(!mediaStream&&!rawMediaStream)return;an.getByteTimeDomainData(d);let s=0;for(const v of d){const x=(v-128)/128;s+=x*x}const rms=Math.sqrt(s/d.length);$('#meterBar').style.width=Math.min(100,rms*720)+'%';recMeterRAF=requestAnimationFrame(loop)}loop()}
+function setupMicMeter(stream){
+ // Meter/monitor is optional. The recorder always owns the original microphone stream.
+ try{
+  const ctx=ensureAudio();ctx.resume().catch(()=>{});
+  const src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser(),silent=ctx.createGain(),hp=ctx.createBiquadFilter(),lp=ctx.createBiquadFilter(),gain=ctx.createGain(),lim=ctx.createDynamicsCompressor(),monitor=ctx.createGain();
+  recordGraph={src,an,silent,hp,lp,gain,lim,monitor};recordAnalyser=an;
+  an.fftSize=2048;silent.gain.value=0;src.connect(an);an.connect(silent);silent.connect(ctx.destination);
+  hp.type='highpass';hp.frequency.value=35;lp.type='lowpass';lp.frequency.value=4200;gain.gain.value=clamp(+$('#inputBoost').value||1,1,16);
+  lim.threshold.value=-12;lim.ratio.value=8;monitor.gain.value=clamp(+$('#monitorLevel').value||0,0,1);
+  src.connect(hp);hp.connect(lp);lp.connect(gain);gain.connect(lim);lim.connect(monitor);monitor.connect(ctx.destination);
+ }catch(e){if(recordGraph)for(const node of Object.values(recordGraph))try{node.disconnect()}catch{}recordGraph=null;recordAnalyser=null;setMicStatus('録音中。入力メーターは利用できません。');}
+}
+async function startRecording(){
+ if(mediaRecorder?.state==='recording')return stopRecording();
+ if(recordPreparing||analysisBusy)return;
+ if(!canDirectRecord()){setRecStatus('この画面では直接録音できません。Safariで公開URLを開くか、音声ファイルを取り込んでください。');openAudioImport();return;}
+ recordPreparing=true;recordingTrack=currentTrack();const targetTrack=recordingTrack,startBeat=Math.max(0,+$('#recordStart').value||0);stop();setRecStatus('マイクを準備中… 許可画面が出たら「許可」を押してください。');setMicStatus('マイク接続待ち');
+ // A suspended/interrupted Web Audio context must never block microphone capture.
+ try{ensureAudio().resume().catch(()=>{})}catch{}
+ try{
+  try{rawMediaStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:{ideal:1}}});}
+  catch(e){if(e.name!=='OverconstrainedError')throw e;rawMediaStream=await navigator.mediaDevices.getUserMedia({audio:true});}
+  const input=rawMediaStream.getAudioTracks()[0];if(!input||input.readyState!=='live')throw new Error('マイク入力が停止しています。接続を確認して録音を押し直してください。');
+  mediaStream=rawMediaStream;chunks=[];const localChunks=chunks,recorder=makeMicRecorder(rawMediaStream);mediaRecorder=recorder;
+  let recorderError=null;
+  recorder.ondataavailable=e=>{if(e.data?.size)localChunks.push(e.data)};
+  recorder.onerror=e=>{recorderError=e.error||new Error('録音中にエラーが発生しました');setRecStatus('録音が中断されました。取得できた音声を確認します。');if(recorder.state==='recording')stopRecording();else{stopRecClock(true);cleanupMic();recordPreparing=false;setRecUI(false)}};
+  recorder.onstop=async()=>{
+   recordPreparing=true;stopRecClock(true);cleanupMic();setRecUI(false);
+   const blob=new Blob(localChunks,{type:recorder.mimeType||localChunks[0]?.type||'audio/mp4'});let captured=false;
+   try{if(!blob.size)throw new Error('録音データが空でした。マイクを許可して録音を押し直してください。');captured=await attachRecordedBlob(blob,targetTrack,'マイク録音',startBeat);}
+   catch(e){setRecStatus(e.message||'録音を読み込めませんでした。音声ファイル取り込みを試してください。');toast('録音データを確認できませんでした');}
+   finally{recordPreparing=false;renderAll();syncSelectedRecording();focusTrackNotes();saveSilent();}
+   if(recorderError)setRecStatus('録音が途中で中断されました。元の声を確認してください。');
+   if(captured&&($('#autoHearRecording').value||'on')==='on')await playCompatBlob(blob,'録音した元の声');
+  };
+  input.addEventListener('ended',()=>{if(recorder.state==='recording'){setMicStatus('マイクの接続が切れたため録音を停止します。');stopRecording();}},{once:true});
+  // One complete container avoids fragmented MP4 decode failures on some devices.
+  recorder.start();recStart=performance.now();recordPreparing=false;setRecUI(true);startRecClock(selectedRecordLimit());
+  setRecStatus(`● 録音中… 最大 ${Math.round(selectedRecordLimit()/60)}分 / もう一度押すと停止`);setMicStatus('入力を確認中… 声を出してください。');setupMicMeter(rawMediaStream);meterLoop();
+ }catch(e){
+  recordPreparing=false;stopRecClock(false);cleanupMic();setRecUI(false);
+  const msg=e.name==='NotAllowedError'?'マイクが許可されていません。Safariのサイト設定でマイクを許可し、録音を押し直してください。':e.name==='NotFoundError'?'マイクが見つかりません。接続を確認してください。':e.name==='NotReadableError'?'マイクを使用できません。他の録音・通話を終了し、録音を押し直してください。':e.message||'録音を開始できませんでした。';setRecStatus(msg);setMicStatus('録音は開始されていません');toast('マイクを確認してください');
+ }
+}
+function stopRecording(){if(mediaRecorder?.state==='recording'){recordPreparing=true;stopRecClock(true);setRecStatus('録音データを受け取り中…');$('#recBtn').disabled=true;mediaRecorder.stop();}}
+function cleanupMic(){cancelAnimationFrame(recMeterRAF);const streams=new Set([mediaStream,rawMediaStream]);for(const s of streams)s?.getTracks().forEach(t=>t.stop());if(recordGraph)for(const n of Object.values(recordGraph))try{n?.disconnect?.()}catch{}mediaStream=null;rawMediaStream=null;recordGraph=null;recordAnalyser=null;$('#meterBar').style.width='0%';}
+function setRecUI(on){for(const id of ['reconvertBtn','audioImportBtn','importProjectBtn','recordLimit'])$('#'+id).disabled=on;$('#recBtn').disabled=false;$('#recBox').classList.toggle('recording',on);$('#recBtn').classList.toggle('recording',on);$('#recBtn').textContent=on?'■ 録音停止':'● 声を録音';if(!on)cancelAnimationFrame(recMeterRAF);}
+function meterLoop(){
+ const an=recordAnalyser;if(!an)return;const data=new Float32Array(an.fftSize),bytes=new Uint8Array(an.fftSize);let peakRms=0,lastUI=0;
+ function loop(now){if(!rawMediaStream||mediaRecorder?.state!=='recording')return;
+  if(an.getFloatTimeDomainData)an.getFloatTimeDomainData(data);else{an.getByteTimeDomainData(bytes);for(let i=0;i<data.length;i++)data[i]=(bytes[i]-128)/128;}
+  let sum=0;for(const v of data)sum+=v*v;const rms=Math.sqrt(sum/data.length);peakRms=Math.max(peakRms,rms);
+  $('#meterBar').style.width=(rms>0?clamp((20*Math.log10(rms)+75)/65*100,0,100):0)+'%';
+  if(now-lastUI>250){lastUI=now;const track=rawMediaStream.getAudioTracks()[0];
+   if(audioCtx?.state!=='running')setMicStatus('録音中。入力メーターは停止中ですが、マイクを直接録音しています。');
+   else if(track?.muted)setMicStatus('マイクから音が届いていません。接続・許可を確認してください。');
+   else if(rms>.00001)setMicStatus(rms<.002?'入力あり（小さめ）':'● マイク入力あり');
+   else if(performance.now()-recStart>3000&&peakRms<.00001)setMicStatus('入力を検出できません。Safariのマイク許可・接続を確認してください。');
+   else setMicStatus(peakRms>.00001?'入力待ち（録音継続中）':'入力を確認中… 声を出してください。');
+  }
+  recMeterRAF=requestAnimationFrame(loop);
+ }recMeterRAF=requestAnimationFrame(loop);
+}
 let analysisWorker=null,analysisSerial=0,analysisBusy=false;
 function analysisOptions(){return Object.fromEntries(['trackingMode','sensitivity','recognitionRange','stabilize','intermediateFilter','minNoteMs'].map(id=>[id,$('#'+id).value]));}
 function setBusy(on){analysisBusy=on;if(on){setRecStatus('音程解析を準備中…');$('#analysisProgress').value=0;}$('#cancelAnalysis').hidden=!on;for(const id of ['recBtn','reconvertBtn','audioImportBtn','importProjectBtn'])$('#'+id).disabled=on;$('#analysisProgress').hidden=!on;}
@@ -312,7 +331,7 @@ function demo(){const tr=currentTrack(),base=tr.type==='bass'?40:tr.type==='viol
 function blobToBase64(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=()=>reject(r.error);r.readAsDataURL(blob)})}
 async function exportProject(){
   try{setAudioStatus('録音を含むプロジェクトを作成中…');const recordings=[];for(const tr of state.tracks)if(tr.recordBlob)recordings.push({id:tr.id,mime:tr.recordBlob.type,base64:await blobToBase64(tr.recordBlob)});
-  const out={version:'3.1',state:metadata(),recordings};downloadBlob(new Blob([JSON.stringify(out)],{type:'application/json'}),'Kotoba-Music-v3.1-project.json');setAudioStatus('録音を含め書き出しました')}catch(e){toast('書出しに失敗しました。 '+e.message)}
+  const out={version:'3.1.1',state:metadata(),recordings};downloadBlob(new Blob([JSON.stringify(out)],{type:'application/json'}),'Kotoba-Music-v3.1.1-project.json');setAudioStatus('録音を含め書き出しました')}catch(e){toast('書出しに失敗しました。 '+e.message)}
 }
 async function importProject(file){
   if(recordPreparing||analysisBusy||mediaRecorder?.state==='recording')return toast('録音・解析が終わってから開いてください');
