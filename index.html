@@ -2,24 +2,53 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<title>Kotoba Music v2.6</title>
-<link rel="stylesheet" href="styles.css?v=2.6.0">
+<title>Kotoba Music v2.7</title>
+<style>
+:root{--bg:#0b0d12;--panel:#141821;--panel2:#1b202b;--line:#2d3442;--text:#f5f7fa;--sub:#9aa6b8;--accent:#7ad7ff;--danger:#ff6f7d;--ok:#86e39b;--cellW:30px;--cellH:24px;--keysW:74px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+body{min-height:100vh}
+button,input,select{font:inherit}
+button{border:1px solid var(--line);background:#222936;color:var(--text);border-radius:10px;padding:10px 12px;font-weight:700}
+button:active{transform:translateY(1px)}
+button.primary{background:#e9f7ff;color:#06121a;border-color:#b6eaff}
+button.danger{background:#3a1e25;border-color:#7e3443;color:#ffd9df}
+button.ghost{background:transparent}
+input,select{background:#0f131b;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px}
+header{position:sticky;top:0;z-index:20;background:rgba(11,13,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px}
+.headerRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:1400px;margin:auto}
+.brand{font-size:20px;font-weight:900;letter-spacing:.02em;margin-right:auto}.badge{font-size:12px;color:#071018;background:var(--accent);border-radius:999px;padding:4px 8px;font-weight:900}
+main{max-width:1400px;margin:0 auto;padding:14px;display:grid;grid-template-columns:340px 1fr;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}.card h2,.card h3{margin:0 0 10px}.muted{color:var(--sub);font-size:13px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{min-width:0}.stack{display:grid;gap:10px}
+.transport{display:grid;grid-template-columns:1fr 1fr;gap:8px}.time{font-variant-numeric:tabular-nums;font-size:18px;font-weight:900}
+label.small{display:grid;gap:5px;font-size:12px;color:var(--sub)}
+.trackList{display:grid;gap:8px}.track{border:1px solid var(--line);border-radius:12px;padding:9px;background:var(--panel2)}.track.selected{outline:2px solid var(--accent)}.trackTop{display:flex;align-items:center;gap:8px}.trackName{font-weight:900;flex:1}.pill{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:3px 7px;color:var(--sub)}
+.slider{width:100%}.meter{height:8px;background:#0c0f15;border-radius:10px;overflow:hidden;border:1px solid #242b37}.meter>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#63d28b,#d8e86a,#ff865f)}
+.editorTop{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:10px}.editorTop .grow{flex:1}
+.rollWrap{position:relative;border:1px solid var(--line);border-radius:12px;overflow:auto;background:#0a0d12;height:60vh;min-height:440px;touch-action:none}
+.roll{position:relative;min-width:2500px}.keys{position:sticky;left:0;z-index:8;width:var(--keysW);background:#0f131a;border-right:1px solid var(--line)}
+.grid{position:absolute;left:var(--keysW);top:0;right:0}.rowLine{position:absolute;left:0;right:0;border-top:1px solid #202632}.rowLine.black{background:rgba(255,255,255,.018)}.beatLine{position:absolute;top:0;bottom:0;border-left:1px solid #222a36}.beatLine.bar{border-left:2px solid #3b4659}.keyLabel{position:absolute;left:0;width:var(--keysW);height:var(--cellH);border-top:1px solid #232a36;padding:3px 6px;font-size:11px;color:#aeb8c9;white-space:nowrap}.keyLabel.black{background:#090c11;color:#7f8a9b}
+.note{position:absolute;height:calc(var(--cellH) - 4px);border-radius:5px;background:#8cdefe;color:#08141b;border:1px solid #bdf0ff;font-size:10px;font-weight:900;padding:2px 4px;overflow:hidden;white-space:nowrap;touch-action:none;user-select:none}.note.selected{outline:2px solid #fff;z-index:6}.note .resize{position:absolute;right:0;top:0;bottom:0;width:8px;background:rgba(0,0,0,.2);cursor:ew-resize}.playhead{position:absolute;top:0;bottom:0;width:2px;background:#ff6f7d;z-index:7;pointer-events:none}
+.notePanel{margin-top:10px;display:grid;grid-template-columns:repeat(6,minmax(100px,1fr));gap:8px}.notePanel button{align-self:end}
+.recBox{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#10141c}.recBox.recording{border-color:#ff6575;box-shadow:0 0 0 2px rgba(255,101,117,.16) inset}.recBtn.recording{background:#7e2230;border-color:#ff7d8d}
+.help{font-size:12px;line-height:1.65;color:var(--sub)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#eff9ff;color:#051119;border-radius:999px;padding:10px 14px;font-weight:800;z-index:99;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}
+@media(max-width:900px){main{grid-template-columns:1fr}.rollWrap{height:58vh}.notePanel{grid-template-columns:repeat(2,1fr)}header{position:relative}}
+</style>
 </head>
 <body>
 <header>
   <div class="headerRow">
-    <div class="brand">▥ Kotoba Music <span class="badge">v2.6 HIGH PRECISION PITCH</span></div>
-    <button id="playBtn" class="primary">▶ 再生</button><button id="stopBtn">■ 停止</button><button id="testC4Btn">♪ C4確認</button><button id="testToneBtn">♪ A4=440Hz</button><button id="testC5Btn">♪ C5確認</button>
-    <label class="small">再生方式<select id="outputMode"><option value="compat" selected>iPad互換（推奨）</option><option value="webaudio">Web Audio</option></select></label>
+    <div class="brand">▥ Kotoba Music <span class="badge">v2.7 FILTER</span></div>
+    <button id="playBtn" class="primary">▶ 再生</button><button id="stopBtn">■ 停止</button>
     <span id="time" class="time">00:00.0</span>
-    <label class="small">BPM<input id="bpm" type="number" min="40" max="240" value="100" style="width:82px"></label><label class="small">全体音量<select id="masterBoost"><option value="1">100%</option><option value="1.5">150%</option><option value="2" selected>200%</option><option value="3">300%</option><option value="4">400%</option></select></label><label class="small">楽器ブースト<select id="instrumentBoost"><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option><option value="2.5" selected>250%（推奨）</option><option value="3">300%</option><option value="4">400%</option></select></label>
+    <label class="small">BPM<input id="bpm" type="number" min="40" max="240" value="100" style="width:82px"></label>
     <button id="saveBtn">保存</button><button id="exportProjectBtn">プロジェクト書出し</button><button id="importProjectBtn">開く</button>
     <input id="importFile" type="file" accept="application/json" hidden>
     <button id="wavBtn">曲を書き出す(WAV)</button>
   </div>
-  <div class="compatRow"><span class="small"><b>iPad互換プレイヤー</b> — 音が出ない時もここから再生できます</span><audio id="compatPlayer" controls playsinline preload="metadata"></audio><span id="audioStatus" class="small muted">待機中</span></div>
 </header>
 <main>
 <section class="stack">
@@ -35,35 +64,31 @@
   <div class="card">
     <h3>声 → 音符</h3>
     <div id="recBox" class="recBox stack">
-      <div class="row"><button id="recBtn" class="recBtn primary">● 声を録音</button><button id="audioImportBtn">音声ファイルから取り込む</button><button id="reconvertBtn">録音を再変換</button><button id="hearVoiceBtn">元の声</button></div>
-      <input id="audioCaptureFile" type="file" accept="audio/*" capture="microphone" hidden>
-      <div id="recStatus" class="muted">録音ボタンを押すとマイクを準備します。</div>
+      <div class="row"><button id="recBtn" class="recBtn primary">● 声を録音</button><button id="reconvertBtn">録音を再変換</button><button id="hearVoiceBtn">元の声</button></div>
       <div class="meter"><i id="meterBar"></i></div>
       <div class="row">
-        <label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4" selected>4倍（推奨）</option><option value="8">8倍</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">認識音域<select id="recognitionRange"><option value="auto" selected>精度優先 50Hz〜2.2kHz</option><option value="low">低音優先 35〜900Hz</option><option value="high">高音優先 100Hz〜3kHz</option><option value="wide">広域 35Hz〜3.5kHz</option></select></label><label class="small">マイク入力ブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option value="2" selected>2倍（推奨）</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option><option value="256">256倍</option></select></label>
-        <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option value="2" selected>標準</option><option value="3">強</option><option value="4">超強</option><option value="5">極強</option><option value="6">MAX（かなり固定）</option><option value="7">ULTRA（ほぼ固定）</option><option value="8">LOCK（最強）</option></select></label>
-        <label class="small">録音中モニター<select id="monitorLevel"><option value="0" selected>OFF</option><option value="0.25">25%</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select></label>
-        <label class="small">録音後の元声<select id="autoHearRecording"><option value="on" selected>自動再生 ON</option><option value="off">OFF</option></select></label>
-        <label class="small">最大録音時間<select id="recordLimit"><option value="60">1分（軽い）</option><option value="180">3分</option><option value="300" selected>5分</option></select></label><span id="recClock" class="recClock">00:00 / 05:00</span>
+        <label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option value="8" selected>8倍</option><option value="16">16倍</option><option value="32">32倍</option></select></label>
+        <label class="small">震え抑制<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option value="2" selected>標準</option><option value="3">強</option></select></label>
+        <label class="small">中間音除去<select id="intermediateFilter"><option value="0">OFF</option><option value="1">弱</option><option value="2" selected>標準</option><option value="3">強</option></select></label>
         <label class="small">録音開始（拍）<input id="recordStart" type="number" min="0" step="0.125" value="0" style="width:90px"></label>
         <label class="small">量子化<select id="quantize"><option value="0">声のまま</option><option value="0.5">8分</option><option value="0.25">16分</option><option value="0.125">32分</option></select></label>
       </div>
-      <div class="muted">v2.6では音程変換エンジンを刷新しました。基音推定、倍音判定、オクターブ誤認補正、前後フレーム追跡、ノイズゲート、歌い始め・語尾の補正、同音連打の再アタック検出を組み合わせて変換します。1音ずつ歌うほど精度が上がります。5分録音は高精度解析のため停止後に少し時間がかかる場合があります。</div>
+      <div class="muted">震え抑制は同じ音の周辺の揺れをまとめます。中間音除去は、ド→ド♯→レのような移動途中に一瞬だけ出る音を前後関係から消します。強くしすぎると細かいメロディーも潰れるので、まずは両方「標準」がおすすめです。</div>
     </div>
   </div>
   <div class="card help">
-    <b>操作</b><br>上の「ピアノ / ベース / ギター / ボイス…」から編集したいトラックを選ぶと、そのすぐ下に音程編集エリアが出ます。音符を上下ドラッグ＝音程、左右ドラッグ＝開始位置。右端をドラッグ＝長さ。<br>空いているマスをダブルタップ＝その場所に音符を追加。2本指のピンチアウト＝拡大、ピンチイン＝縮小。1本指の音符ドラッグとは分けて動きます。
+    <b>操作</b><br>音符を上下ドラッグ＝音程、左右ドラッグ＝開始位置。右端をドラッグ＝長さ。音符タップで数値編集。<br>同じ楽器を何本でも追加できるので、ピアノ＋ピアノ、ギター＋ボイスのように重ねられます。
   </div>
 </section>
-<section id="editorCard" class="card editorCard stackedEditor">
+<section class="card">
   <div class="editorTop">
-    <div class="grow"><h2 id="editorTitle">選択トラックの音程を編集</h2><div id="editorSub" class="muted"></div></div>
+    <div class="grow"><h2 id="editorTitle">音を編集</h2><div id="editorSub" class="muted"></div></div>
     <label class="small">表示<select id="labelMode"><option value="letter">CDE</option><option value="solfege">ドレミ</option></select></label>
     <label class="small">編集単位<select id="snap"><option value="0.125">32分</option><option value="0.25" selected>16分</option><option value="0.5">8分</option><option value="1">4分</option></select></label>
-    <label class="small">音域<select id="rangeMode"><option value="extreme">超広域 C−1〜G9</option><option value="full">広域 C0〜C9</option><option value="normal" selected>C1〜C8</option><option value="vocal">声域 C2〜C6</option></select></label>
-    <div class="zoomTools"><button id="zoomOutBtn">−</button><button id="zoomResetBtn">100%</button><button id="zoomInBtn">＋</button><span id="zoomLabel" class="zoomLabel">100%</span><button id="expandEditorBtn">⛶ 拡大編集</button></div><button id="addNoteBtn">＋ 音を追加</button><button id="octDown">−1オクターブ</button><button id="octUp">＋1オクターブ</button><button id="deleteNote" class="danger">選択音を削除</button>
+    <label class="small">音域<select id="rangeMode"><option value="full">C0〜C9</option><option value="normal" selected>C1〜C8</option><option value="vocal">C2〜C6</option></select></label>
+    <button id="addNoteBtn">＋ 音を追加</button><button id="octDown">−1オクターブ</button><button id="octUp">＋1オクターブ</button><button id="deleteNote" class="danger">選択音を削除</button>
   </div>
-  <div class="muted" style="margin:0 0 8px">ダブルタップ＝その場所に音符追加 / 2本指ピンチ＝拡大・縮小（50〜300%）</div><div id="rollWrap" class="rollWrap"><div id="roll" class="roll"></div></div>
+  <div id="rollWrap" class="rollWrap"><div id="roll" class="roll"></div></div>
   <div class="notePanel">
     <label class="small">音程<select id="notePitch"></select></label>
     <label class="small">開始（拍）<input id="noteStart" type="number" step="0.125" min="0"></label>
@@ -75,6 +100,134 @@
 </section>
 </main>
 <div id="toast" class="toast"></div>
-<script src="app.js?v=2.6.0"></script>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const TYPES={voice:'ボイス',piano:'ピアノ',bass:'ベース',guitar:'ギター',violin:'ヴァイオリン',drums:'ドラム'};
+const SOL=['ド','ド♯','レ','レ♯','ミ','ファ','ファ♯','ソ','ソ♯','ラ','ラ♯','シ'];
+const LET=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+let state={bpm:100,labelMode:'letter',snap:.25,rangeMode:'normal',tracks:[],selectedTrack:null,selectedNote:null};
+let audioCtx=null, activeNodes=[], isPlaying=false, playStartCtx=0, playStartBeat=0, raf=0;
+let mediaRecorder=null, mediaStream=null, chunks=[], currentRecordingBlob=null, currentRecordingBuffer=null, recStart=0, recMeterRAF=0;
+const CELL_W=30,CELL_H=24,KEYS_W=74,TOTAL_BEATS=80;
+function uid(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4)}
+function midiToFreq(m){return 440*Math.pow(2,(m-69)/12)}
+function midiLabel(m,mode=state.labelMode){const pc=((m%12)+12)%12,oct=Math.floor(m/12)-1;return (mode==='solfege'?SOL[pc]:LET[pc])+oct}
+function range(){if(state.rangeMode==='full')return [12,120];if(state.rangeMode==='vocal')return [36,84];return [24,108]}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1500)}
+function ensureAudio(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
+function defaultTrack(type,index=1){return {id:uid(),type,name:(TYPES[type]||type)+(index>1?' '+index:''),volume:.7,mute:false,notes:[],recordBlob:null,recordBuffer:null,recordStart:0}}
+function initTracks(){['voice','piano','bass','guitar','violin','drums'].forEach(t=>state.tracks.push(defaultTrack(t)));state.selectedTrack=state.tracks[1].id}
+function currentTrack(){return state.tracks.find(t=>t.id===state.selectedTrack)||state.tracks[0]}
+function currentNote(){const tr=currentTrack();return tr?.notes.find(n=>n.id===state.selectedNote)||null}
+function saveLocal(){const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV16',JSON.stringify(compact));toast('保存しました')}
+function loadLocal(){try{const x=JSON.parse(localStorage.getItem('kotobaMusicV16'));if(x&&x.tracks){state={...state,...x};return true}}catch{}return false}
+function renderTracks(){const box=$('#trackList');box.innerHTML='';state.tracks.forEach(tr=>{const d=document.createElement('div');d.className='track'+(tr.id===state.selectedTrack?' selected':'');d.innerHTML=`<div class="trackTop"><button data-sel="${tr.id}" class="ghost" style="padding:4px 7px">●</button><div class="trackName">${escapeHTML(tr.name)}</div><span class="pill">${TYPES[tr.type]}</span><button data-mute="${tr.id}" style="padding:5px 8px">${tr.mute?'M✓':'M'}</button><button data-deltrack="${tr.id}" class="danger" style="padding:5px 8px">×</button></div><label class="small">音量 ${Math.round(tr.volume*100)}%<input data-vol="${tr.id}" class="slider" type="range" min="0" max="4" step="0.05" value="${tr.volume}"></label><div class="muted">${tr.notes.length}音${tr.recordBlob?' · 録音あり':''}</div>`;box.appendChild(d)});
+box.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{state.selectedTrack=b.dataset.sel;state.selectedNote=null;syncSelectedRecording();renderAll()});
+box.querySelectorAll('[data-mute]').forEach(b=>b.onclick=()=>{const tr=state.tracks.find(t=>t.id===b.dataset.mute);tr.mute=!tr.mute;renderTracks()});
+box.querySelectorAll('[data-deltrack]').forEach(b=>b.onclick=()=>{if(state.tracks.length<=1)return toast('トラックは1本以上必要です');state.tracks=state.tracks.filter(t=>t.id!==b.dataset.deltrack);if(!state.tracks.some(t=>t.id===state.selectedTrack))state.selectedTrack=state.tracks[0].id;state.selectedNote=null;renderAll()});
+box.querySelectorAll('[data-vol]').forEach(r=>r.oninput=()=>{const tr=state.tracks.find(t=>t.id===r.dataset.vol);tr.volume=+r.value;r.closest('.track').querySelector('.muted').textContent=`${tr.notes.length}音${tr.recordBlob?' · 録音あり':''}`;r.parentElement.firstChild.textContent='音量 '+Math.round(tr.volume*100)+'%'});
+}
+function escapeHTML(s){return String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function renderPitchSelect(){const [lo,hi]=range(),sel=$('#notePitch');const old=+sel.value;sel.innerHTML='';for(let m=hi;m>=lo;m--){const o=document.createElement('option');o.value=m;o.textContent=midiLabel(m);sel.appendChild(o)}if(old>=lo&&old<=hi)sel.value=old}
+function renderRoll(){const roll=$('#roll'),tr=currentTrack();if(!tr)return;const [lo,hi]=range();const rows=hi-lo+1,height=rows*CELL_H,width=KEYS_W+TOTAL_BEATS*CELL_W;roll.style.height=height+'px';roll.style.width=width+'px';roll.innerHTML='';
+const keys=document.createElement('div');keys.className='keys';keys.style.height=height+'px';roll.appendChild(keys);const grid=document.createElement('div');grid.className='grid';grid.style.width=(TOTAL_BEATS*CELL_W)+'px';grid.style.height=height+'px';roll.appendChild(grid);
+for(let i=0;i<rows;i++){const m=hi-i,y=i*CELL_H,black=[1,3,6,8,10].includes(m%12);const k=document.createElement('div');k.className='keyLabel'+(black?' black':'');k.style.top=y+'px';k.textContent=midiLabel(m);keys.appendChild(k);const r=document.createElement('div');r.className='rowLine'+(black?' black':'');r.style.top=y+'px';r.style.height=CELL_H+'px';grid.appendChild(r)}
+for(let b=0;b<=TOTAL_BEATS;b++){const l=document.createElement('div');l.className='beatLine'+(b%4===0?' bar':'');l.style.left=(b*CELL_W)+'px';grid.appendChild(l)}
+tr.notes.forEach(n=>{if(n.midi<lo||n.midi>hi)return;const el=document.createElement('div');el.className='note'+(n.id===state.selectedNote?' selected':'');el.dataset.id=n.id;el.style.left=(n.start*CELL_W)+'px';el.style.top=((hi-n.midi)*CELL_H+2)+'px';el.style.width=Math.max(8,n.dur*CELL_W)+'px';el.textContent=midiLabel(n.midi);const rz=document.createElement('i');rz.className='resize';el.appendChild(rz);grid.appendChild(el);attachNoteDrag(el,n,rz)});
+const ph=document.createElement('div');ph.id='playhead';ph.className='playhead';ph.style.left='0px';grid.appendChild(ph);updateEditorHeader();}
+function attachNoteDrag(el,n,rz){let mode='move',sx=0,sy=0,os=0,om=0,od=0;const down=e=>{e.preventDefault();e.stopPropagation();state.selectedNote=n.id;mode=(e.target===rz?'resize':'move');sx=e.clientX;sy=e.clientY;os=n.start;om=n.midi;od=n.dur;el.setPointerCapture?.(e.pointerId);renderNotePanel();document.querySelectorAll('.note').forEach(x=>x.classList.toggle('selected',x.dataset.id===n.id))};const move=e=>{if(!sx&&!sy)return;e.preventDefault();const snap=+state.snap,dx=(e.clientX-sx)/CELL_W,dy=(e.clientY-sy)/CELL_H;if(mode==='resize'){n.dur=Math.max(snap,Math.round((od+dx)/snap)*snap)}else{const [lo,hi]=range();n.start=Math.max(0,Math.round((os+dx)/snap)*snap);n.midi=clamp(Math.round(om-dy),lo,hi)};el.style.left=(n.start*CELL_W)+'px';el.style.width=Math.max(8,n.dur*CELL_W)+'px';const [lo,hi]=range();el.style.top=((hi-n.midi)*CELL_H+2)+'px';el.childNodes[0].nodeValue=midiLabel(n.midi);renderNotePanel()};const up=e=>{sx=sy=0;saveSilent()};el.onpointerdown=down;el.onpointermove=move;el.onpointerup=up;el.onclick=e=>{e.stopPropagation();state.selectedNote=n.id;renderAll()}}
+function renderNotePanel(){const n=currentNote();['notePitch','noteStart','noteDur','noteVel','previewNote','deleteNote'].forEach(id=>$('#'+id).disabled=!n);if(!n)return;renderPitchSelect();$('#notePitch').value=n.midi;$('#noteStart').value=n.start;$('#noteDur').value=n.dur;$('#noteVel').value=n.vel??.75}
+function updateEditorHeader(){const tr=currentTrack();$('#editorTitle').textContent=`音を編集 — ${tr?.name||''}`;$('#editorSub').textContent=`${TYPES[tr?.type]||''} / ${tr?.notes.length||0}音 / 音符を直接ドラッグできます`}
+function renderAll(){renderTracks();renderPitchSelect();renderRoll();renderNotePanel();$('#bpm').value=state.bpm;$('#labelMode').value=state.labelMode;$('#snap').value=state.snap;$('#rangeMode').value=state.rangeMode}
+function saveSilent(){try{const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV16',JSON.stringify(compact))}catch{}}
+function addNote(midi=60,start=null,dur=null){const tr=currentTrack();if(!tr)return;const last=tr.notes.reduce((a,n)=>Math.max(a,n.start+n.dur),0),snap=+state.snap;const n={id:uid(),midi,start:start??Math.round(last/snap)*snap,dur:dur??Math.max(.5,snap),vel:.75};tr.notes.push(n);state.selectedNote=n.id;renderAll();scrollNoteIntoView(n);saveSilent()}
+function scrollNoteIntoView(n){requestAnimationFrame(()=>{const [lo,hi]=range(),wrap=$('#rollWrap');wrap.scrollLeft=Math.max(0,n.start*CELL_W-140);wrap.scrollTop=Math.max(0,(hi-n.midi)*CELL_H-100)})}
+function scheduleOsc(ctx,dest,type,midi,start,dur,vel=0.75){if(type==='drums'){return scheduleDrum(ctx,dest,midi,start,dur,vel)}const f=midiToFreq(midi),g=ctx.createGain();g.gain.setValueAtTime(0,start);const amp=.23*vel;g.gain.linearRampToValueAtTime(amp,start+.008);let release=.12;if(type==='piano'){g.gain.exponentialRampToValueAtTime(.0008,start+Math.max(.15,dur));release=.04}else if(type==='guitar'){g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.22,dur*.85));release=.04}else if(type==='bass'){g.gain.setValueAtTime(amp,start+.02);g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.18,dur));release=.06}else if(type==='violin'){g.gain.setValueAtTime(amp*.65,start+.06);g.gain.linearRampToValueAtTime(amp*.8,start+.16);g.gain.exponentialRampToValueAtTime(.001,start+dur+release)}else{g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.18,dur))}
+g.connect(dest);const oscs=[];function osc(wave,mult,level,det=0){const o=ctx.createOscillator(),og=ctx.createGain();o.type=wave;o.frequency.value=f*mult;o.detune.value=det;og.gain.value=level;o.connect(og);og.connect(g);o.start(start);o.stop(start+dur+release+.1);oscs.push(o)}
+if(type==='piano'){osc('triangle',1,.9);osc('sine',2,.35);osc('sine',3,.15)}else if(type==='bass'){osc('sawtooth',1,.45);osc('sine',.5,.6)}else if(type==='guitar'){osc('sawtooth',1,.45,-4);osc('triangle',2,.25,4);osc('sine',3,.12)}else if(type==='violin'){osc('sawtooth',1,.42,-5);osc('sawtooth',1,.42,5);osc('triangle',2,.18)}else{osc('sine',1,.8);osc('triangle',2,.16)}
+activeNodes.push(...oscs,g);return g}
+function scheduleDrum(ctx,dest,midi,start,dur,vel){const pc=midi%12;if(pc<4){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(130,start);o.frequency.exponentialRampToValueAtTime(45,start+.12);g.gain.setValueAtTime(.5*vel,start);g.gain.exponentialRampToValueAtTime(.001,start+.2);o.connect(g);g.connect(dest);o.start(start);o.stop(start+.21);activeNodes.push(o,g)}else{const len=Math.floor(ctx.sampleRate*.12),buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=buf;f.type='highpass';f.frequency.value=pc>8?5000:1200;g.gain.setValueAtTime(.22*vel,start);g.gain.exponentialRampToValueAtTime(.001,start+.12);s.connect(f);f.connect(g);g.connect(dest);s.start(start);activeNodes.push(s,f,g)}}
+function play(fromBeat=0){stop(false);const ctx=ensureAudio(),master=ctx.createGain();master.gain.value=.8;master.connect(ctx.destination);activeNodes.push(master);const bpm=+state.bpm||100,spb=60/bpm;playStartCtx=ctx.currentTime+.06;playStartBeat=fromBeat;state.tracks.forEach(tr=>{if(tr.mute)return;const tg=ctx.createGain();tg.gain.value=tr.volume;tg.connect(master);activeNodes.push(tg);if(tr.type==='voice'&&tr.recordBuffer){const rs=tr.recordStart||0,re=rs+tr.recordBuffer.duration/spb;if(re>fromBeat){const src=ctx.createBufferSource();src.buffer=tr.recordBuffer;src.connect(tg);const offset=Math.max(0,(fromBeat-rs)*spb),when=playStartCtx+Math.max(0,rs-fromBeat)*spb;try{src.start(when,offset)}catch{}activeNodes.push(src)}}tr.notes.forEach(n=>{if(n.start+n.dur<fromBeat)return;const start=playStartCtx+Math.max(0,n.start-fromBeat)*spb,dur=Math.max(.04,n.dur*spb);scheduleOsc(ctx,tg,tr.type,n.midi,start,dur,n.vel)})});isPlaying=true;tick()}
+function stop(reset=true){isPlaying=false;cancelAnimationFrame(raf);activeNodes.forEach(n=>{try{n.stop?.()}catch{}try{n.disconnect?.()}catch{}});activeNodes=[];if(reset){$('#time').textContent='00:00.0';const p=$('#playhead');if(p)p.style.left='0px'}}
+function tick(){if(!isPlaying)return;const ctx=ensureAudio(),bpm=+state.bpm||100,beat=playStartBeat+(ctx.currentTime-playStartCtx)*bpm/60,t=Math.max(0,(beat*60/bpm));$('#time').textContent=fmt(t);const p=$('#playhead');if(p)p.style.left=(Math.max(0,beat)*CELL_W)+'px';if(beat>TOTAL_BEATS+2)return stop();raf=requestAnimationFrame(tick)}
+function fmt(t){const m=Math.floor(t/60),s=t-m*60;return String(m).padStart(2,'0')+':'+s.toFixed(1).padStart(4,'0')}
+function preview(n=currentNote()){if(!n)return;const ctx=ensureAudio(),g=ctx.createGain();g.gain.value=currentTrack().volume;g.connect(ctx.destination);scheduleOsc(ctx,g,currentTrack().type,n.midi,ctx.currentTime+.02,.45,n.vel)}
+async function startRecording(){if(mediaRecorder?.state==='recording')return stopRecording();try{ensureAudio();mediaStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:true,autoGainControl:true}});chunks=[];mediaRecorder=new MediaRecorder(mediaStream);mediaRecorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};mediaRecorder.onstop=async()=>{currentRecordingBlob=new Blob(chunks,{type:mediaRecorder.mimeType||'audio/webm'});const tr=currentTrack();tr.recordBlob=currentRecordingBlob;tr.recordStart=Math.max(0,+$('#recordStart').value||0);try{const ab=await currentRecordingBlob.arrayBuffer();currentRecordingBuffer=await ensureAudio().decodeAudioData(ab.slice(0));tr.recordBuffer=currentRecordingBuffer;await convertBufferToNotes(currentRecordingBuffer,tr)}catch(e){console.error(e);toast('録音は保存しました。変換に失敗しました')}finally{mediaStream?.getTracks().forEach(t=>t.stop());mediaStream=null;setRecUI(false);renderAll()}};mediaRecorder.start(250);recStart=performance.now();setRecUI(true);meterLoop();setTimeout(()=>{if(mediaRecorder?.state==='recording')stopRecording()},60000)}catch(e){console.error(e);toast('マイクを許可してください')}}
+function stopRecording(){if(mediaRecorder?.state==='recording')mediaRecorder.stop()}
+function setRecUI(on){$('#recBox').classList.toggle('recording',on);$('#recBtn').classList.toggle('recording',on);$('#recBtn').textContent=on?'■ 録音停止':'● 声を録音';if(!on)cancelAnimationFrame(recMeterRAF)}
+async function meterLoop(){if(!mediaStream)return;const ctx=ensureAudio(),src=ctx.createMediaStreamSource(mediaStream),an=ctx.createAnalyser();an.fftSize=512;src.connect(an);const d=new Uint8Array(an.fftSize);function loop(){if(!mediaStream)return;an.getByteTimeDomainData(d);let s=0;for(const v of d){const x=(v-128)/128;s+=x*x}const rms=Math.sqrt(s/d.length);$('#meterBar').style.width=Math.min(100,rms*450)+'%';recMeterRAF=requestAnimationFrame(loop)}loop()}
+function autocorrelate(buf,sr){let size=buf.length,rms=0;for(let i=0;i<size;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/size);const sens=+$('#sensitivity').value||1;if(rms<0.008/Math.sqrt(sens))return null;const minFreq=55,maxFreq=1600,minLag=Math.max(2,Math.floor(sr/maxFreq)),maxLag=Math.min(size-3,Math.ceil(sr/minFreq));let best=-1,bestLag=-1,energy0=0;for(let i=0;i<size;i+=2)energy0+=buf[i]*buf[i];for(let lag=minLag;lag<=maxLag;lag++){let sum=0,e1=0,e2=0;for(let i=0;i<size-lag;i+=2){const a=buf[i],b=buf[i+lag];sum+=a*b;e1+=a*a;e2+=b*b}const corr=sum/Math.sqrt((e1||1e-9)*(e2||1e-9));if(corr>best){best=corr;bestLag=lag}}if(bestLag<0||best<0.35)return null;let T0=bestLag;const score=lag=>{let sum=0,e1=0,e2=0;for(let i=0;i<size-lag;i+=3){const a=buf[i],b=buf[i+lag];sum+=a*b;e1+=a*a;e2+=b*b}return sum/Math.sqrt((e1||1e-9)*(e2||1e-9))};if(bestLag>minLag&&bestLag<maxLag){const x1=score(bestLag-1),x2=best,x3=score(bestLag+1),den=(x1-2*x2+x3);if(Math.abs(den)>1e-6)T0=bestLag+.5*(x1-x3)/den}const freq=sr/T0;return {freq,rms,confidence:best}}
+function removeIntermediateNotes(notes,level,spb){
+if(!level||notes.length<3)return notes;
+const cfg=[
+null,
+{maxMs:60,anchorMs:80,maxStep:1,passes:1},
+{maxMs:110,anchorMs:75,maxStep:2,passes:3},
+{maxMs:170,anchorMs:60,maxStep:3,passes:5}
+][level]||null;
+if(!cfg)return notes;
+let a=notes.map(n=>({...n}));
+const ms=n=>(n.end-n.start)*spb*1000;
+const gapMs=(x,y)=>Math.max(0,(y.start-x.end)*spb*1000);
+for(let pass=0;pass<cfg.passes;pass++){
+let changed=false;
+for(let i=1;i<a.length-1;i++){
+const prev=a[i-1],cur=a[i],next=a[i+1];
+if(ms(cur)>cfg.maxMs)continue;
+if(gapMs(prev,cur)>55||gapMs(cur,next)>55)continue;
+const sameSides=prev.midi===next.midi;
+const rising=prev.midi<cur.midi&&cur.midi<next.midi;
+const falling=prev.midi>cur.midi&&cur.midi>next.midi;
+const between=rising||falling;
+const stepOK=Math.abs(cur.midi-prev.midi)<=cfg.maxStep&&Math.abs(next.midi-cur.midi)<=cfg.maxStep;
+const anchors=ms(prev)>=cfg.anchorMs&&ms(next)>=cfg.anchorMs;
+const shortExcursion=sameSides&&Math.abs(cur.midi-prev.midi)<=cfg.maxStep+1;
+if(!(shortExcursion||(between&&stepOK&&anchors)))continue;
+if(sameSides){
+prev.end=Math.max(prev.end,next.end);
+prev.vel=Math.max(prev.vel||0,next.vel||0,cur.vel||0);
+a.splice(i,2);
+}else{
+const split=(cur.start+cur.end)/2;
+prev.end=Math.max(prev.end,split);
+next.start=Math.min(next.start,split);
+a.splice(i,1);
+}
+changed=true;
+i=Math.max(0,i-2);
+}
+if(!changed)break;
+}
+return a;
+}
+async function convertBufferToNotes(buffer,tr){const sr=buffer.sampleRate,src=buffer.getChannelData(0),frame=1024,hop=1024,bpm=+state.bpm||100,spb=60/bpm,level=+$('#stabilize').value||0,midLevel=+$('#intermediateFilter').value||0;let frames=[];for(let i=0;i+frame<src.length;i+=hop){const seg=src.slice(i,i+frame),p=autocorrelate(seg,sr);if(!p||p.confidence<.18){frames.push(null);continue}const midi=69+12*Math.log2(p.freq/440);frames.push({t:i/sr,m:midi,r:p.rms})}
+// stabilize pitch with median window + hysteresis
+const win=[1,3,5,9][level];let smooth=[];for(let i=0;i<frames.length;i++){if(!frames[i]){smooth.push(null);continue}const a=[];for(let j=Math.max(0,i-Math.floor(win/2));j<=Math.min(frames.length-1,i+Math.floor(win/2));j++)if(frames[j])a.push(frames[j].m);a.sort((x,y)=>x-y);const med=a.length?a[Math.floor(a.length/2)]:frames[i].m;smooth.push({...frames[i],m:med})}
+let notes=[],cur=null,lastMidi=null;const hold=[0,1,2,4][level];let candidate=null,cCount=0;for(const f of smooth){if(!f){if(cur&&cur.end-cur.start>.035){notes.push(cur);cur=null}candidate=null;cCount=0;continue}let m=Math.round(f.m);if(level>0&&lastMidi!=null&&Math.abs(m-lastMidi)<=level*.45)m=lastMidi;if(m!==lastMidi){if(candidate===m)cCount++;else{candidate=m;cCount=1}if(cCount<=hold&&lastMidi!=null)m=lastMidi;else{lastMidi=m;candidate=null;cCount=0}}const beat=f.t/spb;if(!cur||cur.midi!==m){if(cur&&cur.end-cur.start>.035)notes.push(cur);cur={midi:m,start:beat,end:beat+hop/sr/spb,vel:clamp(.35+f.r*3,.35,1)}}else cur.end=beat+hop/sr/spb}
+if(cur)notes.push(cur);notes=removeIntermediateNotes(notes,midLevel,spb);const q=+$('#quantize').value||0,snap=q||+state.snap;notes=notes.map(n=>{let st=n.start,d=Math.max(.06,n.end-n.start);if(q){st=Math.round(st/q)*q;d=Math.max(q,Math.round(d/q)*q)}else{st=Math.round(st/snap)*snap;d=Math.max(snap,Math.round(d/snap)*snap)}return {id:uid(),midi:clamp(n.midi,12,120),start:st,dur:d,vel:n.vel}}).filter((n,i,a)=>i===0||n.midi!==a[i-1].midi||Math.abs(n.start-(a[i-1].start+a[i-1].dur))>.02);
+tr.notes=notes;state.selectedNote=notes[0]?.id||null;toast(`${notes.length}音に変換しました`);saveSilent()}
+async function reconvert(){const tr=currentTrack();const buf=tr.recordBuffer||currentRecordingBuffer;if(!buf)return toast('このトラックに録音がありません');await convertBufferToNotes(buf,tr);renderAll()}
+function syncSelectedRecording(){const tr=currentTrack();currentRecordingBlob=tr?.recordBlob||null;currentRecordingBuffer=tr?.recordBuffer||null;$('#recordStart').value=tr?.recordStart||0}
+function hearVoice(){const tr=currentTrack();if(!tr?.recordBuffer)return toast('録音がありません');const ctx=ensureAudio(),s=ctx.createBufferSource(),g=ctx.createGain();s.buffer=tr.recordBuffer;g.gain.value=tr.volume;s.connect(g);g.connect(ctx.destination);s.start();activeNodes.push(s,g)}
+function demo(){const tr=currentTrack(),base=tr.type==='bass'?40:tr.type==='violin'?67:60;tr.notes=[];[0,2,4,5,7,5,4,2].forEach((p,i)=>tr.notes.push({id:uid(),midi:base+p,start:i*.5,dur:.45,vel:.75}));state.selectedNote=tr.notes[0].id;renderAll();saveSilent()}
+function exportProject(){const out={version:'2.7',state:{...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))}};downloadBlob(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),'Kotoba-Music-project.json')}
+function importProject(file){const fr=new FileReader();fr.onload=()=>{try{const x=JSON.parse(fr.result);if(x?.state?.tracks){state={...state,...x.state};state.tracks.forEach(t=>{t.recordBlob=null;t.recordBuffer=null});renderAll();saveSilent();toast('プロジェクトを開きました')}}catch{toast('プロジェクトを読めませんでした')}};fr.readAsText(file)}
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+async function exportWav(){toast('WAVを作成中…');const bpm=+state.bpm||100,spb=60/bpm,endBeat=Math.max(8,...state.tracks.flatMap(t=>t.notes.map(n=>n.start+n.dur))),dur=endBeat*spb+1,sr=44100;const ctx=new OfflineAudioContext(2,Math.ceil(dur*sr),sr),master=ctx.createGain();master.gain.value=.82;master.connect(ctx.destination);state.tracks.forEach(tr=>{if(tr.mute)return;const tg=ctx.createGain();tg.gain.value=tr.volume;tg.connect(master);if(tr.type==='voice'&&tr.recordBuffer){const src=ctx.createBufferSource();src.buffer=tr.recordBuffer;src.connect(tg);try{src.start((tr.recordStart||0)*spb)}catch{}}tr.notes.forEach(n=>scheduleOsc(ctx,tg,tr.type,n.midi,n.start*spb,n.dur*spb,n.vel))});const rendered=await ctx.startRendering();const wav=audioBufferToWav(rendered);downloadBlob(new Blob([wav],{type:'audio/wav'}),'Kotoba-Music.wav');toast('WAVを書き出しました')}
+function audioBufferToWav(buffer){const ch=buffer.numberOfChannels,sr=buffer.sampleRate,len=buffer.length,bytes=44+len*ch*2,ab=new ArrayBuffer(bytes),v=new DataView(ab);let p=0;const ws=s=>{for(let i=0;i<s.length;i++)v.setUint8(p++,s.charCodeAt(i))};const u32=x=>{v.setUint32(p,x,true);p+=4},u16=x=>{v.setUint16(p,x,true);p+=2};ws('RIFF');u32(bytes-8);ws('WAVE');ws('fmt ');u32(16);u16(1);u16(ch);u32(sr);u32(sr*ch*2);u16(ch*2);u16(16);ws('data');u32(len*ch*2);const data=[];for(let c=0;c<ch;c++)data.push(buffer.getChannelData(c));for(let i=0;i<len;i++)for(let c=0;c<ch;c++){let s=clamp(data[c][i],-1,1);v.setInt16(p,s<0?s*0x8000:s*0x7fff,true);p+=2}return ab}
+$('#playBtn').onclick=()=>play(0);$('#stopBtn').onclick=()=>stop();$('#bpm').onchange=e=>{state.bpm=clamp(+e.target.value||100,40,240);saveSilent()};
+$('#saveBtn').onclick=saveLocal;$('#exportProjectBtn').onclick=exportProject;$('#importProjectBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>e.target.files[0]&&importProject(e.target.files[0]);$('#wavBtn').onclick=exportWav;
+$('#addTrackBtn').onclick=()=>{const type=$('#newTrackType').value,count=state.tracks.filter(t=>t.type===type).length+1,tr=defaultTrack(type,count);state.tracks.push(tr);state.selectedTrack=tr.id;state.selectedNote=null;syncSelectedRecording();renderAll();saveSilent()};
+$('#recBtn').onclick=startRecording;$('#reconvertBtn').onclick=reconvert;$('#hearVoiceBtn').onclick=hearVoice;$('#recordStart').onchange=e=>{const tr=currentTrack();if(tr){tr.recordStart=Math.max(0,+e.target.value||0);saveSilent()}};
+$('#labelMode').onchange=e=>{state.labelMode=e.target.value;renderAll();saveSilent()};$('#snap').onchange=e=>{state.snap=+e.target.value;saveSilent()};$('#rangeMode').onchange=e=>{state.rangeMode=e.target.value;renderAll();saveSilent()};
+$('#addNoteBtn').onclick=()=>{const tr=currentTrack();addNote(tr.type==='bass'?40:tr.type==='violin'?67:60)};$('#deleteNote').onclick=()=>{const tr=currentTrack();if(!state.selectedNote)return;tr.notes=tr.notes.filter(n=>n.id!==state.selectedNote);state.selectedNote=null;renderAll();saveSilent()};
+$('#octDown').onclick=()=>{const tr=currentTrack(),targets=state.selectedNote?tr.notes.filter(n=>n.id===state.selectedNote):tr.notes;targets.forEach(n=>n.midi=clamp(n.midi-12,12,120));renderAll();saveSilent()};$('#octUp').onclick=()=>{const tr=currentTrack(),targets=state.selectedNote?tr.notes.filter(n=>n.id===state.selectedNote):tr.notes;targets.forEach(n=>n.midi=clamp(n.midi+12,12,120));renderAll();saveSilent()};
+$('#notePitch').onchange=e=>{const n=currentNote();if(n){n.midi=+e.target.value;renderRoll();renderNotePanel();saveSilent()}};$('#noteStart').onchange=e=>{const n=currentNote();if(n){n.start=Math.max(0,+e.target.value||0);renderRoll();saveSilent()}};$('#noteDur').onchange=e=>{const n=currentNote();if(n){n.dur=Math.max(+state.snap,+e.target.value||+state.snap);renderRoll();saveSilent()}};$('#noteVel').oninput=e=>{const n=currentNote();if(n){n.vel=+e.target.value;saveSilent()}};$('#previewNote').onclick=()=>preview();$('#demoBtn').onclick=demo;
+$('#roll').onclick=e=>{if(e.target.id==='roll'||e.target.classList.contains('grid')||e.target.classList.contains('rowLine')){state.selectedNote=null;renderAll()}};
+if(!loadLocal())initTracks();renderAll();syncSelectedRecording();
+})();
+</script>
 </body>
 </html>
