@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>Kotoba Music v3.5.1</title>
+<title>Kotoba Music v3.5.2</title>
 <style>
 :root{--bg:#0b0d12;--panel:#141821;--panel2:#1b202b;--line:#2d3442;--text:#f5f7fa;--sub:#9aa6b8;--accent:#7ad7ff;--danger:#ff6f7d;--ok:#86e39b;--cellW:30px;--cellH:24px;--keysW:74px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -79,7 +79,7 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 <body>
 <header>
 <div class="headerRow">
-<div class="brand">▥ Kotoba Music <span class="badge">v3.5.1</span></div>
+<div class="brand">▥ Kotoba Music <span class="badge">v3.5.2</span></div>
 <button class="primary" id="playBtn">▶ 再生</button><button id="stopBtn">■ 停止</button>
 
 <span class="time" id="time">00:00.0</span>
@@ -129,6 +129,7 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label>
 <label class="small">ドラム入力<select id="drumInputMode"><option selected="" value="mouth">口ドラム（ドン・タッ・チッ）</option><option value="real">実ドラム／打楽器</option></select></label>
 <label class="small">チッ／シャー判定<select id="drumHatBias"><option selected="" value="closed">チッ優先（推奨）</option><option value="balanced">標準</option><option value="open">シャー優先</option></select></label>
+<label class="small">高域音の拾いやすさ<select id="drumHatSensitivity"><option selected="" value="high">高（推奨）</option><option value="normal">標準</option><option value="low">低</option></select></label>
 <label class="small">録音中モニター<select id="monitorLevel"><option selected="" value="0">OFF</option><option value="0.25">25%</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select></label>
 <label class="small">録音後の元声<select id="autoHearRecording"><option selected="" value="on">自動再生 ON</option><option value="off">OFF</option></select></label>
 <label class="small">最大録音時間<select id="recordLimit"><option value="60">1分（軽い）</option><option value="180">3分</option><option selected="" value="300">5分</option></select></label><span class="recClock" id="recClock">00:00 / 05:00</span>
@@ -137,10 +138,10 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 </div>
 <div class="muted">パートごとに解析を自動最適化します。ピアノ／ベース／ギター／ヴァイオリン／ボイスは音程解析、ドラムは時間変化つきアタック＋音色解析です。速い音階・大きな跳躍は「高速追従」＋30ms推奨。「近い音をまとめる」は同音の震えや極短い誤検出を整理します。弱い入力は自動で解析しやすいレベルまで追従し、高速解析が失敗した場合は互換解析へ自動切替します。設定変更後は「録音を再変換」を押してください。</div>
 <progress aria-label="音程解析の進捗" hidden="" id="analysisProgress" max="100" value="0"></progress><button hidden="" id="cancelAnalysis">解析を中止</button></div>
-</div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。旋律パートの音程解析は1つのメロディー向けです。ドラムは「口ドラム」と「実ドラム」で解析方式を切り替えます。標準は声の「ドン／タッ／チッ」に最適化されています。「チッ／シャー判定」はチッ優先が推奨です。選択したドラム音は編集欄で「ドン／タッ／チッ／シャー」に変更できます。和音・伴奏の混じる録音は音程がずれることがあります。録音モニターはイヤホンで使ってください。</div></main>
+</div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。旋律パートの音程解析は1つのメロディー向けです。ドラムは「口ドラム」と「実ドラム」で解析方式を切り替えます。標準は声の「ドン／タッ／チッ」に最適化されています。「高域音の拾いやすさ」は高が推奨です。「チッ／シャー判定」はチッ優先が推奨です。選択したドラム音は編集欄で「ドン／タッ／チッ／シャー」に変更できます。和音・伴奏の混じる録音は音程がずれることがあります。録音モニターはイヤホンで使ってください。</div></main>
 <div class="toast" id="toast"></div>
 <script>
-/* Kotoba Music 3.5.1 — stronger closed/open hi-hat duration discrimination for mouth drums. No network calls. */
+/* Kotoba Music 3.5.2 — stronger closed/open hi-hat duration discrimination for mouth drums. No network calls. */
 (function installPitchEngine(root){
 'use strict';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));let options={};
@@ -422,7 +423,7 @@ async function analyze(samples,sampleRate,opt={},progress=()=>{}){
   return {notes,gate,frames:frames.length,duration:samples.length/sampleRate,lowConfidence:notes.filter(n=>n.confidence<.80||n.uncertain).length};
 }
 async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
-  // v3.5.1: classify the *whole hit over time*, with dedicated high-band persistence for チッ vs シャー.
+  // v3.5.2: classify the *whole hit over time*, with dedicated high-band persistence for チッ vs シャー.
   // Default "mouth" mode is tuned for spoken/beatbox ドン・タッ・チッ・シャー.
   const mode=opt.drumInputMode||'mouth',target=22050,factor=Math.max(1,Math.floor(sampleRate/target));
   const pre=factor>1?lowpassMono(samples,sampleRate,sampleRate/factor*.44):samples,sr=sampleRate/factor,x=downsampleMono(pre,factor);
@@ -509,37 +510,55 @@ async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
     const transient=clamp(candidates[ci].strength/Math.max(onGate,1e-9)/3,0,1);
     let scores,midi;
     if(mode==='mouth'){
-      // Spoken/beatbox syllables:
-      // ドン = voiced low/body energy; タッ = stop burst + mid body;
-      // チッ = short high hiss; シャー = sustained high hiss.
+      // v3.5.2: hierarchical mouth-drum classifier.
+      // First decide whether this hit belongs to the high-frequency family (チッ/シャー).
+      // Only low/mid-family hits are then allowed to become ドン/タッ. This prevents
+      // weak fricatives from being swallowed by the kick/snare guardrails.
       const voiced=clamp((lowBody*1.25+body.lm*.55)-body.z*.45,0,1.3);
-      const hiss=clamp(highEarly*1.15+early.z*.62+early.air*.70,0,1.8);
+      const hiss=clamp(highEarly*1.18+early.z*.58+early.air*.78,0,1.8);
       const sustain=clamp(dur/.18,0,1.25),highSustain=clamp(highBody*1.2+tailLevel*.48,0,1.5);
-      const kick=3.10*voiced+1.05*(early.sub+early.low)+.72*sustain-1.55*hiss-.40*transient;
+      const lowEarly=early.sub+early.low, upperEarly=early.mid+early.high+early.air;
+      const sensMode=opt.drumHatSensitivity||'high';
+      const hatThreshold=sensMode==='high'?.31:sensMode==='normal'?.42:.54;
+      const highFloorEarly=sensMode==='high'?.130:sensMode==='normal'?.180:.240;
+      const zNeed=sensMode==='high'?.115:sensMode==='normal'?.155:.205;
+      // /ch/ and /sh/ can have a voiced vowel/body after the initial frication. Use the
+      // first ~20 ms and true >3.2 kHz persistence instead of whole-syllable low energy.
+      const fricativeEvidence=1.42*highEarly+.48*early.mid+.52*early.z+.36*early.air-.42*lowEarly-.18*lowBody;
+      const spectralHat=(highEarly>=highFloorEarly && early.z>=zNeed && upperEarly>lowEarly*.72);
+      const persistentHat=(highDur>=.105 && (highMidRatio>=.085||highLateRatio>=.035) && (highEarly>=highFloorEarly*.78||highBody>=.17));
+      const strongHat=(fricativeEvidence>=hatThreshold && highEarly>=highFloorEarly) || spectralHat || persistentHat;
+
+      const kick=3.10*voiced+1.05*lowEarly+.72*sustain-1.55*hiss-.40*transient;
       const snare=1.45*(early.lm+early.mid)+1.00*highEarly+.95*transient+.75*midBody-.68*early.air-.38*voiced;
-      // v3.5.1: closed/open hi-hat is decided primarily by HIGH-BAND persistence, not
-      // by total syllable length. This strongly reduces チッ -> シャー mistakes.
-      const closed=2.22*hiss+.72*transient+.45*highBody+1.15*(1-highPersist)-1.08*voiced-.42*lateHiss;
-      const open=1.42*hiss+1.72*lateHiss+1.52*highPersist+.52*highSustain-1.00*voiced-.72*(highDur<.145?1:0);
+      const closed=2.30*hiss+.78*transient+.50*highBody+1.10*(1-highPersist)-.92*voiced-.38*lateHiss;
+      const open=1.55*hiss+1.78*lateHiss+1.62*highPersist+.58*highSustain-.88*voiced-.64*(highDur<.125?1:0);
       scores=[['kick',kick],['snare',snare],['closed',closed],['open',open]].sort((a,b)=>b[1]-a[1]);
-      // Strong language-aware guardrails make the common syllables much more stable.
-      if(lowBody>.48&&highEarly<.34 || (voiced>.62&&hiss<.58))midi=36;
-      else if(midBody>.42&&transient>.28&&highEarly<.62)midi=38;
-      else if(highEarly>.34&&early.z>.30){
-        // "シャー" must keep real high-frequency hiss well after the initial attack.
-        // A long vowel/body tail after a short "チッ" no longer qualifies.
+
+      if(strongHat){
+        // Once identified as a high-frequency event, never let ドン/タッ steal it.
+        // Then distinguish チッ vs シャー only from sustained high-band evidence.
         const hatBias=opt.drumHatBias||'closed';
-        const openDur=hatBias==='open'?.135:hatBias==='balanced'?.165:.190;
-        const midNeed=hatBias==='open'?.14:hatBias==='balanced'?.18:.21;
-        const lateNeed=hatBias==='open'?.055:hatBias==='balanced'?.085:.11;
-        const longEnough=highDur>=openDur;
-        const clearlyOpen=longEnough && highMidRatio>=midNeed && (highLateRatio>=lateNeed || highDur>=openDur+.055);
+        const openDur=hatBias==='open'?.120:hatBias==='balanced'?.150:.178;
+        const midNeed=hatBias==='open'?.095:hatBias==='balanced'?.135:.175;
+        const lateNeed=hatBias==='open'?.030:hatBias==='balanced'?.055:.080;
+        const clearlyOpen=highDur>=openDur && highMidRatio>=midNeed && (highLateRatio>=lateNeed || highDur>=openDur+.050);
         midi=clearlyOpen?46:42;
-      }
-      else {
-        const hatBias=opt.drumHatBias||'closed';
-        const scoreOpenDur=hatBias==='open'?.130:hatBias==='balanced'?.155:.180;
-        midi=scores[0][0]==='kick'?36:scores[0][0]==='snare'?38:scores[0][0]==='open'&&highDur>=scoreOpenDur?46:42;
+      }else if((lowBody>.50&&highEarly<.26)||(voiced>.66&&hiss<.46)){
+        midi=36;
+      }else if(midBody>.40&&transient>.24&&highEarly<.46){
+        midi=38;
+      }else{
+        // Ambiguous low/mid hit: prefer snare over kick unless there is clear low voiced body.
+        // If the hat score narrowly wins, preserve it rather than collapsing to ドン/タッ.
+        const top=scores[0][0];
+        if((top==='closed'||top==='open') && (highEarly>.12||highDur>.09)){
+          if(top==='open'){
+            const hatBias=opt.drumHatBias||'closed';
+            const od=hatBias==='open'?.115:hatBias==='balanced'?.145:.172;
+            midi=highDur>=od?46:42;
+          }else midi=42;
+        }else midi=top==='kick'?36:top==='snare'?38:42;
       }
     }else{
       // Real drum / percussion mode keeps a more physical timbre model.
@@ -915,7 +934,7 @@ function meterLoop(){
  }recMeterRAF=requestAnimationFrame(loop);
 }
 let analysisWorker=null,analysisSerial=0,analysisBusy=false;
-function analysisOptions(tr=currentTrack()){const o=Object.fromEntries(['trackingMode','sensitivity','recognitionRange','stabilize','intermediateFilter','mergeNearby','minNoteMs','drumInputMode','drumHatBias'].map(id=>[id,$('#'+id).value]));o.trackType=tr?.type||'voice';return o;}
+function analysisOptions(tr=currentTrack()){const o=Object.fromEntries(['trackingMode','sensitivity','recognitionRange','stabilize','intermediateFilter','mergeNearby','minNoteMs','drumInputMode','drumHatBias','drumHatSensitivity'].map(id=>[id,$('#'+id).value]));o.trackType=tr?.type||'voice';return o;}
 function setBusy(on){analysisBusy=on;if(on){setRecStatus('音程解析を準備中…');$('#analysisProgress').value=0;}$('#cancelAnalysis').hidden=!on;for(const id of ['recBtn','reconvertBtn','audioImportBtn','importProjectBtn'])$('#'+id).disabled=on;$('#analysisProgress').hidden=!on;}
 function cancelAnalysis(){analysisSerial++;analysisWorker?.terminate();analysisWorker=null;analysisReject?.(new Error('cancelled'));analysisReject=null;setBusy(false);setRecStatus('解析を中止しました。元の録音と音符は残っています。');}
 let analysisReject=null;
@@ -946,7 +965,7 @@ async function convertBufferToNotes(buffer,tr){
     if(q)for(let i=0;i<notes.length-1;i++)if(notes[i].start+notes[i].dur>notes[i+1].start){if(notes[i+1].start>notes[i].start)notes[i].dur=notes[i+1].start-notes[i].start;else notes[i].dur=0;}
     tr.notes=notes.filter(n=>n.dur>0);state.selectedNote=state.selectedTrack===tr.id?tr.notes[0]?.id||null:state.selectedNote;
     tr.analysisSummary=`${tr.notes.length}音 / 要確認 ${result.lowConfidence}音`;
-    setRecStatus(mode==='drums'?`変換完了：${tr.analysisSummary}。時間変化と音色からドン／タッ／チッ／シャーを判定しました。選択音は編集欄から変更できます。`:`変換完了：${tr.analysisSummary}。黄色の音符は音程を確認してください。`);toast(`${tr.notes.length}音に変換しました`);saveSilent();return true;
+    setRecStatus(mode==='drums'?`変換完了：${tr.analysisSummary}。高域系を先に判定してから、ドン／タッ／チッ／シャーを分類しました。選択音は編集欄から変更できます。`:`変換完了：${tr.analysisSummary}。黄色の音符は音程を確認してください。`);toast(`${tr.notes.length}音に変換しました`);saveSilent();return true;
   }catch(e){if(serial===analysisSerial){setRecStatus(e.message);toast('解析できませんでした。録音は残っています。')}}
   finally{if(serial===analysisSerial){analysisWorker?.terminate();analysisWorker=null;analysisReject=null;setBusy(false)}}
 }
