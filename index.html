@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<title>Kotoba Music v2.5</title>
-<link rel="stylesheet" href="styles.css?v=2.5.0">
+<title>Kotoba Music v2.6</title>
+<link rel="stylesheet" href="styles.css?v=2.6.0">
 </head>
 <body>
 <header>
   <div class="headerRow">
-    <div class="brand">▥ Kotoba Music <span class="badge">v2.5 1 / 3 / 5 MIN + DOUBLE TAP</span></div>
+    <div class="brand">▥ Kotoba Music <span class="badge">v2.6 HIGH PRECISION PITCH</span></div>
     <button id="playBtn" class="primary">▶ 再生</button><button id="stopBtn">■ 停止</button><button id="testC4Btn">♪ C4確認</button><button id="testToneBtn">♪ A4=440Hz</button><button id="testC5Btn">♪ C5確認</button>
     <label class="small">再生方式<select id="outputMode"><option value="compat" selected>iPad互換（推奨）</option><option value="webaudio">Web Audio</option></select></label>
     <span id="time" class="time">00:00.0</span>
@@ -48,7 +48,7 @@
         <label class="small">録音開始（拍）<input id="recordStart" type="number" min="0" step="0.125" value="0" style="width:90px"></label>
         <label class="small">量子化<select id="quantize"><option value="0">声のまま</option><option value="0.5">8分</option><option value="0.25">16分</option><option value="0.125">32分</option></select></label>
       </div>
-      <div class="muted">v2.5では最大録音時間を1分 / 3分 / 5分から選べます。5分録音は停止後の音程解析に少し時間がかかる場合があります。ボイス以外の楽器も独立して増幅できます。録音中モニターはスピーカーだとハウリングしやすいのでイヤホン推奨です。「録音後の元声」をONにすると、停止・解析後に録ったままの声を自動再生します。音程認識は倍音・オクターブ誤認を抑える方式のままです。</div>
+      <div class="muted">v2.6では音程変換エンジンを刷新しました。基音推定、倍音判定、オクターブ誤認補正、前後フレーム追跡、ノイズゲート、歌い始め・語尾の補正、同音連打の再アタック検出を組み合わせて変換します。1音ずつ歌うほど精度が上がります。5分録音は高精度解析のため停止後に少し時間がかかる場合があります。</div>
     </div>
   </div>
   <div class="card help">
@@ -75,6 +75,6 @@
 </section>
 </main>
 <div id="toast" class="toast"></div>
-<script src="app.js?v=2.5.0"></script>
+<script src="app.js?v=2.6.0"></script>
 </body>
 </html>

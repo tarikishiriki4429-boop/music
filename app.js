@@ -51,8 +51,8 @@ function defaultTrack(type,index=1){return {id:uid(),type,name:(TYPES[type]||typ
 function initTracks(){['voice','piano','bass','guitar','violin','drums'].forEach(t=>state.tracks.push(defaultTrack(t)));state.selectedTrack=state.tracks[1].id}
 function currentTrack(){return state.tracks.find(t=>t.id===state.selectedTrack)||state.tracks[0]}
 function currentNote(){const tr=currentTrack();return tr?.notes.find(n=>n.id===state.selectedNote)||null}
-function saveLocal(){const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV25',JSON.stringify(compact));toast('保存しました')}
-function loadLocal(){try{const raw=localStorage.getItem('kotobaMusicV25')||localStorage.getItem('kotobaMusicV24')||localStorage.getItem('kotobaMusicV23')||localStorage.getItem('kotobaMusicV22')||localStorage.getItem('kotobaMusicV21')||localStorage.getItem('kotobaMusicV17')||localStorage.getItem('kotobaMusicV16');const x=JSON.parse(raw);if(x&&x.tracks){state={...state,...x};return true}}catch{}return false}
+function saveLocal(){const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV26',JSON.stringify(compact));toast('保存しました')}
+function loadLocal(){try{const raw=localStorage.getItem('kotobaMusicV26')||localStorage.getItem('kotobaMusicV25')||localStorage.getItem('kotobaMusicV24')||localStorage.getItem('kotobaMusicV23')||localStorage.getItem('kotobaMusicV22')||localStorage.getItem('kotobaMusicV21')||localStorage.getItem('kotobaMusicV17')||localStorage.getItem('kotobaMusicV16');const x=JSON.parse(raw);if(x&&x.tracks){state={...state,...x};return true}}catch{}return false}
 function renderTracks(){const box=$('#trackList');box.innerHTML='';state.tracks.forEach(tr=>{const d=document.createElement('div');d.className='track'+(tr.id===state.selectedTrack?' selected':'');d.innerHTML=`<div class="trackTop"><button data-sel="${tr.id}" class="ghost" style="padding:4px 7px">●</button><div class="trackName">${escapeHTML(tr.name)}</div><span class="pill">${TYPES[tr.type]}</span><button data-mute="${tr.id}" style="padding:5px 8px">${tr.mute?'M✓':'M'}</button><button data-deltrack="${tr.id}" class="danger" style="padding:5px 8px">×</button></div><label class="small">音量 ${Math.round(tr.volume*100)}%<input data-vol="${tr.id}" class="slider" type="range" min="0" max="4" step="0.05" value="${tr.volume}"></label><div class="muted">${tr.notes.length}音${tr.recordBlob?' · 録音あり':''}</div>`;box.appendChild(d)});
 box.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{state.selectedTrack=b.dataset.sel;state.selectedNote=null;syncSelectedRecording();renderAll()});
 box.querySelectorAll('[data-mute]').forEach(b=>b.onclick=()=>{const tr=state.tracks.find(t=>t.id===b.dataset.mute);tr.mute=!tr.mute;renderTracks()});
@@ -115,7 +115,7 @@ function attachNoteDrag(el,n,rz){let mode='move',sx=0,sy=0,os=0,om=0,od=0,dragSe
 function renderNotePanel(){const n=currentNote();['notePitch','noteStart','noteDur','noteVel','previewNote','deleteNote'].forEach(id=>$('#'+id).disabled=!n);if(!n)return;renderPitchSelect();$('#notePitch').value=n.midi;$('#noteStart').value=n.start;$('#noteDur').value=n.dur;$('#noteVel').value=n.vel??.75}
 function updateEditorHeader(){const tr=currentTrack();$('#editorTitle').textContent=`音を編集 — ${tr?.name||''}`;$('#editorSub').textContent=`${TYPES[tr?.type]||''} / ${tr?.notes.length||0}音 / ダブルタップで追加・音符を直接ドラッグ`}
 function renderAll(){renderTracks();renderPitchSelect();renderRoll();renderNotePanel();$('#bpm').value=state.bpm;$('#labelMode').value=state.labelMode;$('#snap').value=state.snap;$('#rangeMode').value=state.rangeMode;if($('#masterBoost'))$('#masterBoost').value=state.masterBoost||2;if($('#outputMode'))$('#outputMode').value=state.outputMode||'compat';if($('#zoomLabel'))$('#zoomLabel').textContent=Math.round((state.zoom||1)*100)+'%';if($('#zoomResetBtn'))$('#zoomResetBtn').textContent=Math.round((state.zoom||1)*100)+'%'}
-function saveSilent(){try{const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV25',JSON.stringify(compact))}catch{}}
+function saveSilent(){try{const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV26',JSON.stringify(compact))}catch{}}
 function addNote(midi=60,start=null,dur=null){const tr=currentTrack();if(!tr)return;const last=tr.notes.reduce((a,n)=>Math.max(a,n.start+n.dur),0),snap=+state.snap;const n={id:uid(),midi,start:start??Math.round(last/snap)*snap,dur:dur??Math.max(.5,snap),vel:.75};tr.notes.push(n);state.selectedNote=n.id;renderAll();scrollNoteIntoView(n);saveSilent()}
 function scrollNoteIntoView(n){requestAnimationFrame(()=>{const [lo,hi]=range(),wrap=$('#rollWrap');wrap.scrollLeft=Math.max(0,n.start*CELL_W-140);wrap.scrollTop=Math.max(0,(hi-n.midi)*CELL_H-100)})}
 function scheduleOsc(ctx,dest,type,midi,start,dur,vel=0.75){if(type==='drums'){return scheduleDrum(ctx,dest,midi,start,dur,vel)}const f=midiToFreq(midi),g=ctx.createGain();g.gain.setValueAtTime(0,start);const amp=.38*vel;g.gain.linearRampToValueAtTime(amp,start+.008);let release=.12;if(type==='piano'){g.gain.exponentialRampToValueAtTime(.0008,start+Math.max(.15,dur));release=.04}else if(type==='guitar'){g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.22,dur*.85));release=.04}else if(type==='bass'){g.gain.setValueAtTime(amp,start+.02);g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.18,dur));release=.06}else if(type==='violin'){g.gain.setValueAtTime(amp*.65,start+.06);g.gain.linearRampToValueAtTime(amp*.8,start+.16);g.gain.exponentialRampToValueAtTime(.001,start+dur+release)}else{g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.18,dur))}
@@ -234,86 +234,202 @@ function highpassMono(src,sr,cut=42){
   for(let i=0;i<src.length;i++){const x=src[i];const y=a*(py+x-px);out[i]=y;px=x;py=y}
   return out;
 }
-function autocorrelate(buf,sr,prevFreq=null){
-  const size=buf.length;let mean=0;for(let i=0;i<size;i++)mean+=buf[i];mean/=size;
-  let rms=0;for(let i=0;i<size;i++){const x=buf[i]-mean;rms+=x*x}rms=Math.sqrt(rms/size);
-  const sens=+$('#sensitivity').value||1,boost=clamp(+($('#inputBoost')?.value||1),1,256);
-  const effectiveRms=rms*Math.sqrt(Math.min(boost,16));
-  const gate=.006/Math.sqrt(Math.max(1,sens));if(effectiveRms<gate)return null;
-  const [minFreq,maxFreq0]=recognitionBounds(),maxFreq=Math.min(maxFreq0,sr*.43);
-  const minLag=Math.max(2,Math.floor(sr/maxFreq)),maxLag=Math.min(size-5,Math.ceil(sr/minFreq));
-  if(maxLag<=minLag+2)return null;
-  const step=size>2500?3:2,corr=new Float32Array(maxLag+2);
-  const corrAt=lag=>{let sum=0,e1=0,e2=0;for(let i=0;i<size-lag;i+=step){const a=buf[i]-mean,b=buf[i+lag]-mean;sum+=a*b;e1+=a*a;e2+=b*b}return sum/Math.sqrt(Math.max(1e-12,e1*e2))};
-  let globalBest=-2;for(let lag=minLag;lag<=maxLag;lag++){const c=corrAt(lag);corr[lag]=c;if(c>globalBest)globalBest=c}
-  const minConf=clamp(.70-Math.log2(Math.max(1,sens))*.025,.52,.70);if(globalBest<minConf)return null;
-  const peaks=[];for(let lag=minLag+1;lag<maxLag;lag++){const c=corr[lag];if(c>=minConf&&c>=corr[lag-1]&&c>=corr[lag+1])peaks.push({lag,c,f:sr/lag})}
-  if(!peaks.length)return null;
-  // Multiples of the real period often create an equally high later peak. Prefer the shortest
-  // period only when it is almost as strong as the global peak; this reduces octave-low errors.
-  const bestPeak=peaks.reduce((a,b)=>b.c>a.c?b:a,peaks[0]);
-  const near=peaks.filter(p=>p.c>=Math.max(minConf,bestPeak.c*.965));
-  let chosen=near.length?near.reduce((a,b)=>b.lag<a.lag?b:a,near[0]):bestPeak;
-  if(prevFreq&&Number.isFinite(prevFreq)){
-    let bestScore=-99,best=null;
-    for(const p of peaks){
-      const semi=Math.abs(12*Math.log2(p.f/prevFreq));let score=p.c;
-      if(semi<1.5)score+=.11;else if(semi<3.5)score+=.06;else if(semi<6)score+=.02;
-      if(Math.abs(semi-12)<1.8)score-=.025;
-      if(p.c<globalBest*.88)score-=.06;
-      if(score>bestScore){bestScore=score;best=p}
-    }
-    if(best)chosen=best;
-  }
-  let lag=chosen.lag;
-  if(lag>minLag&&lag<maxLag){const y1=corr[lag-1],y2=corr[lag],y3=corr[lag+1],den=y1-2*y2+y3;if(Math.abs(den)>1e-7)lag=lag+.5*(y1-y3)/den}
-  const freq=sr/lag;if(freq<minFreq||freq>maxFreq)return null;
-  return {freq,rms,confidence:chosen.c};
+function lowpassMono(src,sr,cut){
+  const out=new Float32Array(src.length);if(!src.length)return out;
+  const a=1-Math.exp(-2*Math.PI*Math.min(cut,sr*.45)/sr);let y=src[0]||0;
+  for(let i=0;i<src.length;i++){y+=a*(src[i]-y);out[i]=y}return out;
 }
-function downsampleMono(src,factor){if(factor<=1)return src;const n=Math.floor(src.length/factor),out=new Float32Array(n);for(let i=0;i<n;i++){let s=0;for(let j=0;j<factor;j++)s+=src[i*factor+j];out[i]=s/factor}return out}
+function downsampleMono(src,factor){
+  if(factor<=1)return src;
+  const n=Math.floor(src.length/factor),out=new Float32Array(n);
+  for(let i=0;i<n;i++){let s=0;for(let j=0;j<factor;j++)s+=src[i*factor+j];out[i]=s/factor}
+  return out;
+}
+function frameRms(buf,step=4){let s=0,n=0,mean=0;for(let i=0;i<buf.length;i+=step){mean+=buf[i];n++}mean/=Math.max(1,n);s=0;n=0;for(let i=0;i<buf.length;i+=step){const x=buf[i]-mean;s+=x*x;n++}return Math.sqrt(s/Math.max(1,n))}
+function estimateNoiseGate(src,frame,hop){
+  const sens=+$('#sensitivity').value||1,boost=clamp(+($('#inputBoost')?.value||1),1,256),vals=[];
+  const stride=Math.max(hop*5,Math.floor(src.length/80));
+  for(let i=0;i+frame<src.length;i+=stride)vals.push(frameRms(src.subarray(i,i+frame),8));
+  vals.sort((a,b)=>a-b);const q=vals.length?vals[Math.floor(vals.length*.12)]:0;
+  const fixed=.0038/Math.sqrt(Math.max(1,sens))*1/Math.pow(Math.min(boost,16),.18);
+  return Math.max(fixed,Math.min(.016,q*2.15));
+}
+function parabolicMinimum(a,i){
+  if(i<=1||i>=a.length-1)return i;const y1=a[i-1],y2=a[i],y3=a[i+1],den=y1-2*y2+y3;
+  if(!Number.isFinite(den)||Math.abs(den)<1e-9)return i;return i+.5*(y1-y3)/den;
+}
+function normalizedCorr(buf,lag,mean,step=3){
+  const ilag=Math.max(1,Math.round(lag));let s=0,e1=0,e2=0;
+  for(let i=0;i+ilag<buf.length;i+=step){const a=buf[i]-mean,b=buf[i+ilag]-mean;s+=a*b;e1+=a*a;e2+=b*b}
+  return s/Math.sqrt(Math.max(1e-12,e1*e2));
+}
+function tonePower(buf,sr,freq,mean){
+  if(freq<=0||freq>=sr*.48)return 0;const n=Math.min(buf.length,512),step=1;let re=0,im=0,en=0,c=0;
+  for(let i=0;i<n;i+=step){const w=.5-.5*Math.cos(2*Math.PI*i/Math.max(1,n-1)),x=(buf[i]-mean)*w,a=2*Math.PI*freq*i/sr;re+=x*Math.cos(a);im-=x*Math.sin(a);en+=x*x;c++}
+  return en>1e-12?(re*re+im*im)/(en*Math.max(1,c)):0;
+}
+function spectralSupport(buf,sr,freq,mean){
+  const e=[];for(let h=1;h<=4;h++)e.push(tonePower(buf,sr,freq*h,mean));const sum=e.reduce((a,b)=>a+b,0),weighted=(e[0]||0)+.62*(e[1]||0)+.38*(e[2]||0)+.24*(e[3]||0),base=sum>1e-12?(e[0]||0)/sum:0;return {raw:weighted,base,p1:e[0]||0};
+}
+function yinCandidates(buf,sr,noiseGate){
+  const size=buf.length;let mean=0;for(let i=0;i<size;i+=2)mean+=buf[i];mean/=Math.ceil(size/2);
+  let rms=0,nr=0;for(let i=0;i<size;i+=2){const x=buf[i]-mean;rms+=x*x;nr++}rms=Math.sqrt(rms/Math.max(1,nr));
+  const sens=+$('#sensitivity').value||1,boost=clamp(+($('#inputBoost')?.value||1),1,256),effective=rms*Math.pow(Math.min(boost,16),.16);
+  if(effective<noiseGate)return null;
+  const [minFreq,maxFreq0]=recognitionBounds(),maxFreq=Math.min(maxFreq0,sr*.43);
+  const tauMin=Math.max(2,Math.floor(sr/maxFreq)),tauMax=Math.min(Math.floor(sr/minFreq),Math.floor(size*.46));
+  if(tauMax<=tauMin+2)return null;
+  const work=Math.max(96,Math.min(size-tauMax-2,768)),sampleStep=work>600?3:2;
+  const diff=new Float32Array(tauMax+2),cmnd=new Float32Array(tauMax+2);cmnd[0]=1;
+  let running=0;
+  for(let tau=1;tau<=tauMax;tau++){
+    let d=0,c=0;for(let i=0;i<work;i+=sampleStep){const z=(buf[i]-mean)-(buf[i+tau]-mean);d+=z*z;c++}
+    d/=Math.max(1,c);diff[tau]=d;running+=d;cmnd[tau]=running>1e-12?d*tau/running:1;
+  }
+  const threshold=clamp(.16+Math.log2(Math.max(1,sens))*.020,.16,.28),locals=[];
+  let globalTau=tauMin,globalVal=cmnd[tauMin];
+  for(let tau=tauMin+1;tau<tauMax;tau++){
+    if(cmnd[tau]<globalVal){globalVal=cmnd[tau];globalTau=tau}
+    if(cmnd[tau]<=cmnd[tau-1]&&cmnd[tau]<cmnd[tau+1])locals.push(tau);
+  }
+  let firstGood=null;
+  for(const tau of locals){if(cmnd[tau]<threshold){firstGood=tau;break}}
+  if(firstGood==null&&globalVal>.36)return null;
+  const bestVal=Math.min(globalVal,firstGood==null?1:cmnd[firstGood]);
+  let pool=locals.filter(t=>cmnd[t]<=Math.min(.44,bestVal+.18));
+  if(firstGood!=null&&!pool.includes(firstGood))pool.push(firstGood);
+  if(!pool.includes(globalTau))pool.push(globalTau);
+  // A strong second harmonic can produce a half-period minimum. If a deeper minimum exists near 2x,
+  // keep it as an explicit candidate so the temporal path can choose the true fundamental.
+  for(const t of [...pool]){
+    const lo=Math.max(tauMin,Math.round(t*1.86)),hi=Math.min(tauMax,Math.round(t*2.14));let bt=-1,bv=1;
+    for(let k=lo;k<=hi;k++)if(cmnd[k]<bv){bv=cmnd[k];bt=k}
+    if(bt>0&&bv<Math.min(.38,cmnd[t]+.055)&&!pool.some(x=>Math.abs(x-bt)<=2))pool.push(bt);
+  }
+  pool.sort((a,b)=>cmnd[a]-cmnd[b]);pool=pool.slice(0,6);if(firstGood!=null&&!pool.some(x=>Math.abs(x-firstGood)<=1))pool.push(firstGood);if(!pool.some(x=>Math.abs(x-globalTau)<=1))pool.push(globalTau);
+  const candidates=[];
+  for(const tau0 of pool){
+    const tau=parabolicMinimum(cmnd,tau0),freq=sr/tau;if(freq<minFreq||freq>maxFreq)continue;
+    const corr=normalizedCorr(buf,tau,mean,4),q=clamp((1-cmnd[tau0])*.72+Math.max(0,corr)*.28,0,1);
+    if(q<.48)continue;
+    const midi=69+12*Math.log2(freq/440);if(!Number.isFinite(midi))continue;
+    if(candidates.some(c=>Math.abs(c.midi-midi)<.22))continue;
+    const sp=spectralSupport(buf,sr,freq,mean);candidates.push({freq,midi,q,y:cmnd[tau0],corr,tau,first:firstGood!=null&&Math.abs(tau0-firstGood)<=1,specRaw:sp.raw,base:sp.base,p1:sp.p1});
+  }
+  if(!candidates.length)return null;
+  // If the true pitch is high, YIN can sometimes keep only an octave-lower period.
+  // Add an octave-up hypothesis when there is clear spectral energy there; the octave evidence below decides between them.
+  for(const c of [...candidates]){
+    const uf=c.freq*2;if(c.midi+12<80||uf>maxFreq||uf>=sr*.44||candidates.some(x=>Math.abs(x.midi-(c.midi+12))<.45))continue;
+    const upP=tonePower(buf,sr,uf,mean);if(upP<Math.max(.0025,(c.p1||0)*1.35))continue;
+    const sp=spectralSupport(buf,sr,uf,mean),ratio=upP/(upP+(c.p1||0)+1e-9),q=clamp(.78+.12*ratio+.04*c.q,.50,.94);
+    candidates.push({freq:uf,midi:c.midi+12,q,y:Math.min(.36,(c.y||0)+.08),corr:c.corr,tau:c.tau/2,first:false,specRaw:sp.raw,base:sp.base,p1:sp.p1,synthetic:true});
+  }
+  const maxSpec=Math.max(1e-9,...candidates.map(c=>c.specRaw||0));for(const c of candidates){c.spec=clamp((c.specRaw||0)/maxSpec,0,1);c.oct=0}
+  // Resolve the most common voice error: confusing f0 with 2*f0 or f0/2.
+  // A real lower fundamental leaves measurable spectral energy at half the higher candidate.
+  for(const hi of candidates){
+    const lo=candidates.find(c=>{const d=hi.midi-c.midi;return d>11.45&&d<12.55});if(!lo)continue;
+    const ratio=(lo.p1||0)/Math.max(1e-9,hi.p1||0);
+    if(ratio<.0035)hi.oct+=.245;
+    else if(ratio<.015)hi.oct+=.245*(.015-ratio)/.0115;
+    else if(ratio>.024)lo.oct+=Math.min(.09,.025+(ratio-.024)*1.35);
+  }
+  return {rms,candidates};
+}
+function choosePitchPath(raw){
+  const out=new Array(raw.length).fill(null);let i=0;
+  while(i<raw.length){while(i<raw.length&&!raw[i])i++;if(i>=raw.length)break;let j=i;while(j<raw.length&&raw[j])j++;
+    const block=raw.slice(i,j),scores=[],backs=[];
+    for(let t=0;t<block.length;t++){
+      const cs=block[t].candidates,sc=new Float64Array(cs.length),bk=new Int16Array(cs.length);bk.fill(-1);
+      for(let k=0;k<cs.length;k++){
+        const emit=cs[k].q-(cs[k].y||0)*.035+(cs[k].oct||0)+(cs[k].spec||0)*.018+(cs[k].first?.012:0);
+        if(t===0){sc[k]=emit;continue}
+        let best=-1e9,bi=-1;const pcs=block[t-1].candidates,ps=scores[t-1];
+        for(let p=0;p<pcs.length;p++){
+          const d=Math.abs(cs[k].midi-pcs[p].midi),oct=Math.abs(d-12)<1.25||Math.abs(d-24)<1.4;
+          let penalty=Math.min(.22,d*.012);if(d<1.2)penalty*=.32;else if(d<3)penalty*=.62;if(oct)penalty+=.07;
+          const v=ps[p]-penalty;if(v>best){best=v;bi=p}
+        }
+        sc[k]=best+emit;bk[k]=bi;
+      }
+      scores.push(sc);backs.push(bk);
+    }
+    let k=0,last=scores[scores.length-1];for(let x=1;x<last.length;x++)if(last[x]>last[k])k=x;
+    for(let t=block.length-1;t>=0;t--){const f=block[t],c=f.candidates[k];out[i+t]={t:f.t,m:c.midi,r:f.rms,c:c.q,freq:c.freq};k=backs[t][k];if(k<0&&t>0){const ps=scores[t-1];k=0;for(let x=1;x<ps.length;x++)if(ps[x]>ps[k])k=x}}
+    i=j;
+  }
+  return out;
+}
+function repairPitchTrack(frames){
+  const x=frames.map(f=>f?{...f}:null);
+  // Remove one/two-frame pitch spikes, especially octave mistakes, when both sides agree.
+  for(let i=1;i<x.length-1;i++){
+    if(!x[i]||!x[i-1]||!x[i+1])continue;const a=x[i-1].m,b=x[i].m,c=x[i+1].m;
+    if(Math.abs(a-c)<1.2&&Math.abs(b-(a+c)/2)>3.5)x[i].m=(a+c)/2;
+  }
+  for(let i=1;i<x.length-2;i++){
+    if(!x[i-1]||!x[i]||!x[i+1]||!x[i+2])continue;const a=x[i-1].m,d=x[i+2].m;
+    if(Math.abs(a-d)<1.0&&Math.abs(x[i].m-a)>5&&Math.abs(x[i+1].m-a)>5){x[i].m=(a+d)/2;x[i+1].m=(a+d)/2}
+  }
+  // A small median only among nearby pitches kills vibrato jitter without smearing real note changes.
+  const y=x.map((f,i)=>{if(!f)return null;const near=[];for(let j=Math.max(0,i-2);j<=Math.min(x.length-1,i+2);j++)if(x[j]&&Math.abs(x[j].m-f.m)<3.0)near.push(x[j].m);near.sort((a,b)=>a-b);return near.length?{...f,m:near[Math.floor(near.length/2)]}:f});
+  return y;
+}
+function weightedMedianPitch(frames){
+  const a=[];for(const f of frames)if(f)for(let n=0;n<Math.max(1,Math.round((f.c||.5)*4));n++)a.push(f.m);
+  if(!a.length)return null;a.sort((x,y)=>x-y);return a[Math.floor(a.length/2)];
+}
 async function convertBufferToNotes(buffer,tr){
-  const src0=buffer.getChannelData(0),factor=buffer.sampleRate>=32000?4:2,sr=buffer.sampleRate/factor,down=downsampleMono(src0,factor),src=highpassMono(down,sr,42),frame=2048,hop=256,bpm=+state.bpm||100,spb=60/bpm,level=clamp(+$('#stabilize').value||0,0,8),inputBoost=+($('#inputBoost')?.value||1);
+  const mode=$('#recognitionRange')?.value||'auto',target=mode==='low'?9000:mode==='high'?22000:mode==='wide'?18000:14000;
+  const factor=Math.max(1,Math.floor(buffer.sampleRate/target)),sr=buffer.sampleRate/factor,src0=buffer.getChannelData(0),down=downsampleMono(src0,factor);
+  const [minFreq,maxFreq]=recognitionBounds(),filtered=lowpassMono(highpassMono(down,sr,Math.max(28,minFreq*.65)),sr,Math.min(sr*.42,maxFreq*2.6));
+  const need=Math.ceil(sr/minFreq*5.3),frame=need>2048?4096:need>1024?2048:1024,hop=buffer.duration>120?Math.floor(frame/4):Math.floor(frame/8),bpm=+state.bpm||100,spb=60/bpm,level=clamp(+$('#stabilize').value||0,0,8),inputBoost=+($('#inputBoost')?.value||1);
   const cfg=[
-    {win:1,hold:0,dead:0,min:.035},{win:3,hold:1,dead:.30,min:.045},{win:5,hold:2,dead:.50,min:.055},
-    {win:9,hold:3,dead:.80,min:.070},{win:15,hold:5,dead:1.15,min:.095},{win:25,hold:7,dead:1.65,min:.130},{win:41,hold:10,dead:2.30,min:.180},
-    {win:61,hold:16,dead:3.10,min:.240},{win:81,hold:24,dead:4.20,min:.320}
+    {win:1,hold:0,dead:0,min:.035},{win:3,hold:1,dead:.18,min:.042},{win:5,hold:2,dead:.32,min:.050},
+    {win:7,hold:2,dead:.48,min:.060},{win:9,hold:3,dead:.70,min:.075},{win:11,hold:4,dead:.95,min:.095},{win:15,hold:5,dead:1.25,min:.120},
+    {win:19,hold:7,dead:1.65,min:.150},{win:23,hold:9,dead:2.10,min:.180}
   ][level];
-  let frames=[],prevFreq=null,prevConfidence=0;
-  for(let i=0;i+frame<src.length;i+=hop){if((frames.length&255)===0&&frames.length){const pct=Math.min(99,Math.round(i/Math.max(1,src.length-frame)*100));setRecStatus(`音程解析中… ${pct}%`);await new Promise(r=>setTimeout(r,0))}const seg=src.subarray(i,i+frame),p=autocorrelate(seg,sr,prevFreq);if(!p){frames.push(null);prevConfidence*=.85;continue}let midi=69+12*Math.log2(p.freq/440);
-    if(prevFreq){const pm=69+12*Math.log2(prevFreq/440),d=midi-pm;if(Math.abs(Math.abs(d)-12)<1.25&&p.confidence<Math.max(.90,prevConfidence+.015))midi+=d>0?-12:12}
-    const correctedFreq=440*Math.pow(2,(midi-69)/12);if(!prevFreq||Math.abs(12*Math.log2(correctedFreq/prevFreq))<5||p.confidence>.90)prevFreq=prevFreq?prevFreq*.65+correctedFreq*.35:correctedFreq;prevConfidence=p.confidence;
-    frames.push({t:i/sr,m:midi,r:p.rms,c:p.confidence})}
-  let smooth=[];
-  for(let i=0;i<frames.length;i++){
-    if(!frames[i]){smooth.push(null);continue}
-    const a=[];const half=Math.floor(cfg.win/2);for(let j=Math.max(0,i-half);j<=Math.min(frames.length-1,i+half);j++)if(frames[j])a.push(frames[j].m);
-    a.sort((x,y)=>x-y);const med=a.length?a[Math.floor(a.length/2)]:frames[i].m;smooth.push({...frames[i],m:med});
+  const noiseGate=estimateNoiseGate(filtered,Math.min(frame,filtered.length),hop),raw=[];let frameCount=0;
+  for(let pos=0;pos+frame<filtered.length;pos+=hop){
+    if((frameCount++&127)===0&&frameCount>1){const pct=Math.min(99,Math.round(pos/Math.max(1,filtered.length-frame)*100));setRecStatus(`高精度で音程解析中… ${pct}%`);await new Promise(r=>setTimeout(r,0))}
+    const seg=filtered.subarray(pos,pos+frame),p=yinCandidates(seg,sr,noiseGate);raw.push(p?{t:pos/sr,rms:p.rms,candidates:p.candidates}:null);
   }
-  let notes=[],cur=null,lastMidi=null,candidate=null,cCount=0;
-  for(const f of smooth){
-    if(!f){if(cur&&cur.end-cur.start>=cfg.min){notes.push(cur);cur=null}candidate=null;cCount=0;continue}
+  let smooth=repairPitchTrack(choosePitchPath(raw));
+  // Additional local median amount follows the tremor filter, but stays much narrower than v2.5.
+  if(cfg.win>1){const half=Math.floor(cfg.win/2),tmp=smooth.map((f,i)=>{if(!f)return null;const a=[];for(let j=Math.max(0,i-half);j<=Math.min(smooth.length-1,i+half);j++)if(smooth[j]&&Math.abs(smooth[j].m-f.m)<4)a.push(smooth[j].m);a.sort((x,y)=>x-y);return a.length?{...f,m:a[Math.floor(a.length/2)]}:f});smooth=tmp}
+  let segments=[],cur=null,lastMidi=null,candidate=null,cCount=0,lastVoiced=null;
+  const closeSegment=()=>{if(cur){const pitch=weightedMedianPitch(cur.frames),dur=cur.end-cur.start;if(pitch!=null&&dur>=cfg.min){cur.midi=clamp(Math.round(pitch),0,127);segments.push(cur)}cur=null}};
+  for(let i=0;i<smooth.length;i++){
+    const f=smooth[i];
+    if(!f){closeSegment();candidate=null;cCount=0;lastMidi=null;lastVoiced=null;continue}
     let m=Math.round(f.m);
-    if(level>0&&lastMidi!=null&&Math.abs(f.m-lastMidi)<=cfg.dead)m=lastMidi;
+    if(lastMidi!=null&&Math.abs(f.m-lastMidi)<=.50+cfg.dead)m=lastMidi;
     if(lastMidi==null)lastMidi=m;
-    if(m!==lastMidi){
-      const jump=Math.abs(m-lastMidi),need=jump>=5?Math.max(1,Math.floor(cfg.hold/2)):cfg.hold;
-      if(candidate===m)cCount++;else{candidate=m;cCount=1}
-      if(cCount<=need)m=lastMidi;else{lastMidi=m;candidate=null;cCount=0}
-    }else{candidate=null;cCount=0}
-    const beat=f.t/spb;
-    if(!cur||cur.midi!==m){if(cur&&cur.end-cur.start>=cfg.min)notes.push(cur);cur={midi:m,start:beat,end:beat+hop/sr/spb,vel:clamp(.30+f.r*inputBoost*3,.30,1)}}else cur.end=beat+hop/sr/spb;
+    if(m!==lastMidi){const jump=Math.abs(m-lastMidi),needHold=jump>=5?Math.max(1,Math.floor(cfg.hold/2)):cfg.hold;if(candidate===m)cCount++;else{candidate=m;cCount=1}if(cCount<=needHold)m=lastMidi;else{lastMidi=m;candidate=null;cCount=0}}
+    else{candidate=null;cCount=0}
+    const beat=f.t/spb,endBeat=(f.t+hop/sr)/spb;
+    const energyRise=lastVoiced&&lastVoiced.r>0?f.r/lastVoiced.r:1;
+    const reattack=cur&&m===cur.trackMidi&&energyRise>1.95&&lastVoiced.r<Math.max(noiseGate*1.8,f.r*.48)&&f.r>noiseGate*2.5;
+    if(!cur||m!==cur.trackMidi||reattack){closeSegment();cur={trackMidi:m,start:beat,end:endBeat,frames:[f],vels:[f.r],trackMidi:m}}
+    else{cur.end=endBeat;cur.frames.push(f);cur.vels.push(f.r)}
+    lastVoiced={r:f.r,m:f.m};
   }
-  if(cur&&cur.end-cur.start>=cfg.min)notes.push(cur);
+  closeSegment();
   const q=+$('#quantize').value||0,snap=q||+state.snap;
-  notes=notes.map(n=>{let st=n.start,d=Math.max(cfg.min,n.end-n.start);if(q){st=Math.round(st/q)*q;d=Math.max(q,Math.round(d/q)*q)}else{st=Math.round(st/snap)*snap;d=Math.max(snap,Math.round(d/snap)*snap)}return {id:uid(),midi:clamp(n.midi,0,127),start:st,dur:d,vel:n.vel}})
+  let notes=segments.map(n=>{let st=n.start,d=Math.max(cfg.min,n.end-n.start);if(q){st=Math.round(st/q)*q;d=Math.max(q,Math.round(d/q)*q)}else{st=Math.round(st/snap)*snap;d=Math.max(snap,Math.round(d/snap)*snap)}const vv=[...n.vels].sort((a,b)=>a-b),rv=vv[Math.floor(vv.length*.65)]||0,vel=clamp(.28+rv*Math.max(1,inputBoost)*2.8,.28,1);return {id:uid(),midi:n.midi,start:st,dur:d,vel}})
     .filter((n,i,a)=>i===0||n.midi!==a[i-1].midi||Math.abs(n.start-(a[i-1].start+a[i-1].dur))>.02);
-  tr.notes=notes;state.selectedNote=notes[0]?.id||null;if(notes.length){const lo=Math.min(...notes.map(n=>n.midi)),hi=Math.max(...notes.map(n=>n.midi));tr.analysisSummary=`認識 ${midiLabel(lo,'letter')}〜${midiLabel(hi,'letter')}`;toast(`${notes.length}音に変換 / ${midiLabel(lo,'letter')}〜${midiLabel(hi,'letter')}`)}else{tr.analysisSummary='音程を検出できません';toast('音程を検出できませんでした')}saveSilent();
+  tr.notes=notes;state.selectedNote=notes[0]?.id||null;
+  if(notes.length){const lo=Math.min(...notes.map(n=>n.midi)),hi=Math.max(...notes.map(n=>n.midi));tr.analysisSummary=`高精度認識 ${midiLabel(lo,'letter')}〜${midiLabel(hi,'letter')}`;setRecStatus(`高精度変換完了：${notes.length}音 / ${midiLabel(lo,'letter')}〜${midiLabel(hi,'letter')}`);toast(`${notes.length}音に高精度変換`)}
+  else{tr.analysisSummary='音程を検出できません';setRecStatus('音程を検出できませんでした。元声を確認し、感度か認識音域を調整してください。');toast('音程を検出できませんでした')}
+  saveSilent();
 }
 async function reconvert(){const tr=currentTrack();const buf=tr.recordBuffer||currentRecordingBuffer;if(!buf)return toast('このトラックに録音がありません');await convertBufferToNotes(buf,tr);renderAll()}
 function syncSelectedRecording(){const tr=currentTrack();currentRecordingBlob=tr?.recordBlob||null;currentRecordingBuffer=tr?.recordBuffer||null;$('#recordStart').value=tr?.recordStart||0}
 async function hearVoice(){const tr=currentTrack();if(!tr?.recordBlob)return toast('録音がありません');await playCompatBlob(tr.recordBlob,'元の声')}
 function demo(){const tr=currentTrack(),base=tr.type==='bass'?40:tr.type==='violin'?67:60;tr.notes=[];[0,2,4,5,7,5,4,2].forEach((p,i)=>tr.notes.push({id:uid(),midi:base+p,start:i*.5,dur:.45,vel:.75}));state.selectedNote=tr.notes[0].id;renderAll();saveSilent()}
-function exportProject(){const out={version:'2.5',state:{...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))}};downloadBlob(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),'Kotoba-Music-project.json')}
+function exportProject(){const out={version:'2.6',state:{...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))}};downloadBlob(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),'Kotoba-Music-project.json')}
 function importProject(file){const fr=new FileReader();fr.onload=()=>{try{const x=JSON.parse(fr.result);if(x?.state?.tracks){state={...state,...x.state};state.tracks.forEach(t=>{t.recordBlob=null;t.recordBuffer=null});renderAll();saveSilent();toast('プロジェクトを開きました')}}catch{toast('プロジェクトを読めませんでした')}};fr.readAsText(file)}
 function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
 async function exportWav(){toast('WAVを作成中…');const bpm=+state.bpm||100,spb=60/bpm,endBeat=Math.max(8,...state.tracks.flatMap(t=>t.notes.map(n=>n.start+n.dur))),dur=endBeat*spb+1,sr=44100;const ctx=new OfflineAudioContext(2,Math.ceil(dur*sr),sr),master=ctx.createGain();master.gain.value=Math.min(3,.75*masterBoost());const comp=ctx.createDynamicsCompressor();comp.threshold.value=-10;comp.ratio.value=5;master.connect(comp);comp.connect(ctx.destination);state.tracks.forEach(tr=>{if(tr.mute)return;const tg=ctx.createGain();tg.gain.value=tr.volume*instrumentGain(tr.type);tg.connect(master);if(tr.type==='voice'&&tr.recordBuffer){const src=ctx.createBufferSource();src.buffer=tr.recordBuffer;src.connect(tg);try{src.start((tr.recordStart||0)*spb)}catch{}}tr.notes.forEach(n=>scheduleOsc(ctx,tg,tr.type,n.midi,n.start*spb,n.dur*spb,n.vel))});const rendered=await ctx.startRendering();const wav=audioBufferToWav(rendered);downloadBlob(new Blob([wav],{type:'audio/wav'}),'Kotoba-Music.wav');toast('WAVを書き出しました')}
