@@ -1,6 +1,8 @@
-# GitHub Pages
+# GitHub Pages への更新
+
 1. このZIPを展開します。
-2. 中身をGitHubリポジトリのルートへアップロードします。
-3. Settings → Pages → Deploy from a branch → main → /(root) を選択します。
-4. 公開URLをSafariで開き、最初に「♪ 音のテスト」を押してください。
-5. iPadでは「再生方式：iPad互換（推奨）」のまま使ってください。
+2. `index.html`、`app.js`、`styles.css`、README等を既存リポジトリ直下へ上書きアップロードします。
+3. GitHub Pages が再公開されるまで少し待ちます。
+4. Safariで古い版が残る場合はページを再読み込みしてください。v2.2ではCSS/JS URLを更新してキャッシュを避けています。
+
+録音精度確認は、まず「A4=440Hz」の基準音と録音後の認識音程を比較してください。

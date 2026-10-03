@@ -49,8 +49,8 @@ function defaultTrack(type,index=1){return {id:uid(),type,name:(TYPES[type]||typ
 function initTracks(){['voice','piano','bass','guitar','violin','drums'].forEach(t=>state.tracks.push(defaultTrack(t)));state.selectedTrack=state.tracks[1].id}
 function currentTrack(){return state.tracks.find(t=>t.id===state.selectedTrack)||state.tracks[0]}
 function currentNote(){const tr=currentTrack();return tr?.notes.find(n=>n.id===state.selectedNote)||null}
-function saveLocal(){const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV21',JSON.stringify(compact));toast('保存しました')}
-function loadLocal(){try{const raw=localStorage.getItem('kotobaMusicV21')||localStorage.getItem('kotobaMusicV17')||localStorage.getItem('kotobaMusicV16');const x=JSON.parse(raw);if(x&&x.tracks){state={...state,...x};return true}}catch{}return false}
+function saveLocal(){const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV22',JSON.stringify(compact));toast('保存しました')}
+function loadLocal(){try{const raw=localStorage.getItem('kotobaMusicV22')||localStorage.getItem('kotobaMusicV21')||localStorage.getItem('kotobaMusicV17')||localStorage.getItem('kotobaMusicV16');const x=JSON.parse(raw);if(x&&x.tracks){state={...state,...x};return true}}catch{}return false}
 function renderTracks(){const box=$('#trackList');box.innerHTML='';state.tracks.forEach(tr=>{const d=document.createElement('div');d.className='track'+(tr.id===state.selectedTrack?' selected':'');d.innerHTML=`<div class="trackTop"><button data-sel="${tr.id}" class="ghost" style="padding:4px 7px">●</button><div class="trackName">${escapeHTML(tr.name)}</div><span class="pill">${TYPES[tr.type]}</span><button data-mute="${tr.id}" style="padding:5px 8px">${tr.mute?'M✓':'M'}</button><button data-deltrack="${tr.id}" class="danger" style="padding:5px 8px">×</button></div><label class="small">音量 ${Math.round(tr.volume*100)}%<input data-vol="${tr.id}" class="slider" type="range" min="0" max="4" step="0.05" value="${tr.volume}"></label><div class="muted">${tr.notes.length}音${tr.recordBlob?' · 録音あり':''}</div>`;box.appendChild(d)});
 box.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{state.selectedTrack=b.dataset.sel;state.selectedNote=null;syncSelectedRecording();renderAll()});
 box.querySelectorAll('[data-mute]').forEach(b=>b.onclick=()=>{const tr=state.tracks.find(t=>t.id===b.dataset.mute);tr.mute=!tr.mute;renderTracks()});
@@ -69,12 +69,12 @@ function attachNoteDrag(el,n,rz){let mode='move',sx=0,sy=0,os=0,om=0,od=0,dragSe
 function renderNotePanel(){const n=currentNote();['notePitch','noteStart','noteDur','noteVel','previewNote','deleteNote'].forEach(id=>$('#'+id).disabled=!n);if(!n)return;renderPitchSelect();$('#notePitch').value=n.midi;$('#noteStart').value=n.start;$('#noteDur').value=n.dur;$('#noteVel').value=n.vel??.75}
 function updateEditorHeader(){const tr=currentTrack();$('#editorTitle').textContent=`音を編集 — ${tr?.name||''}`;$('#editorSub').textContent=`${TYPES[tr?.type]||''} / ${tr?.notes.length||0}音 / 音符を直接ドラッグできます`}
 function renderAll(){renderTracks();renderPitchSelect();renderRoll();renderNotePanel();$('#bpm').value=state.bpm;$('#labelMode').value=state.labelMode;$('#snap').value=state.snap;$('#rangeMode').value=state.rangeMode;if($('#masterBoost'))$('#masterBoost').value=state.masterBoost||2;if($('#outputMode'))$('#outputMode').value=state.outputMode||'compat';if($('#zoomLabel'))$('#zoomLabel').textContent=Math.round((state.zoom||1)*100)+'%';if($('#zoomResetBtn'))$('#zoomResetBtn').textContent=Math.round((state.zoom||1)*100)+'%'}
-function saveSilent(){try{const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV21',JSON.stringify(compact))}catch{}}
+function saveSilent(){try{const compact={...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))};localStorage.setItem('kotobaMusicV22',JSON.stringify(compact))}catch{}}
 function addNote(midi=60,start=null,dur=null){const tr=currentTrack();if(!tr)return;const last=tr.notes.reduce((a,n)=>Math.max(a,n.start+n.dur),0),snap=+state.snap;const n={id:uid(),midi,start:start??Math.round(last/snap)*snap,dur:dur??Math.max(.5,snap),vel:.75};tr.notes.push(n);state.selectedNote=n.id;renderAll();scrollNoteIntoView(n);saveSilent()}
 function scrollNoteIntoView(n){requestAnimationFrame(()=>{const [lo,hi]=range(),wrap=$('#rollWrap');wrap.scrollLeft=Math.max(0,n.start*CELL_W-140);wrap.scrollTop=Math.max(0,(hi-n.midi)*CELL_H-100)})}
 function scheduleOsc(ctx,dest,type,midi,start,dur,vel=0.75){if(type==='drums'){return scheduleDrum(ctx,dest,midi,start,dur,vel)}const f=midiToFreq(midi),g=ctx.createGain();g.gain.setValueAtTime(0,start);const amp=.38*vel;g.gain.linearRampToValueAtTime(amp,start+.008);let release=.12;if(type==='piano'){g.gain.exponentialRampToValueAtTime(.0008,start+Math.max(.15,dur));release=.04}else if(type==='guitar'){g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.22,dur*.85));release=.04}else if(type==='bass'){g.gain.setValueAtTime(amp,start+.02);g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.18,dur));release=.06}else if(type==='violin'){g.gain.setValueAtTime(amp*.65,start+.06);g.gain.linearRampToValueAtTime(amp*.8,start+.16);g.gain.exponentialRampToValueAtTime(.001,start+dur+release)}else{g.gain.exponentialRampToValueAtTime(.001,start+Math.max(.18,dur))}
 g.connect(dest);const oscs=[];function osc(wave,mult,level,det=0){const o=ctx.createOscillator(),og=ctx.createGain();o.type=wave;o.frequency.value=f*mult;o.detune.value=det;og.gain.value=level;o.connect(og);og.connect(g);o.start(start);o.stop(start+dur+release+.1);oscs.push(o)}
-if(type==='piano'){osc('triangle',1,.9);osc('sine',2,.35);osc('sine',3,.15)}else if(type==='bass'){osc('sawtooth',1,.45);osc('sine',.5,.6)}else if(type==='guitar'){osc('sawtooth',1,.45,-4);osc('triangle',2,.25,4);osc('sine',3,.12)}else if(type==='violin'){osc('sawtooth',1,.42,-5);osc('sawtooth',1,.42,5);osc('triangle',2,.18)}else{osc('sine',1,.8);osc('triangle',2,.16)}
+if(type==='piano'){osc('triangle',1,.78);osc('sine',1,.34);osc('sine',2,.20);osc('sine',3,.08)}else if(type==='bass'){osc('sine',1,.86);osc('triangle',1,.24);osc('sine',2,.08)}else if(type==='guitar'){osc('triangle',1,.62,-2);osc('sine',1,.42,2);osc('sine',2,.16);osc('sine',3,.06)}else if(type==='violin'){osc('sawtooth',1,.34,-3);osc('sawtooth',1,.34,3);osc('sine',1,.42);osc('triangle',2,.10)}else{osc('sine',1,.9);osc('triangle',2,.08)}
 activeNodes.push(...oscs,g);return g}
 function scheduleDrum(ctx,dest,midi,start,dur,vel){const pc=midi%12;if(pc<4){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(130,start);o.frequency.exponentialRampToValueAtTime(45,start+.12);g.gain.setValueAtTime(.5*vel,start);g.gain.exponentialRampToValueAtTime(.001,start+.2);o.connect(g);g.connect(dest);o.start(start);o.stop(start+.21);activeNodes.push(o,g)}else{const len=Math.floor(ctx.sampleRate*.12),buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=buf;f.type='highpass';f.frequency.value=pc>8?5000:1200;g.gain.setValueAtTime(.22*vel,start);g.gain.exponentialRampToValueAtTime(.001,start+.12);s.connect(f);f.connect(g);g.connect(dest);s.start(start);activeNodes.push(s,f,g)}}
 async function playWebAudio(fromBeat=0){stop(false);const ctx=await unlockAudio();if(ctx.state!=='running'){toast('音声出力を開始できませんでした');return}const master=makeOutput(ctx,.9);const bpm=+state.bpm||100,spb=60/bpm;playStartCtx=ctx.currentTime+.06;playStartBeat=fromBeat;state.tracks.forEach(tr=>{if(tr.mute)return;const tg=ctx.createGain();tg.gain.value=tr.volume;tg.connect(master);activeNodes.push(tg);if(tr.type==='voice'&&tr.recordBuffer){const rs=tr.recordStart||0,re=rs+tr.recordBuffer.duration/spb;if(re>fromBeat){const src=ctx.createBufferSource();src.buffer=tr.recordBuffer;src.connect(tg);const offset=Math.max(0,(fromBeat-rs)*spb),when=playStartCtx+Math.max(0,rs-fromBeat)*spb;try{src.start(when,offset)}catch{}activeNodes.push(src)}}tr.notes.forEach(n=>{if(n.start+n.dur<fromBeat)return;const start=playStartCtx+Math.max(0,n.start-fromBeat)*spb,dur=Math.max(.04,n.dur*spb);scheduleOsc(ctx,tg,tr.type,n.midi,start,dur,n.vel)})});isPlaying=true;tick()}
@@ -87,10 +87,11 @@ function setAudioStatus(t){const e=$('#audioStatus');if(e)e.textContent=t}
 function floatMonoToWav(samples,sr=22050){const ab=new ArrayBuffer(44+samples.length*2),v=new DataView(ab);let p=0;const ws=x=>{for(let i=0;i<x.length;i++)v.setUint8(p++,x.charCodeAt(i))},u32=x=>{v.setUint32(p,x,true);p+=4},u16=x=>{v.setUint16(p,x,true);p+=2};ws('RIFF');u32(36+samples.length*2);ws('WAVE');ws('fmt ');u32(16);u16(1);u16(1);u32(sr);u32(sr*2);u16(2);u16(16);ws('data');u32(samples.length*2);for(let i=0;i<samples.length;i++){const x=clamp(samples[i],-1,1);v.setInt16(p,x<0?x*32768:x*32767,true);p+=2}return new Blob([ab],{type:'audio/wav'})}
 function setCompatSource(blob,label='音声'){const a=$('#compatPlayer');if(!a)return null;if(compatObjectURL)URL.revokeObjectURL(compatObjectURL);compatObjectURL=URL.createObjectURL(blob);a.src=compatObjectURL;a.muted=false;a.volume=1;a.load();setAudioStatus(label+'を準備しました');return a}
 async function playCompatBlob(blob,label='音声'){const a=setCompatSource(blob,label);if(!a)return false;try{await a.play();setAudioStatus(label+'を再生中');return true}catch(e){console.warn(e);setAudioStatus('下のプレイヤーの▶を押してください');toast('下のiPad互換プレイヤーの▶を押してください');return false}}
-function testToneBlob(){const sr=22050,d=.8,n=Math.floor(sr*d),x=new Float32Array(n);for(let i=0;i<n;i++){const t=i/sr,env=Math.min(1,t/.015)*Math.max(0,1-t/d);x[i]=Math.sin(2*Math.PI*440*t)*.72*env}return floatMonoToWav(x,sr)}
-async function testTone(){await playCompatBlob(testToneBlob(),'440Hzテスト音');toast('テスト音を再生')}
+function exactToneBlob(freq,d=.85){const sr=44100,n=Math.floor(sr*d),x=new Float32Array(n);for(let i=0;i<n;i++){const t=i/sr,env=Math.min(1,t/.018)*Math.max(0,1-t/d);x[i]=Math.sin(2*Math.PI*freq*t)*.72*env}return floatMonoToWav(x,sr)}
+async function testExactPitch(midi){const f=midiToFreq(midi),name=midiLabel(midi,'letter');await playCompatBlob(exactToneBlob(f),`${name} / ${f.toFixed(2)}Hz`);toast(`${name} = ${f.toFixed(2)}Hz`)}
+async function testTone(){return testExactPitch(69)}
 function isIPadLike(){return /iPad|iPhone|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}
-function synthSample(type,f,t,dur){const ph=2*Math.PI*f*t;const saw=2*((t*f)%1)-1;const tri=2*Math.abs(2*((t*f)%1)-1)-1;let w=0,env=1;if(type==='piano'){w=.72*Math.sin(ph)+.22*Math.sin(ph*2)+.08*Math.sin(ph*3);env=Math.exp(-4.4*t/Math.max(.12,dur))}else if(type==='bass'){w=.68*Math.sin(ph)+.23*saw;env=Math.exp(-2.5*t/Math.max(.15,dur))}else if(type==='guitar'){w=.48*saw+.36*Math.sin(ph)+.12*Math.sin(ph*2);env=Math.exp(-5*t/Math.max(.16,dur))}else if(type==='violin'){w=.44*saw+.42*Math.sin(ph)+.12*Math.sin(ph*2);env=Math.min(1,t/.07)*Math.max(.1,1-t/(dur+.18))}else{w=.84*Math.sin(ph)+.14*Math.sin(ph*2);env=Math.max(.08,1-t/(dur+.12))}return w*env}
+function synthSample(type,f,t,dur){const ph=2*Math.PI*f*t;const saw=2*((t*f)%1)-1;const tri=2*Math.abs(2*((t*f)%1)-1)-1;let w=0,env=1;if(type==='piano'){w=.62*Math.sin(ph)+.26*tri+.14*Math.sin(ph*2)+.05*Math.sin(ph*3);env=Math.exp(-4.4*t/Math.max(.12,dur))}else if(type==='bass'){w=.82*Math.sin(ph)+.18*tri+.06*Math.sin(ph*2);env=Math.exp(-2.5*t/Math.max(.15,dur))}else if(type==='guitar'){w=.56*Math.sin(ph)+.28*tri+.12*Math.sin(ph*2)+.04*Math.sin(ph*3);env=Math.exp(-5*t/Math.max(.16,dur))}else if(type==='violin'){w=.52*Math.sin(ph)+.30*saw+.12*Math.sin(ph*2);env=Math.min(1,t/.07)*Math.max(.1,1-t/(dur+.18))}else{w=.90*Math.sin(ph)+.08*Math.sin(ph*2);env=Math.max(.08,1-t/(dur+.12))}return w*env}
 function renderCompatSong(){const sr=22050,bpm=+state.bpm||100,spb=60/bpm;let endBeat=.5;for(const tr of state.tracks){for(const n of tr.notes)endBeat=Math.max(endBeat,n.start+n.dur+.35);if(tr.recordBuffer)endBeat=Math.max(endBeat,(tr.recordStart||0)+tr.recordBuffer.duration/spb)}const dur=Math.min(300,endBeat*spb+.35),out=new Float32Array(Math.max(1,Math.ceil(dur*sr)));let material=0;
   const add=(i,v)=>{if(i>=0&&i<out.length)out[i]+=v};
   for(const tr of state.tracks){if(tr.mute)continue;const tg=clamp(tr.volume,0,4);
@@ -109,7 +110,7 @@ async function attachRecordedBlob(blob,tr,sourceLabel='録音'){
   const actx=await unlockAudio();currentRecordingBuffer=await actx.decodeAudioData(ab.slice(0));
   tr.recordBuffer=currentRecordingBuffer;
   await convertBufferToNotes(currentRecordingBuffer,tr);
-  setRecStatus(`${sourceLabel}OK：${currentRecordingBuffer.duration.toFixed(1)}秒 / ${tr.notes.length}音`);
+  setRecStatus(`${sourceLabel}OK：${currentRecordingBuffer.duration.toFixed(1)}秒 / ${tr.notes.length}音${tr.analysisSummary?' / '+tr.analysisSummary:''}`);
 }
 function preferredRecorderOptions(){
   if(!window.MediaRecorder)return null;
@@ -132,14 +133,15 @@ async function startRecording(){
   }
   try{
     const ctx=await unlockAudio();
-    rawMediaStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:true,channelCount:1}});
+    rawMediaStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:1}});
     const boost=clamp(+($('#inputBoost')?.value||1),1,256);
     mediaStream=rawMediaStream;
     recordAnalyser=null;recordGraph=null;
     try{
-      const src=ctx.createMediaStreamSource(rawMediaStream),gain=ctx.createGain(),lim=ctx.createDynamicsCompressor(),dst=ctx.createMediaStreamDestination(),an=ctx.createAnalyser();
-      gain.gain.value=boost;lim.threshold.value=-18;lim.knee.value=4;lim.ratio.value=20;lim.attack.value=.002;lim.release.value=.12;an.fftSize=512;
-      src.connect(gain);gain.connect(lim);lim.connect(an);lim.connect(dst);mediaStream=dst.stream;recordAnalyser=an;recordGraph={src,gain,lim,dst,an};
+      const src=ctx.createMediaStreamSource(rawMediaStream),hp=ctx.createBiquadFilter(),lp=ctx.createBiquadFilter(),gain=ctx.createGain(),lim=ctx.createDynamicsCompressor(),dst=ctx.createMediaStreamDestination(),an=ctx.createAnalyser();
+      hp.type='highpass';hp.frequency.value=45;hp.Q.value=.7;lp.type='lowpass';lp.frequency.value=3800;lp.Q.value=.7;
+      gain.gain.value=boost;lim.threshold.value=-12;lim.knee.value=10;lim.ratio.value=8;lim.attack.value=.004;lim.release.value=.10;an.fftSize=512;
+      src.connect(hp);hp.connect(lp);lp.connect(gain);gain.connect(lim);lim.connect(an);lim.connect(dst);mediaStream=dst.stream;recordAnalyser=an;recordGraph={src,hp,lp,gain,lim,dst,an};
       setRecStatus(`● 録音中… 実入力ブースト ${boost}倍`);
     }catch(err){console.warn('processed mic fallback',err);mediaStream=rawMediaStream}
     chunks=[];
@@ -166,28 +168,68 @@ async function startRecording(){
 function stopRecording(){if(mediaRecorder?.state==='recording'){setRecStatus('録音を停止して解析中…');mediaRecorder.stop()}}
 function setRecUI(on){$('#recBox').classList.toggle('recording',on);$('#recBtn').classList.toggle('recording',on);$('#recBtn').textContent=on?'■ 録音停止':'● 声を録音';if(!on)cancelAnimationFrame(recMeterRAF)}
 async function meterLoop(){if(!mediaStream&&!rawMediaStream)return;const ctx=ensureAudio();let an=recordAnalyser;if(!an){const src=ctx.createMediaStreamSource(rawMediaStream||mediaStream);an=ctx.createAnalyser();an.fftSize=512;src.connect(an)}const d=new Uint8Array(an.fftSize);function loop(){if(!mediaStream&&!rawMediaStream)return;an.getByteTimeDomainData(d);let s=0;for(const v of d){const x=(v-128)/128;s+=x*x}const rms=Math.sqrt(s/d.length);$('#meterBar').style.width=Math.min(100,rms*720)+'%';recMeterRAF=requestAnimationFrame(loop)}loop()}
-function autocorrelate(buf,sr){
-  const size=buf.length;let rms=0;for(let i=0;i<size;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/size);
-  const sens=+$('#sensitivity').value||1,boost=clamp(+($('#inputBoost')?.value||1),1,256),effectiveRms=rms*Math.sqrt(boost);if(effectiveRms<0.0045/Math.sqrt(sens))return null;
-  const minFreq=20,maxFreq=Math.min(4500,sr*.40),minLag=Math.max(2,Math.floor(sr/maxFreq)),maxLag=Math.min(size-4,Math.ceil(sr/minFreq));
-  let best=-1,bestLag=-1;const sampleStep=4,lagStep=2;
-  const corrAt=lag=>{let sum=0,e1=0,e2=0;for(let i=0;i<size-lag;i+=sampleStep){const a=buf[i],b=buf[i+lag];sum+=a*b;e1+=a*a;e2+=b*b}return sum/Math.sqrt((e1||1e-9)*(e2||1e-9))};
-  for(let lag=minLag;lag<=maxLag;lag+=lagStep){const c=corrAt(lag);if(c>best){best=c;bestLag=lag}}
-  const minConf=clamp(.29-Math.log2(sens)*.016-Math.log2(boost)*.010,.11,.29);if(bestLag<0||best<minConf)return null;
-  let refinedLag=bestLag,refined=best;for(let lag=Math.max(minLag,bestLag-3);lag<=Math.min(maxLag,bestLag+3);lag++){const c=corrAt(lag);if(c>refined){refined=c;refinedLag=lag}}
-  let T0=refinedLag;if(refinedLag>minLag&&refinedLag<maxLag){const x1=corrAt(refinedLag-1),x2=refined,x3=corrAt(refinedLag+1),den=x1-2*x2+x3;if(Math.abs(den)>1e-6)T0=refinedLag+.5*(x1-x3)/den}
-  const freq=sr/T0;return {freq,rms,confidence:refined};
+function recognitionBounds(){
+  const mode=$('#recognitionRange')?.value||'auto';
+  if(mode==='low')return [35,900];
+  if(mode==='high')return [100,3000];
+  if(mode==='wide')return [35,3500];
+  return [50,2200];
+}
+function highpassMono(src,sr,cut=42){
+  const out=new Float32Array(src.length);if(!src.length)return out;
+  const a=Math.exp(-2*Math.PI*cut/sr);let px=src[0]||0,py=0;
+  for(let i=0;i<src.length;i++){const x=src[i];const y=a*(py+x-px);out[i]=y;px=x;py=y}
+  return out;
+}
+function autocorrelate(buf,sr,prevFreq=null){
+  const size=buf.length;let mean=0;for(let i=0;i<size;i++)mean+=buf[i];mean/=size;
+  let rms=0;for(let i=0;i<size;i++){const x=buf[i]-mean;rms+=x*x}rms=Math.sqrt(rms/size);
+  const sens=+$('#sensitivity').value||1,boost=clamp(+($('#inputBoost')?.value||1),1,256);
+  const effectiveRms=rms*Math.sqrt(Math.min(boost,16));
+  const gate=.006/Math.sqrt(Math.max(1,sens));if(effectiveRms<gate)return null;
+  const [minFreq,maxFreq0]=recognitionBounds(),maxFreq=Math.min(maxFreq0,sr*.43);
+  const minLag=Math.max(2,Math.floor(sr/maxFreq)),maxLag=Math.min(size-5,Math.ceil(sr/minFreq));
+  if(maxLag<=minLag+2)return null;
+  const step=size>2500?3:2,corr=new Float32Array(maxLag+2);
+  const corrAt=lag=>{let sum=0,e1=0,e2=0;for(let i=0;i<size-lag;i+=step){const a=buf[i]-mean,b=buf[i+lag]-mean;sum+=a*b;e1+=a*a;e2+=b*b}return sum/Math.sqrt(Math.max(1e-12,e1*e2))};
+  let globalBest=-2;for(let lag=minLag;lag<=maxLag;lag++){const c=corrAt(lag);corr[lag]=c;if(c>globalBest)globalBest=c}
+  const minConf=clamp(.70-Math.log2(Math.max(1,sens))*.025,.52,.70);if(globalBest<minConf)return null;
+  const peaks=[];for(let lag=minLag+1;lag<maxLag;lag++){const c=corr[lag];if(c>=minConf&&c>=corr[lag-1]&&c>=corr[lag+1])peaks.push({lag,c,f:sr/lag})}
+  if(!peaks.length)return null;
+  // Multiples of the real period often create an equally high later peak. Prefer the shortest
+  // period only when it is almost as strong as the global peak; this reduces octave-low errors.
+  const bestPeak=peaks.reduce((a,b)=>b.c>a.c?b:a,peaks[0]);
+  const near=peaks.filter(p=>p.c>=Math.max(minConf,bestPeak.c*.965));
+  let chosen=near.length?near.reduce((a,b)=>b.lag<a.lag?b:a,near[0]):bestPeak;
+  if(prevFreq&&Number.isFinite(prevFreq)){
+    let bestScore=-99,best=null;
+    for(const p of peaks){
+      const semi=Math.abs(12*Math.log2(p.f/prevFreq));let score=p.c;
+      if(semi<1.5)score+=.11;else if(semi<3.5)score+=.06;else if(semi<6)score+=.02;
+      if(Math.abs(semi-12)<1.8)score-=.025;
+      if(p.c<globalBest*.88)score-=.06;
+      if(score>bestScore){bestScore=score;best=p}
+    }
+    if(best)chosen=best;
+  }
+  let lag=chosen.lag;
+  if(lag>minLag&&lag<maxLag){const y1=corr[lag-1],y2=corr[lag],y3=corr[lag+1],den=y1-2*y2+y3;if(Math.abs(den)>1e-7)lag=lag+.5*(y1-y3)/den}
+  const freq=sr/lag;if(freq<minFreq||freq>maxFreq)return null;
+  return {freq,rms,confidence:chosen.c};
 }
 function downsampleMono(src,factor){if(factor<=1)return src;const n=Math.floor(src.length/factor),out=new Float32Array(n);for(let i=0;i<n;i++){let s=0;for(let j=0;j<factor;j++)s+=src[i*factor+j];out[i]=s/factor}return out}
 async function convertBufferToNotes(buffer,tr){
-  const src0=buffer.getChannelData(0),factor=buffer.sampleRate>=32000?4:2,sr=buffer.sampleRate/factor,src=downsampleMono(src0,factor),frame=2048,hop=512,bpm=+state.bpm||100,spb=60/bpm,level=clamp(+$('#stabilize').value||0,0,8),inputBoost=+($('#inputBoost')?.value||1);
+  const src0=buffer.getChannelData(0),factor=buffer.sampleRate>=32000?4:2,sr=buffer.sampleRate/factor,down=downsampleMono(src0,factor),src=highpassMono(down,sr,42),frame=2048,hop=256,bpm=+state.bpm||100,spb=60/bpm,level=clamp(+$('#stabilize').value||0,0,8),inputBoost=+($('#inputBoost')?.value||1);
   const cfg=[
     {win:1,hold:0,dead:0,min:.035},{win:3,hold:1,dead:.30,min:.045},{win:5,hold:2,dead:.50,min:.055},
     {win:9,hold:3,dead:.80,min:.070},{win:15,hold:5,dead:1.15,min:.095},{win:25,hold:7,dead:1.65,min:.130},{win:41,hold:10,dead:2.30,min:.180},
     {win:61,hold:16,dead:3.10,min:.240},{win:81,hold:24,dead:4.20,min:.320}
   ][level];
-  let frames=[];
-  for(let i=0;i+frame<src.length;i+=hop){const seg=src.subarray(i,i+frame),p=autocorrelate(seg,sr);if(!p){frames.push(null);continue}const midi=69+12*Math.log2(p.freq/440);frames.push({t:i/sr,m:midi,r:p.rms})}
+  let frames=[],prevFreq=null,prevConfidence=0;
+  for(let i=0;i+frame<src.length;i+=hop){const seg=src.subarray(i,i+frame),p=autocorrelate(seg,sr,prevFreq);if(!p){frames.push(null);prevConfidence*=.85;continue}let midi=69+12*Math.log2(p.freq/440);
+    if(prevFreq){const pm=69+12*Math.log2(prevFreq/440),d=midi-pm;if(Math.abs(Math.abs(d)-12)<1.25&&p.confidence<Math.max(.90,prevConfidence+.015))midi+=d>0?-12:12}
+    const correctedFreq=440*Math.pow(2,(midi-69)/12);if(!prevFreq||Math.abs(12*Math.log2(correctedFreq/prevFreq))<5||p.confidence>.90)prevFreq=prevFreq?prevFreq*.65+correctedFreq*.35:correctedFreq;prevConfidence=p.confidence;
+    frames.push({t:i/sr,m:midi,r:p.rms,c:p.confidence})}
   let smooth=[];
   for(let i=0;i<frames.length;i++){
     if(!frames[i]){smooth.push(null);continue}
@@ -212,21 +254,21 @@ async function convertBufferToNotes(buffer,tr){
   const q=+$('#quantize').value||0,snap=q||+state.snap;
   notes=notes.map(n=>{let st=n.start,d=Math.max(cfg.min,n.end-n.start);if(q){st=Math.round(st/q)*q;d=Math.max(q,Math.round(d/q)*q)}else{st=Math.round(st/snap)*snap;d=Math.max(snap,Math.round(d/snap)*snap)}return {id:uid(),midi:clamp(n.midi,0,127),start:st,dur:d,vel:n.vel}})
     .filter((n,i,a)=>i===0||n.midi!==a[i-1].midi||Math.abs(n.start-(a[i-1].start+a[i-1].dur))>.02);
-  tr.notes=notes;state.selectedNote=notes[0]?.id||null;toast(`${notes.length}音に変換しました`);saveSilent();
+  tr.notes=notes;state.selectedNote=notes[0]?.id||null;if(notes.length){const lo=Math.min(...notes.map(n=>n.midi)),hi=Math.max(...notes.map(n=>n.midi));tr.analysisSummary=`認識 ${midiLabel(lo,'letter')}〜${midiLabel(hi,'letter')}`;toast(`${notes.length}音に変換 / ${midiLabel(lo,'letter')}〜${midiLabel(hi,'letter')}`)}else{tr.analysisSummary='音程を検出できません';toast('音程を検出できませんでした')}saveSilent();
 }
 async function reconvert(){const tr=currentTrack();const buf=tr.recordBuffer||currentRecordingBuffer;if(!buf)return toast('このトラックに録音がありません');await convertBufferToNotes(buf,tr);renderAll()}
 function syncSelectedRecording(){const tr=currentTrack();currentRecordingBlob=tr?.recordBlob||null;currentRecordingBuffer=tr?.recordBuffer||null;$('#recordStart').value=tr?.recordStart||0}
 async function hearVoice(){const tr=currentTrack();if(!tr?.recordBlob)return toast('録音がありません');await playCompatBlob(tr.recordBlob,'元の声')}
 function demo(){const tr=currentTrack(),base=tr.type==='bass'?40:tr.type==='violin'?67:60;tr.notes=[];[0,2,4,5,7,5,4,2].forEach((p,i)=>tr.notes.push({id:uid(),midi:base+p,start:i*.5,dur:.45,vel:.75}));state.selectedNote=tr.notes[0].id;renderAll();saveSilent()}
-function exportProject(){const out={version:'2.1',state:{...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))}};downloadBlob(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),'Kotoba-Music-project.json')}
+function exportProject(){const out={version:'2.2',state:{...state,tracks:state.tracks.map(t=>({...t,recordBlob:null,recordBuffer:null}))}};downloadBlob(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),'Kotoba-Music-project.json')}
 function importProject(file){const fr=new FileReader();fr.onload=()=>{try{const x=JSON.parse(fr.result);if(x?.state?.tracks){state={...state,...x.state};state.tracks.forEach(t=>{t.recordBlob=null;t.recordBuffer=null});renderAll();saveSilent();toast('プロジェクトを開きました')}}catch{toast('プロジェクトを読めませんでした')}};fr.readAsText(file)}
 function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
 async function exportWav(){toast('WAVを作成中…');const bpm=+state.bpm||100,spb=60/bpm,endBeat=Math.max(8,...state.tracks.flatMap(t=>t.notes.map(n=>n.start+n.dur))),dur=endBeat*spb+1,sr=44100;const ctx=new OfflineAudioContext(2,Math.ceil(dur*sr),sr),master=ctx.createGain();master.gain.value=Math.min(3,.75*masterBoost());const comp=ctx.createDynamicsCompressor();comp.threshold.value=-10;comp.ratio.value=5;master.connect(comp);comp.connect(ctx.destination);state.tracks.forEach(tr=>{if(tr.mute)return;const tg=ctx.createGain();tg.gain.value=tr.volume;tg.connect(master);if(tr.type==='voice'&&tr.recordBuffer){const src=ctx.createBufferSource();src.buffer=tr.recordBuffer;src.connect(tg);try{src.start((tr.recordStart||0)*spb)}catch{}}tr.notes.forEach(n=>scheduleOsc(ctx,tg,tr.type,n.midi,n.start*spb,n.dur*spb,n.vel))});const rendered=await ctx.startRendering();const wav=audioBufferToWav(rendered);downloadBlob(new Blob([wav],{type:'audio/wav'}),'Kotoba-Music.wav');toast('WAVを書き出しました')}
 function audioBufferToWav(buffer){const ch=buffer.numberOfChannels,sr=buffer.sampleRate,len=buffer.length,bytes=44+len*ch*2,ab=new ArrayBuffer(bytes),v=new DataView(ab);let p=0;const ws=s=>{for(let i=0;i<s.length;i++)v.setUint8(p++,s.charCodeAt(i))};const u32=x=>{v.setUint32(p,x,true);p+=4},u16=x=>{v.setUint16(p,x,true);p+=2};ws('RIFF');u32(bytes-8);ws('WAVE');ws('fmt ');u32(16);u16(1);u16(ch);u32(sr);u32(sr*ch*2);u16(ch*2);u16(16);ws('data');u32(len*ch*2);const data=[];for(let c=0;c<ch;c++)data.push(buffer.getChannelData(c));for(let i=0;i<len;i++)for(let c=0;c<ch;c++){let s=clamp(data[c][i],-1,1);v.setInt16(p,s<0?s*0x8000:s*0x7fff,true);p+=2}return ab}
-$('#playBtn').onclick=()=>play(0);$('#stopBtn').onclick=()=>stop();$('#testToneBtn').onclick=testTone;$('#outputMode').onchange=e=>{state.outputMode=e.target.value;saveSilent();setAudioStatus(e.target.value==='compat'?'iPad互換再生を使用':'Web Audio再生を使用')};$('#masterBoost').onchange=e=>{state.masterBoost=+e.target.value||2;saveSilent();toast('全体音量 '+Math.round(state.masterBoost*100)+'%')};$('#bpm').onchange=e=>{state.bpm=clamp(+e.target.value||100,40,240);saveSilent()};
+$('#playBtn').onclick=()=>play(0);$('#stopBtn').onclick=()=>stop();$('#testC4Btn').onclick=()=>testExactPitch(60);$('#testToneBtn').onclick=testTone;$('#testC5Btn').onclick=()=>testExactPitch(72);$('#outputMode').onchange=e=>{state.outputMode=e.target.value;saveSilent();setAudioStatus(e.target.value==='compat'?'iPad互換再生を使用':'Web Audio再生を使用')};$('#masterBoost').onchange=e=>{state.masterBoost=+e.target.value||2;saveSilent();toast('全体音量 '+Math.round(state.masterBoost*100)+'%')};$('#bpm').onchange=e=>{state.bpm=clamp(+e.target.value||100,40,240);saveSilent()};
 $('#saveBtn').onclick=saveLocal;$('#exportProjectBtn').onclick=exportProject;$('#importProjectBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>e.target.files[0]&&importProject(e.target.files[0]);$('#wavBtn').onclick=exportWav;
 $('#addTrackBtn').onclick=()=>{const type=$('#newTrackType').value,count=state.tracks.filter(t=>t.type===type).length+1,tr=defaultTrack(type,count);state.tracks.push(tr);state.selectedTrack=tr.id;state.selectedNote=null;syncSelectedRecording();renderAll();saveSilent()};
-$('#recBtn').onclick=startRecording;$('#audioImportBtn').onclick=openAudioImport;$('#audioCaptureFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const tr=currentTrack();try{setRecStatus('音声を読み込み中…');await attachRecordedBlob(file,tr,'音声ファイル');renderAll()}catch(err){console.error(err);setRecStatus('この音声を読み込めませんでした。m4a / mp4 / wav などで試してください。');toast('音声を読み込めませんでした')}};$('#reconvertBtn').onclick=reconvert;$('#hearVoiceBtn').onclick=hearVoice;$('#recordStart').onchange=e=>{const tr=currentTrack();if(tr){tr.recordStart=Math.max(0,+e.target.value||0);saveSilent()}};
+$('#recBtn').onclick=startRecording;$('#audioImportBtn').onclick=openAudioImport;$('#audioCaptureFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const tr=currentTrack();try{setRecStatus('音声を読み込み中…');await attachRecordedBlob(file,tr,'音声ファイル');renderAll()}catch(err){console.error(err);setRecStatus('この音声を読み込めませんでした。m4a / mp4 / wav などで試してください。');toast('音声を読み込めませんでした')}};$('#reconvertBtn').onclick=reconvert;$('#hearVoiceBtn').onclick=hearVoice;$('#recordStart').onchange=e=>{const tr=currentTrack();if(tr){tr.recordStart=Math.max(0,+e.target.value||0);saveSilent()}};$('#recognitionRange').onchange=()=>{toast('認識音域を変更しました。録音を再変換してください')};
 $('#labelMode').onchange=e=>{state.labelMode=e.target.value;renderAll();saveSilent()};$('#snap').onchange=e=>{state.snap=+e.target.value;saveSilent()};$('#rangeMode').onchange=e=>{state.rangeMode=e.target.value;renderAll();saveSilent()};$('#zoomOutBtn').onclick=()=>applyZoom((state.zoom||1)-.25);$('#zoomInBtn').onclick=()=>applyZoom((state.zoom||1)+.25);$('#zoomResetBtn').onclick=()=>applyZoom(1);$('#expandEditorBtn').onclick=toggleEditorExpand;
 $('#addNoteBtn').onclick=()=>{const tr=currentTrack();addNote(tr.type==='bass'?40:tr.type==='violin'?67:60)};$('#deleteNote').onclick=()=>{const tr=currentTrack();if(!state.selectedNote)return;tr.notes=tr.notes.filter(n=>n.id!==state.selectedNote);state.selectedNote=null;renderAll();saveSilent()};
 $('#octDown').onclick=()=>{const tr=currentTrack(),targets=state.selectedNote?tr.notes.filter(n=>n.id===state.selectedNote):tr.notes;targets.forEach(n=>n.midi=clamp(n.midi-12,0,127));renderAll();saveSilent()};$('#octUp').onclick=()=>{const tr=currentTrack(),targets=state.selectedNote?tr.notes.filter(n=>n.id===state.selectedNote):tr.notes;targets.forEach(n=>n.midi=clamp(n.midi+12,0,127));renderAll();saveSilent()};
