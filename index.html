@@ -4,17 +4,17 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<title>Kotoba Music v2.2</title>
-<link rel="stylesheet" href="styles.css?v=2.2.0">
+<title>Kotoba Music v2.3</title>
+<link rel="stylesheet" href="styles.css?v=2.3.0">
 </head>
 <body>
 <header>
   <div class="headerRow">
-    <div class="brand">▥ Kotoba Music <span class="badge">v2.2 PITCH ACCURACY</span></div>
+    <div class="brand">▥ Kotoba Music <span class="badge">v2.3 LOUDER + RECORD MONITOR</span></div>
     <button id="playBtn" class="primary">▶ 再生</button><button id="stopBtn">■ 停止</button><button id="testC4Btn">♪ C4確認</button><button id="testToneBtn">♪ A4=440Hz</button><button id="testC5Btn">♪ C5確認</button>
     <label class="small">再生方式<select id="outputMode"><option value="compat" selected>iPad互換（推奨）</option><option value="webaudio">Web Audio</option></select></label>
     <span id="time" class="time">00:00.0</span>
-    <label class="small">BPM<input id="bpm" type="number" min="40" max="240" value="100" style="width:82px"></label><label class="small">全体音量<select id="masterBoost"><option value="1">100%</option><option value="1.5">150%</option><option value="2" selected>200%</option><option value="3">300%</option><option value="4">400%</option></select></label>
+    <label class="small">BPM<input id="bpm" type="number" min="40" max="240" value="100" style="width:82px"></label><label class="small">全体音量<select id="masterBoost"><option value="1">100%</option><option value="1.5">150%</option><option value="2" selected>200%</option><option value="3">300%</option><option value="4">400%</option></select></label><label class="small">楽器ブースト<select id="instrumentBoost"><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option><option value="2.5" selected>250%（推奨）</option><option value="3">300%</option><option value="4">400%</option></select></label>
     <button id="saveBtn">保存</button><button id="exportProjectBtn">プロジェクト書出し</button><button id="importProjectBtn">開く</button>
     <input id="importFile" type="file" accept="application/json" hidden>
     <button id="wavBtn">曲を書き出す(WAV)</button>
@@ -42,10 +42,12 @@
       <div class="row">
         <label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4" selected>4倍（推奨）</option><option value="8">8倍</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">認識音域<select id="recognitionRange"><option value="auto" selected>精度優先 50Hz〜2.2kHz</option><option value="low">低音優先 35〜900Hz</option><option value="high">高音優先 100Hz〜3kHz</option><option value="wide">広域 35Hz〜3.5kHz</option></select></label><label class="small">マイク入力ブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option value="2" selected>2倍（推奨）</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option><option value="256">256倍</option></select></label>
         <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option value="2" selected>標準</option><option value="3">強</option><option value="4">超強</option><option value="5">極強</option><option value="6">MAX（かなり固定）</option><option value="7">ULTRA（ほぼ固定）</option><option value="8">LOCK（最強）</option></select></label>
+        <label class="small">録音中モニター<select id="monitorLevel"><option value="0" selected>OFF</option><option value="0.25">25%</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select></label>
+        <label class="small">録音後の元声<select id="autoHearRecording"><option value="on" selected>自動再生 ON</option><option value="off">OFF</option></select></label>
         <label class="small">録音開始（拍）<input id="recordStart" type="number" min="0" step="0.125" value="0" style="width:90px"></label>
         <label class="small">量子化<select id="quantize"><option value="0">声のまま</option><option value="0.5">8分</option><option value="0.25">16分</option><option value="0.125">32分</option></select></label>
       </div>
-      <div class="muted">音程認識はv2.2で倍音・オクターブ誤認を抑える方式に変更しました。「精度優先」は録音認識だけを50Hz〜2.2kHzへ絞りますが、編集・再生できる音域はC−1〜G9のままです。入力ブーストを上げすぎると歪んで精度が落ちるので、まず2倍〜4倍を推奨します。震え抑制は録音後の細かな揺れをまとめます。</div>
+      <div class="muted">v2.3ではボイス以外の楽器を独立して増幅できます。録音中モニターはスピーカーだとハウリングしやすいのでイヤホン推奨です。「録音後の元声」をONにすると、停止・解析後に録ったままの声を自動再生します。音程認識は倍音・オクターブ誤認を抑える方式のままです。</div>
     </div>
   </div>
   <div class="card help">
@@ -72,6 +74,6 @@
 </section>
 </main>
 <div id="toast" class="toast"></div>
-<script src="app.js?v=2.2.0"></script>
+<script src="app.js?v=2.3.0"></script>
 </body>
 </html>
