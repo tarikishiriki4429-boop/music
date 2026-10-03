@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>Kotoba Music v3.5.2</title>
+<title>Kotoba Music v3.5.3</title>
 <style>
 :root{--bg:#0b0d12;--panel:#141821;--panel2:#1b202b;--line:#2d3442;--text:#f5f7fa;--sub:#9aa6b8;--accent:#7ad7ff;--danger:#ff6f7d;--ok:#86e39b;--cellW:30px;--cellH:24px;--keysW:74px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -79,7 +79,7 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 <body>
 <header>
 <div class="headerRow">
-<div class="brand">▥ Kotoba Music <span class="badge">v3.5.2</span></div>
+<div class="brand">▥ Kotoba Music <span class="badge">v3.5.3</span></div>
 <button class="primary" id="playBtn">▶ 再生</button><button id="stopBtn">■ 停止</button>
 
 <span class="time" id="time">00:00.0</span>
@@ -127,7 +127,7 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 <label class="small">音程の追従<select id="trackingMode"><option value="fast" selected>高速追従（速い音階・跳躍）</option><option value="balanced">安定優先（従来）</option></select></label>
 <label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option selected="" value="8">8倍（推奨）</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">最短音長<select id="minNoteMs"><option selected="" value="30">30ms（速い旋律）</option><option value="50">50ms（標準）</option><option value="80">80ms</option><option value="120">120ms（長い音中心）</option></select></label><label class="small">中間音除去<select id="intermediateFilter"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">近い音をまとめる<select id="mergeNearby"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label><label class="small">認識音域<select id="recognitionRange"><option selected="" value="auto">精度優先 50Hz〜2.2kHz</option><option value="low">低音優先 35〜900Hz</option><option value="high">高音優先 100Hz〜3kHz</option><option value="wide">広域 35Hz〜3.5kHz</option></select></label><label class="small">入力メーター／モニターブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option selected="" value="2">2倍（推奨）</option><option value="4">4倍</option><option value="8">8倍</option><option value="16">16倍</option></select></label>
 <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option selected="" value="2">標準</option><option value="3">強</option></select></label>
-<label class="small">ドラム入力<select id="drumInputMode"><option selected="" value="mouth">口ドラム（ドン・タッ・チッ）</option><option value="real">実ドラム／打楽器</option></select></label>
+<label class="small">ドラム入力<select id="drumInputMode"><option selected="" value="mouth">口ドラム（ドン・タッ・チッ・シャー）</option><option value="real">実ドラム／打楽器</option></select></label>
 <label class="small">チッ／シャー判定<select id="drumHatBias"><option selected="" value="closed">チッ優先（推奨）</option><option value="balanced">標準</option><option value="open">シャー優先</option></select></label>
 <label class="small">高域音の拾いやすさ<select id="drumHatSensitivity"><option selected="" value="high">高（推奨）</option><option value="normal">標準</option><option value="low">低</option></select></label>
 <label class="small">録音中モニター<select id="monitorLevel"><option selected="" value="0">OFF</option><option value="0.25">25%</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select></label>
@@ -138,10 +138,10 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 </div>
 <div class="muted">パートごとに解析を自動最適化します。ピアノ／ベース／ギター／ヴァイオリン／ボイスは音程解析、ドラムは時間変化つきアタック＋音色解析です。速い音階・大きな跳躍は「高速追従」＋30ms推奨。「近い音をまとめる」は同音の震えや極短い誤検出を整理します。弱い入力は自動で解析しやすいレベルまで追従し、高速解析が失敗した場合は互換解析へ自動切替します。設定変更後は「録音を再変換」を押してください。</div>
 <progress aria-label="音程解析の進捗" hidden="" id="analysisProgress" max="100" value="0"></progress><button hidden="" id="cancelAnalysis">解析を中止</button></div>
-</div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。旋律パートの音程解析は1つのメロディー向けです。ドラムは「口ドラム」と「実ドラム」で解析方式を切り替えます。標準は声の「ドン／タッ／チッ」に最適化されています。「高域音の拾いやすさ」は高が推奨です。「チッ／シャー判定」はチッ優先が推奨です。選択したドラム音は編集欄で「ドン／タッ／チッ／シャー」に変更できます。和音・伴奏の混じる録音は音程がずれることがあります。録音モニターはイヤホンで使ってください。</div></main>
+</div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。旋律パートの音程解析は1つのメロディー向けです。ドラムは「口ドラム」と「実ドラム」で解析方式を切り替えます。標準は声の「ドン／タッ／チッ／シャー」に最適化されています。「高域音の拾いやすさ」は高が推奨です。「チッ／シャー判定」はチッ優先が推奨です。選択したドラム音は編集欄で「ドン／タッ／チッ／シャー」に変更できます。和音・伴奏の混じる録音は音程がずれることがあります。録音モニターはイヤホンで使ってください。</div></main>
 <div class="toast" id="toast"></div>
 <script>
-/* Kotoba Music 3.5.2 — stronger closed/open hi-hat duration discrimination for mouth drums. No network calls. */
+/* Kotoba Music 3.5.3 — stronger closed/open hi-hat duration discrimination for mouth drums. No network calls. */
 (function installPitchEngine(root){
 'use strict';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));let options={};
@@ -423,7 +423,7 @@ async function analyze(samples,sampleRate,opt={},progress=()=>{}){
   return {notes,gate,frames:frames.length,duration:samples.length/sampleRate,lowConfidence:notes.filter(n=>n.confidence<.80||n.uncertain).length};
 }
 async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
-  // v3.5.2: classify the *whole hit over time*, with dedicated high-band persistence for チッ vs シャー.
+  // v3.5.3: classify the *whole hit over time*, with dedicated high-band persistence for チッ vs シャー.
   // Default "mouth" mode is tuned for spoken/beatbox ドン・タッ・チッ・シャー.
   const mode=opt.drumInputMode||'mouth',target=22050,factor=Math.max(1,Math.floor(sampleRate/target));
   const pre=factor>1?lowpassMono(samples,sampleRate,sampleRate/factor*.44):samples,sr=sampleRate/factor,x=downsampleMono(pre,factor);
@@ -474,6 +474,31 @@ async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
     }
     candidates.push({i,strength:onset[i]});
   }
+  // Mouth sounds are syllables: close only after a quiet gap, not every vowel pulse.
+  // Relative thresholds scale with recording level; no expected order or time positions.
+  if(mode==='mouth'){
+    const room=sorted[Math.floor(sorted.length*.65)]||noise;
+    const strong=sorted[Math.floor(sorted.length*.99)]||signal;
+    const enter=Math.max(.00001,noise*5,Math.min(room*4,strong*.055),strong*.045);
+    const leave=enter*.55,quietFrames=Math.max(3,Math.round(.065*sr/hop));
+    const events=[];let begin=-1,last=-1,quiet=0,peak=0;
+    for(let q=0;q<frames.length;q++){
+      const level=frames[q].rms;
+      if(begin<0){if(level>=enter){begin=q;last=q;quiet=0;peak=level}}
+      else{
+        peak=Math.max(peak,level);
+        if(level>=leave){last=q;quiet=0}else quiet++;
+        if(quiet>=quietFrames||q===frames.length-1){
+          if((last-begin+1)*hop/sr>=.025 && peak>=enter*1.5){
+            let attack=begin;while(attack>0&&begin-attack<4&&frames[attack-1].rms>leave*.7)attack--;
+            events.push({i:attack,end:last+1,strength:Math.max(...onset.slice(begin,Math.min(last+1,begin+12)))});
+          }
+          begin=-1;
+        }
+      }
+    }
+    candidates.splice(0,candidates.length,...events);
+  }
   function agg(i0,i1){
     const p=[0,0,0,0,0,0];let z=0,e=0,w=0;
     for(let i=Math.max(0,i0);i<Math.min(frames.length,i1);i++){const wt=Math.max(.20,1-(i-i0)*.025),f=frames[i];for(let k=0;k<6;k++)p[k]+=f.p[k]*wt;z+=f.zcr*wt;e+=f.rms*wt;w+=wt}
@@ -484,8 +509,9 @@ async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
   for(let ci=0;ci<candidates.length;ci++){
     const i=candidates[ci].i,t=i*hop/sr;if(t-lastT<.020)continue;
     const early=ratios(agg(i,i+5)),body=ratios(agg(i+5,i+18)),tail=ratios(agg(i+18,i+42));
-    const peak=Math.max(frames[i].rms,frames[Math.min(frames.length-1,i+1)].rms),eventGate=Math.max(gate*.78,peak*.16);
+    const peak=Math.max(...frames.slice(i,candidates[ci].end||i+2).map(f=>f.rms)),eventGate=Math.max(gate*.78,peak*.16);
     let j=i+2;while(j<frames.length&&j<i+70&&frames[j].rms>eventGate)j++;
+    if(mode==='mouth')j=candidates[ci].end||j;
     const dur=(j-i)*hop/sr,tailLevel=tail.e/Math.max(peak,1e-9),highEarly=early.high+early.air,highBody=body.high+body.air,lowBody=body.sub+body.low,midBody=body.lm+body.mid;
 
     // Dedicated high-frequency persistence measurement for mouth hi-hats.
@@ -494,12 +520,12 @@ async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
     const nextHit=ci+1<candidates.length?candidates[ci+1].i:frames.length;
     const hiAmp=q=>{const f=frames[Math.max(0,Math.min(frames.length-1,q))];return Math.sqrt(Math.max(0,f.p[4]+f.p[5]))};
     let highPeak=0;
-    for(let q=i;q<Math.min(frames.length,nextHit,i+11);q++)highPeak=Math.max(highPeak,hiAmp(q));
-    const highFloor=Math.max(highPeak*.24,gate*.055);
+    for(let q=i;q<Math.min(frames.length,nextHit,mode==='mouth'?j:i+11);q++)highPeak=Math.max(highPeak,hiAmp(q));
+    const highFloor=Math.max(highPeak*.20,gate*.055);
     let highLast=i,belowHigh=0;
-    for(let q=i;q<Math.min(frames.length,nextHit,i+70);q++){
+    for(let q=i;q<Math.min(frames.length,nextHit,mode==='mouth'?j:i+70);q++){
       const hv=hiAmp(q);
-      if(hv>=highFloor){highLast=q;belowHigh=0}else if(++belowHigh>=4)break;
+      if(hv>=highFloor){highLast=q;belowHigh=0}else if(++belowHigh>=4 && mode!=='mouth')break;
     }
     const highDur=Math.max(0,(highLast-i+1)*hop/sr);
     function meanHigh(q0,q1){let sum=0,n=0;for(let q=Math.max(i,q0);q<Math.min(frames.length,nextHit,q1);q++){sum+=hiAmp(q);n++}return n?sum/n:0}
@@ -510,56 +536,21 @@ async function analyzeDrums(samples,sampleRate,opt={},progress=()=>{}){
     const transient=clamp(candidates[ci].strength/Math.max(onGate,1e-9)/3,0,1);
     let scores,midi;
     if(mode==='mouth'){
-      // v3.5.2: hierarchical mouth-drum classifier.
-      // First decide whether this hit belongs to the high-frequency family (チッ/シャー).
-      // Only low/mid-family hits are then allowed to become ドン/タッ. This prevents
-      // weak fricatives from being swallowed by the kick/snare guardrails.
-      const voiced=clamp((lowBody*1.25+body.lm*.55)-body.z*.45,0,1.3);
-      const hiss=clamp(highEarly*1.18+early.z*.58+early.air*.78,0,1.8);
-      const sustain=clamp(dur/.18,0,1.25),highSustain=clamp(highBody*1.2+tailLevel*.48,0,1.5);
-      const lowEarly=early.sub+early.low, upperEarly=early.mid+early.high+early.air;
+      const whole=ratios(agg(i,j));
+      const bodyHat=body.high+body.air;
       const sensMode=opt.drumHatSensitivity||'high';
-      const hatThreshold=sensMode==='high'?.31:sensMode==='normal'?.42:.54;
-      const highFloorEarly=sensMode==='high'?.130:sensMode==='normal'?.180:.240;
-      const zNeed=sensMode==='high'?.115:sensMode==='normal'?.155:.205;
-      // /ch/ and /sh/ can have a voiced vowel/body after the initial frication. Use the
-      // first ~20 ms and true >3.2 kHz persistence instead of whole-syllable low energy.
-      const fricativeEvidence=1.42*highEarly+.48*early.mid+.52*early.z+.36*early.air-.42*lowEarly-.18*lowBody;
-      const spectralHat=(highEarly>=highFloorEarly && early.z>=zNeed && upperEarly>lowEarly*.72);
-      const persistentHat=(highDur>=.105 && (highMidRatio>=.085||highLateRatio>=.035) && (highEarly>=highFloorEarly*.78||highBody>=.17));
-      const strongHat=(fricativeEvidence>=hatThreshold && highEarly>=highFloorEarly) || spectralHat || persistentHat;
-
-      const kick=3.10*voiced+1.05*lowEarly+.72*sustain-1.55*hiss-.40*transient;
-      const snare=1.45*(early.lm+early.mid)+1.00*highEarly+.95*transient+.75*midBody-.68*early.air-.38*voiced;
-      const closed=2.30*hiss+.78*transient+.50*highBody+1.10*(1-highPersist)-.92*voiced-.38*lateHiss;
-      const open=1.55*hiss+1.78*lateHiss+1.62*highPersist+.58*highSustain-.88*voiced-.64*(highDur<.125?1:0);
-      scores=[['kick',kick],['snare',snare],['closed',closed],['open',open]].sort((a,b)=>b[1]-a[1]);
-
-      if(strongHat){
-        // Once identified as a high-frequency event, never let ドン/タッ steal it.
-        // Then distinguish チッ vs シャー only from sustained high-band evidence.
-        const hatBias=opt.drumHatBias||'closed';
-        const openDur=hatBias==='open'?.120:hatBias==='balanced'?.150:.178;
-        const midNeed=hatBias==='open'?.095:hatBias==='balanced'?.135:.175;
-        const lateNeed=hatBias==='open'?.030:hatBias==='balanced'?.055:.080;
-        const clearlyOpen=highDur>=openDur && highMidRatio>=midNeed && (highLateRatio>=lateNeed || highDur>=openDur+.050);
-        midi=clearlyOpen?46:42;
-      }else if((lowBody>.50&&highEarly<.26)||(voiced>.66&&hiss<.46)){
-        midi=36;
-      }else if(midBody>.40&&transient>.24&&highEarly<.46){
-        midi=38;
-      }else{
-        // Ambiguous low/mid hit: prefer snare over kick unless there is clear low voiced body.
-        // If the hat score narrowly wins, preserve it rather than collapsing to ドン/タッ.
-        const top=scores[0][0];
-        if((top==='closed'||top==='open') && (highEarly>.12||highDur>.09)){
-          if(top==='open'){
-            const hatBias=opt.drumHatBias||'closed';
-            const od=hatBias==='open'?.115:hatBias==='balanced'?.145:.172;
-            midi=highDur>=od?46:42;
-          }else midi=42;
-        }else midi=top==='kick'?36:top==='snare'?38:42;
-      }
+      const hatNeed=sensMode==='low'?.37:sensMode==='normal'?.30:.27;
+      // /t/ and /d/ also begin with a burst. Require a noise-rich body, not just that burst.
+      const isHat=(bodyHat>=hatNeed && body.sub+body.low<.22)||
+        (whole.high+whole.air>=hatNeed && whole.sub+whole.low<.18);
+      const hatBias=opt.drumHatBias||'closed';
+      const openDur=hatBias==='open'?.205:hatBias==='balanced'?.235:.255;
+      const isOpen=highDur>=openDur && dur>=openDur+.025;
+      if(isHat)midi=isOpen?46:42;
+      else if(body.sub+body.low>.70 && bodyHat<.06 && (highDur<.10 || highEarly<.12))midi=36;
+      else midi=38;
+      const evidence=isHat?Math.min(1,bodyHat/hatNeed):midi===36?lowBody:Math.max(midBody,.55);
+      scores=[['chosen',evidence],['other',Math.max(0,evidence-.35)]];
     }else{
       // Real drum / percussion mode keeps a more physical timbre model.
       const kick=3.00*(early.sub+early.low)+1.45*lowBody+.55*tailLevel-1.42*highEarly-.55*early.z;
@@ -965,7 +956,7 @@ async function convertBufferToNotes(buffer,tr){
     if(q)for(let i=0;i<notes.length-1;i++)if(notes[i].start+notes[i].dur>notes[i+1].start){if(notes[i+1].start>notes[i].start)notes[i].dur=notes[i+1].start-notes[i].start;else notes[i].dur=0;}
     tr.notes=notes.filter(n=>n.dur>0);state.selectedNote=state.selectedTrack===tr.id?tr.notes[0]?.id||null:state.selectedNote;
     tr.analysisSummary=`${tr.notes.length}音 / 要確認 ${result.lowConfidence}音`;
-    setRecStatus(mode==='drums'?`変換完了：${tr.analysisSummary}。高域系を先に判定してから、ドン／タッ／チッ／シャーを分類しました。選択音は編集欄から変更できます。`:`変換完了：${tr.analysisSummary}。黄色の音符は音程を確認してください。`);toast(`${tr.notes.length}音に変換しました`);saveSilent();return true;
+    setRecStatus(mode==='drums'?`変換完了：${tr.analysisSummary}。発音をまとめ、音色と高域の持続時間でドン／タッ／チッ／シャーを分類しました。選択音は編集欄から変更できます。`:`変換完了：${tr.analysisSummary}。黄色の音符は音程を確認してください。`);toast(`${tr.notes.length}音に変換しました`);saveSilent();return true;
   }catch(e){if(serial===analysisSerial){setRecStatus(e.message);toast('解析できませんでした。録音は残っています。')}}
   finally{if(serial===analysisSerial){analysisWorker?.terminate();analysisWorker=null;analysisReject=null;setBusy(false)}}
 }
