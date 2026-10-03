@@ -1,10 +1,6 @@
-# GitHub Pages 公開手順
-
-1. ZIPを展開する。
-2. `index.html`, `app.js`, `styles.css`, `README.md`, `DEPLOY.md` をGitHubリポジトリ直下へアップロードする。
-3. GitHubの Settings → Pages を開く。
-4. Source を Deploy from a branch にする。
-5. Branch を main、Folder を /(root) にして Save。
-6. 公開URLをSafariで開き、マイクの使用を許可する。
-
-`.nojekyll` と `.gitignore` は隠しファイルなのでiPadのファイルアプリでは見えないことがあります。
+# GitHub Pages
+1. このZIPを展開します。
+2. 中身をGitHubリポジトリのルートへアップロードします。
+3. Settings → Pages → Deploy from a branch → main → /(root) を選択します。
+4. 公開URLをSafariで開き、最初に「♪ 音のテスト」を押してください。
+5. iPadでは「再生方式：iPad互換（推奨）」のまま使ってください。

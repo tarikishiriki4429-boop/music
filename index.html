@@ -4,20 +4,22 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<title>Kotoba Music v2.0</title>
-<link rel="stylesheet" href="styles.css">
+<title>Kotoba Music v2.1</title>
+<link rel="stylesheet" href="styles.css?v=2.1.0">
 </head>
 <body>
 <header>
   <div class="headerRow">
-    <div class="brand">▥ Kotoba Music <span class="badge">v2.0 iPAD EDITOR</span></div>
+    <div class="brand">▥ Kotoba Music <span class="badge">v2.1 iPAD AUDIO FIX</span></div>
     <button id="playBtn" class="primary">▶ 再生</button><button id="stopBtn">■ 停止</button><button id="testToneBtn">♪ 音のテスト</button>
+    <label class="small">再生方式<select id="outputMode"><option value="compat" selected>iPad互換（推奨）</option><option value="webaudio">Web Audio</option></select></label>
     <span id="time" class="time">00:00.0</span>
     <label class="small">BPM<input id="bpm" type="number" min="40" max="240" value="100" style="width:82px"></label><label class="small">全体音量<select id="masterBoost"><option value="1">100%</option><option value="1.5">150%</option><option value="2" selected>200%</option><option value="3">300%</option><option value="4">400%</option></select></label>
     <button id="saveBtn">保存</button><button id="exportProjectBtn">プロジェクト書出し</button><button id="importProjectBtn">開く</button>
     <input id="importFile" type="file" accept="application/json" hidden>
     <button id="wavBtn">曲を書き出す(WAV)</button>
   </div>
+  <div class="compatRow"><span class="small"><b>iPad互換プレイヤー</b> — 音が出ない時もここから再生できます</span><audio id="compatPlayer" controls playsinline preload="metadata"></audio><span id="audioStatus" class="small muted">待機中</span></div>
 </header>
 <main>
 <section class="stack">
@@ -38,12 +40,12 @@
       <div id="recStatus" class="muted">録音ボタンを押すとマイクを準備します。</div>
       <div class="meter"><i id="meterBar"></i></div>
       <div class="row">
-        <label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option value="8">8倍</option><option value="16" selected>16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">マイク入力ブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option value="2">2倍</option><option value="4" selected>4倍</option><option value="8">8倍</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option></select></label>
+        <label class="small">読み取り感度<select id="sensitivity"><option value="1">標準</option><option value="2">2倍</option><option value="4">4倍</option><option value="8">8倍</option><option value="16" selected>16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option></select></label><label class="small">マイク入力ブースト<select id="inputBoost"><option value="1">OFF / 1倍</option><option value="2">2倍</option><option value="4" selected>4倍</option><option value="8">8倍</option><option value="16">16倍</option><option value="32">32倍</option><option value="64">64倍</option><option value="128">128倍</option><option value="256">256倍</option></select></label>
         <label class="small">震え抑制フィルター<select id="stabilize"><option value="0">OFF</option><option value="1">弱</option><option value="2" selected>標準</option><option value="3">強</option><option value="4">超強</option><option value="5">極強</option><option value="6">MAX（かなり固定）</option><option value="7">ULTRA（ほぼ固定）</option><option value="8">LOCK（最強）</option></select></label>
         <label class="small">録音開始（拍）<input id="recordStart" type="number" min="0" step="0.125" value="0" style="width:90px"></label>
         <label class="small">量子化<select id="quantize"><option value="0">声のまま</option><option value="0.5">8分</option><option value="0.25">16分</option><option value="0.125">32分</option></select></label>
       </div>
-      <div class="muted">震え抑制フィルターは声の細かいビブラート・震えを同じ音へまとめます。ULTRA / LOCKは音程の変化をかなり強く固定します。入力ブーストは小さい声を解析しやすくするための増幅です。</div>
+      <div class="muted">震え抑制フィルターは声の細かいビブラート・震えを同じ音へまとめます。ULTRA / LOCKは音程の変化をかなり強く固定します。入力ブーストはマイク音声そのものを増幅してから録音・解析します。大きすぎる場合は下げてください。</div>
     </div>
   </div>
   <div class="card help">
@@ -70,6 +72,6 @@
 </section>
 </main>
 <div id="toast" class="toast"></div>
-<script src="app.js"></script>
+<script src="app.js?v=2.1.0"></script>
 </body>
 </html>
