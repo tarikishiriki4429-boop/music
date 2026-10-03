@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<title>Kotoba Music v1.8</title>
+<title>Kotoba Music v2.0</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
   <div class="headerRow">
-    <div class="brand">▥ Kotoba Music <span class="badge">v1.8 AUDIO + ZOOM</span></div>
+    <div class="brand">▥ Kotoba Music <span class="badge">v2.0 iPAD EDITOR</span></div>
     <button id="playBtn" class="primary">▶ 再生</button><button id="stopBtn">■ 停止</button><button id="testToneBtn">♪ 音のテスト</button>
     <span id="time" class="time">00:00.0</span>
     <label class="small">BPM<input id="bpm" type="number" min="40" max="240" value="100" style="width:82px"></label><label class="small">全体音量<select id="masterBoost"><option value="1">100%</option><option value="1.5">150%</option><option value="2" selected>200%</option><option value="3">300%</option><option value="4">400%</option></select></label>
@@ -47,18 +47,18 @@
     </div>
   </div>
   <div class="card help">
-    <b>操作</b><br>音符を上下ドラッグ＝音程、左右ドラッグ＝開始位置。右端をドラッグ＝長さ。音符タップで数値編集。編集画面は50〜300%に拡大でき、「拡大編集」でiPad画面をほぼ全部使えます。<br>同じ楽器を何本でも追加できるので、ピアノ＋ピアノ、ギター＋ボイスのように重ねられます。
+    <b>操作</b><br>上の「ピアノ / ベース / ギター / ボイス…」から編集したいトラックを選ぶと、そのすぐ下に音程編集エリアが出ます。音符を上下ドラッグ＝音程、左右ドラッグ＝開始位置。右端をドラッグ＝長さ。<br>2本指のピンチアウト＝拡大、ピンチイン＝縮小。1本指の音符ドラッグとは分けて動きます。
   </div>
 </section>
-<section id="editorCard" class="card editorCard">
+<section id="editorCard" class="card editorCard stackedEditor">
   <div class="editorTop">
-    <div class="grow"><h2 id="editorTitle">音を編集</h2><div id="editorSub" class="muted"></div></div>
+    <div class="grow"><h2 id="editorTitle">選択トラックの音程を編集</h2><div id="editorSub" class="muted"></div></div>
     <label class="small">表示<select id="labelMode"><option value="letter">CDE</option><option value="solfege">ドレミ</option></select></label>
     <label class="small">編集単位<select id="snap"><option value="0.125">32分</option><option value="0.25" selected>16分</option><option value="0.5">8分</option><option value="1">4分</option></select></label>
     <label class="small">音域<select id="rangeMode"><option value="extreme">超広域 C−1〜G9</option><option value="full">広域 C0〜C9</option><option value="normal" selected>C1〜C8</option><option value="vocal">声域 C2〜C6</option></select></label>
     <div class="zoomTools"><button id="zoomOutBtn">−</button><button id="zoomResetBtn">100%</button><button id="zoomInBtn">＋</button><span id="zoomLabel" class="zoomLabel">100%</span><button id="expandEditorBtn">⛶ 拡大編集</button></div><button id="addNoteBtn">＋ 音を追加</button><button id="octDown">−1オクターブ</button><button id="octUp">＋1オクターブ</button><button id="deleteNote" class="danger">選択音を削除</button>
   </div>
-  <div id="rollWrap" class="rollWrap"><div id="roll" class="roll"></div></div>
+  <div class="muted" style="margin:0 0 8px">2本指でピンチアウト＝拡大 / ピンチイン＝縮小（50〜300%）</div><div id="rollWrap" class="rollWrap"><div id="roll" class="roll"></div></div>
   <div class="notePanel">
     <label class="small">音程<select id="notePitch"></select></label>
     <label class="small">開始（拍）<input id="noteStart" type="number" step="0.125" min="0"></label>
