@@ -16,4 +16,3 @@ Voice-to-instrument / voice editing web app designed for iPad use.
 Upload the contents of this folder to the repository root. `index.html` is ready to be served by GitHub Pages.
 
 The app does not require a network connection for its audio processing after the page is loaded.
-
