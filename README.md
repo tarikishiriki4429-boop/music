@@ -1,48 +1,18 @@
-# Kotoba Music v3.9.1
+# Kotoba Music v3.9.2
 
-声を録音して、ピアノ・ベース・ギター・ドラム・ヴァイオリン・ボイスなどのパートとして編集できる、ブラウザ上で動作する音楽制作アプリです。
+Voice-to-instrument / voice editing web app designed for iPad use.
 
-## 使い方
+## v3.9.2 fixes
 
-1. `index.html` をブラウザで開きます。
-2. マイクの使用を許可します。
-3. パートを選び、録音・解析・編集します。
-4. 必要に応じてプロジェクト保存やWAV書き出しを行います。
+- Unedited voice now bypasses granular pitch processing and stays close to the original recording.
+- Reworked high-quality voice pitch shifting with phase-aligned grain spacing.
+- Normalized overlap-add prevents edited voice from becoming unusually quiet.
+- Added independent Voice Boost control (default 150%).
+- Voice crossfades, per-note volume, copy/paste, pitch/timing/length edits remain available.
+- Existing v3.9.x project data remains compatible.
 
-## GitHub Pages で公開する場合
+## GitHub Pages
 
-このリポジトリのルートに `index.html` がある状態で、GitHub の **Settings → Pages** から公開できます。
+Upload the contents of this folder to the repository root. `index.html` is ready to be served by GitHub Pages.
 
-- Source: `Deploy from a branch`
-- Branch: `main`
-- Folder: `/ (root)`
-
-## v3.9.1 の主な機能
-
-- 声から各楽器パートへの変換・編集
-- 音程バーのドラッグ編集
-- 音の長さ・タイミング・音量編集
-- 選択音のコピー＆ペースト
-- ボイス区間の音程・長さ・タイミング編集
-- ボイス区間のノイズ抑制・フィルター
-- ボイス編集区間のクロスフェード
-- 大きな音程変更時の高精度グレイン処理
-- ヴァイオリンの伸び・揺れ補正
-- ドラムの「ドン / タッ / チッ / シャー」判定・編集
-- 最大5分録音
-- WAV書き出し
-- プロジェクト保存・読み込み
-- オフライン動作を前提とした構成
-
-## ファイル構成
-
-```text
-Kotoba-Music-v3.9.1-GitHub/
-├── index.html
-├── README.md
-└── .gitignore
-```
-
-## 対応環境
-
-主に iPad / Safari での使用を想定しています。ブラウザのマイク権限が必要です。
+The app does not require a network connection for its audio processing after the page is loaded.
