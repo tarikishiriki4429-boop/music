@@ -1,18 +1,17 @@
-# Kotoba Music v3.9.2
+# Kotoba Music v3.10.1
 
-Voice-to-instrument / voice editing web app designed for iPad use.
+index.htmlをGitHub Pagesなどで公開して使用できます。
 
-## v3.9.2 fixes
+## ファイルから取り込む
+「音楽ファイルを開く」でMP3/WAV/M4Aなどを選びます（形式対応は端末によります・100MB以下）。選択中と同じ種類の新しいパートに入ります。元の音声を加工したい場合はボイスパートを選んでから取り込んでください。元のパートは残ります。
 
-- Unedited voice now bypasses granular pitch processing and stays close to the original recording.
-- Reworked high-quality voice pitch shifting with phase-aligned grain spacing.
-- Normalized overlap-add prevents edited voice from becoming unusually quiet.
-- Added independent Voice Boost control (default 150%).
-- Voice crossfades, per-note volume, copy/paste, pitch/timing/length edits remain available.
-- Existing v3.9.x project data remains compatible.
+## 譜面
+「選択パートの五線譜を見る」で音程確認用の参考譜を表示します。横位置は拍、数字は長さ（拍）です。通常のリズム譜表記ではありません。BPMは手動設定。旋律1本の解析向けで、完成曲の楽器分離や和音採譜は行いません。ドラムは音程バー表示を使います。
 
-## GitHub Pages
+## 書き出し
+WAVは再生対象の曲を音声として保存します。MIDIは音符・BPM・楽器を保存します。M／Sの対象を反映します。MIDIには元音声・声の加工は含まれません。旋律パートは15本までです。
 
-Upload the contents of this folder to the repository root. `index.html` is ready to be served by GitHub Pages.
+シンセサイザーを楽器一覧に追加しました。持続する明るい電子音で、音程バー編集・試聴・曲再生・WAV・MIDI書き出しに対応します。既存のプロジェクトでは楽器一覧からシンセサイザーを選んで追加してください。MIDIはGM Lead 2（sawtooth）を指定します。MIDI再生時の音色は再生ソフトによって異なります。
 
-The app does not require a network connection for its audio processing after the page is loaded.
+シンセの音声生成・持続・立ち上がりと終端を検証し、既存楽器の出力が変わらないことも確認しました。
+検証：スクリプト構文、MIDI構造・チャンネル・音符時刻、参考譜生成を確認。今回の環境ではブラウザが起動できず、実ブラウザの取込〜保存とiPad実機は未検証です。
