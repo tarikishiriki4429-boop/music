@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>Kotoba Music v3.16.0</title>
+<title>Kotoba Music v3.18.0</title>
 <style>
 :root{--bg:#0b0d12;--panel:#141821;--panel2:#1b202b;--line:#2d3442;--text:#f5f7fa;--sub:#9aa6b8;--accent:#7ad7ff;--danger:#ff6f7d;--ok:#86e39b;--cellW:30px;--cellH:24px;--keysW:74px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -87,7 +87,7 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 <body>
 <header>
 <div class="headerRow">
-<div class="brand">▥ Kotoba Music <span class="badge">v3.16.0</span></div>
+<div class="brand">▥ Kotoba Music <span class="badge">v3.18.0</span></div>
 <button class="primary" id="playBtn">▶ 全体再生</button><button id="soloPlayBtn">▶ このパートを再生</button><button id="stopBtn">■ 停止</button>
 
 <span class="time" id="time">00:00.0</span>
@@ -166,7 +166,7 @@ header{position:relative}.brand{font-size:23px}.rollWrap{height:54vh;min-height:
 </div><div class="card help">M＝ミュート、S＝そのパートだけ再生。録音は最大5分。元の声も保存・プロジェクト書出しに含まれます。旋律パートの音程解析は1つのメロディー向けです。ドラムは「口ドラム」と「実ドラム」で解析方式を切り替えます。標準は声の「ドン／タッ／チッ／シャー」に最適化されています。「高域音の拾いやすさ」は高が推奨です。「チッ／シャー判定」はチッ優先が推奨です。選択したドラム音は編集欄で「ドン／タッ／チッ／シャー」に変更できます。和音・伴奏の混じる録音は音程がずれることがあります。「選択した音から録音」は選択音の開始位置から録り直します。複数選択では最も早い音から開始します。終了位置が空欄なら手動停止です。録音終了（拍）を指定するとその位置で自動停止し、前後を残して録り直します。録音前カウントはBPMに合わせて4拍・8拍から選べます。録音中の伴奏は録音するパートを除いて再生します（M／S設定に従います）。伴奏・録音モニターはイヤホンで使ってください。</div></main>
 <div class="toast" id="toast"></div>
 <script>
-/* Kotoba Music 3.16.0 — Voice-bar audio editing, note/phrase copy-paste, per-note volume. No network calls. */
+/* Kotoba Music 3.18.0 — Voice-bar audio editing, note/phrase copy-paste, per-note volume. No network calls. */
 (function installPitchEngine(root){
 'use strict';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));let options={};
@@ -682,7 +682,7 @@ if(typeof module!=='undefined')module.exports=api;
 function mix(project){
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  const sr=44100,spb=60/project.bpm;let duration=.5,material=0;
- for(const tr of project.tracks){if(tr.voice&&tr.notes?.length){for(const n of tr.notes)duration=Math.max(duration,(n.start+n.dur)*spb+.08)}else if(tr.voice)duration=Math.max(duration,tr.recordStart*spb+tr.voice.length/tr.sampleRate);else for(const n of tr.notes)duration=Math.max(duration,(n.start+n.dur)*spb+.22)}
+ for(const tr of project.tracks){if(tr.voice&&tr.notes?.length){for(const n of tr.notes)duration=Math.max(duration,(n.start+n.dur)*spb+.08)}else if(tr.voice)duration=Math.max(duration,tr.recordStart*spb+tr.voice.length/tr.sampleRate);else for(const n of tr.notes)duration=Math.max(duration,(n.start+n.dur)*spb+(tr.type==='piano'?.42:tr.type==='guitar'?.28:tr.type==='drums'?1.25:tr.type==='bass'?.28:.30))}
 
 
  function biquad(data,rate,type,hz,db=0){
@@ -706,7 +706,7 @@ function mix(project){
   const edge=Math.min(Math.floor(rate*.005),Math.floor(data.length/2));for(let i=0;i<edge;i++){const f=.5-.5*Math.cos(Math.PI*i/Math.max(1,edge));data[i]*=f;data[data.length-1-i]*=f;}return data;
  }
  project={...project,tracks:project.tracks.map(tr=>tr.type==='voice'&&tr.voice&&tr.voiceMode!=='notes'?{...tr,voice:rawVoice(tr),notes:[]}:tr)};
- duration=.5;for(const tr of project.tracks){if(tr.voice&&tr.notes?.length){for(const n of tr.notes)duration=Math.max(duration,(n.start+n.dur)*spb+.08);}else if(tr.voice)duration=Math.max(duration,(tr.recordStart||0)*spb+tr.voice.length/tr.sampleRate);else for(const n of tr.notes)duration=Math.max(duration,(n.start+n.dur)*spb+.22);}
+ duration=.5;for(const tr of project.tracks){if(tr.voice&&tr.notes?.length){for(const n of tr.notes)duration=Math.max(duration,(n.start+n.dur)*spb+.08);}else if(tr.voice)duration=Math.max(duration,(tr.recordStart||0)*spb+tr.voice.length/tr.sampleRate);else for(const n of tr.notes)duration=Math.max(duration,(n.start+n.dur)*spb+(tr.type==='piano'?.42:tr.type==='guitar'?.28:tr.type==='drums'?1.25:tr.type==='bass'?.28:.30));}
  const out=new Float32Array(Math.ceil((duration+.1)*sr));let seed=123456789;
  function noise(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296*2-1}
  function lerp(a,i){const k=Math.floor(i),f=i-k;if(k<0||k>=a.length)return 0;return (a[k]||0)*(1-f)+(a[k+1]||0)*f}
@@ -776,6 +776,77 @@ function mix(project){
   return true;
 }
 
+ // Damped string modes: each overtone loses brightness at its own rate.
+ // Oscillator recurrence avoids trigonometry in the per-sample modal loop.
+ function renderAcoustic(tr,n,gain){
+  const piano=tr.type==='piano',bass=tr.type==='bass',f=440*2**((n.midi-69)/12),d=Math.max(.0001,n.dur*spb),tail=piano?.42:.28,
+   st=Math.max(0,Math.floor(n.start*spb*sr)),length=Math.min(out.length-st,Math.ceil((d+tail)*sr)),v=clamp(+n.vel||0,0,2);
+  if(!v||length<=0)return;
+  const touch=clamp(v,0,1),modes=[],brightness=piano?2.8+touch*7:5+touch*10,
+   stiffness=piano?.000035+.00009*(f/1000)**1.3:.000012,
+   baseDecay=piano?.40+f/1700:bass?.48+f/2200:.65+f/1500;
+  function mode(hz,amp,decay,phase=0){if(hz>=sr*.44)return;const a=2*Math.PI*hz/sr,r=Math.exp(-decay/sr);modes.push({c:2*r*Math.cos(a),r2:r*r,y1:amp*Math.sin(phase),y2:amp*Math.sin(phase-a)/r});}
+  for(let h=1;h<=32;h++){
+   const hz=f*h*Math.sqrt((1+stiffness*h*h)/(1+stiffness));if(hz>=sr*.44)break;
+   const shape=piano?(h===1?1:1.25/h**.95):Math.sin(Math.PI*h*(bass?.27:.19))/(Math.sin(Math.PI*(bass?.27:.19))*h**(bass?1.55:1.25)),
+    amp=shape*Math.exp(-(h-1)/(bass?4+touch*5:brightness)),decay=baseDecay+(piano?.14:.20)*(h-1)**1.25,
+    body=piano?1:1+.22*Math.exp(-(((hz-190)/100)**2))+.16*Math.exp(-(((hz-380)/140)**2));
+   mode(hz,amp*body*(piano?.76:1),decay);
+   if(piano&&h<=8&&f>90){mode(hz*2**(1.3/1200),amp*.12,decay*1.05);mode(hz*2**(-1.1/1200),amp*.12,decay*.97);}
+  }
+  // Short, quiet body modes add the hammer/pick contact without a synthetic buzz.
+  if(!bass){mode(piano?420:105,piano?.024:.035,25);mode(piano?1150:215,piano?.012:.024,38);}
+  let prevNoise=0;const scale=(piano?.22:bass?.32:.25)*gain*v,attack=Math.min(piano?.0025:.0015,d*.2);
+  for(let i=0;i<length;i++){
+   const t=i/sr;let x=0;for(const m of modes){const y=m.c*m.y1-m.r2*m.y2;m.y2=m.y1;m.y1=y;x+=y;}
+   const rnd=noise(),contact=(rnd-prevNoise)*(piano?.018:bass?.009:.025)*( .4+touch)*Math.exp(-t/(piano?.004:.007));prevNoise=rnd;
+   const a=Math.min(1,t/Math.max(.00002,attack)),u=Math.max(0,(t-d)/tail),release=u?Math.exp(-5*u)*(1-u)*(1-u):1;
+   out[st+i]+=(x+contact)*a*release*scale;
+  }
+ }
+
+ // Shared sustained timbre for isolated notes and connected phrases.
+ function sustainedState(){return {phase:0,side:0,low:0,weights:[],tick:0};}
+ function sustainedSample(type,f,time,velocity,state){
+  const violin=type==='violin',v=clamp(velocity,0,1),tau=2*Math.PI;
+  state.phase=(state.phase+tau*f/sr)%tau;state.side=(state.side+tau*f*1.0017/sr)%tau;
+  if((state.tick++&127)===0){
+   state.weights.length=0;
+   for(let h=1;h<=16;h++){
+    const hz=f*h;if(hz>=sr*.43)break;
+    const body=violin?(.72+.55*Math.exp(-(((hz-480)/220)**2))+.65*Math.exp(-(((hz-2400)/950)**2))):1;
+    const brightness=violin?6+v*5:3+v*5+4*Math.exp(-time*4);
+    state.weights.push(body*Math.exp(-(h-1)/brightness)/h**(violin?1.04:1.3));
+   }
+  }
+  let x=0;for(let h=1;h<=state.weights.length;h++)if(f*h<sr*.43)x+=state.weights[h-1]*(violin?Math.sin(state.phase*h):(.72*Math.sin(state.phase*h)+.28*Math.sin(state.side*h)));
+  if(violin){const white=noise();state.low+=.18*(white-state.low);x+=state.low*.024*(.5+v);x*=.88+.016*Math.sin(time*tau*1.2);}
+  return x*(violin?.50:.58);
+ }
+ function renderSustained(tr,n,gain){
+  const start=Math.max(0,Math.floor(n.start*spb*sr)),d=n.dur*spb,release=tr.type==='violin'?.18:.24,
+   end=Math.min(out.length,start+Math.ceil((d+release)*sr)),state=sustainedState(),attack=Math.min(tr.type==='violin'?.045:.012,Math.max(.0001,d*.25));
+  for(let i=start;i<end;i++){
+   const t=(i-start)/sr,vib=tr.type==='violin'?.14*Math.sin(2*Math.PI*5.15*t)*Math.min(1,Math.max(0,(t-.14)/.3)):0,f=440*2**((n.midi+vib-69)/12),a=Math.min(1,t/attack),r=clamp((d+release-t)/release,0,1),env=a*a*(3-2*a)*r*r*(3-2*r);
+   out[i]+=sustainedSample(tr.type,f,t,n.vel,state)*env*gain*n.vel*.38;
+  }
+ }
+ function renderDrum(tr,n,gain){
+  const dm=n.midi|0,open=dm===46,hat=open||dm===42,life=hat?(open?1.2:.16):dm===36?.65:.42,
+   st=Math.max(0,Math.floor(n.start*spb*sr)),size=Math.min(out.length-st,Math.ceil(life*sr));if(size<=0||n.vel<=0)return;
+  const data=new Float32Array(size);for(let i=0;i<size;i++)data[i]=noise();
+  biquad(data,sr,'hp',hat?5200:dm===36?1800:1100);biquad(data,sr,'lp',hat?14500:dm===36?6500:11000);
+  // Closing a hi-hat damps an earlier open hat, without moving either hit.
+  let choke=life;if(open)for(const next of tr.notes)if((next.midi===42||next.midi===46)&&next.vel>0&&next.start>n.start)choke=Math.min(choke,(next.start-n.start)*spb);
+  const v=clamp(n.vel,0,2);for(let i=0;i<size;i++){
+   const t=i/sr;let x;
+   if(dm===36){const phase=2*Math.PI*(48*t+78*.022*(1-Math.exp(-t/.022)));x=.95*Math.sin(phase)*Math.exp(-t*9)+.16*Math.sin(phase*1.53)*Math.exp(-t*35)+data[i]*.19*Math.exp(-t*180);}
+   else if(hat){let metal=0;for(const hz of [5430,7130,8630])metal+=Math.sin(2*Math.PI*hz*t);x=(data[i]*.72+metal*.055)*Math.exp(-t*(open?5.8:35));x*=clamp((choke+.012-t)/.012,0,1);}
+   else{x=(.46*Math.sin(2*Math.PI*185*t)*Math.exp(-t*22)+.24*Math.sin(2*Math.PI*333*t)*Math.exp(-t*29)+data[i]*(.65+.18*Math.min(1,v))*Math.exp(-t*15));}
+   const edge=Math.min(1,t/.0007)*Math.min(1,(life-t)/.015);out[st+i]+=x*edge*gain*v*.42;
+  }
+ }
+
  function renderConnected(tr,notes,gain){
   const used=new Set();if(!['synth','violin'].includes(tr.type)||tr.legato===false)return used;
   const sorted=notes.slice().sort((a,b)=>a.start-b.start),gap=clamp(Number.isFinite(+tr.legatoGap)?+tr.legatoGap:60,0,100)/1000;
@@ -783,12 +854,12 @@ function mix(project){
   if(sorted.some((n,i)=>i&&n.start<sorted[i-1].start+sorted[i-1].dur-.00001))return used;
   let chains=[],chain=[];for(const n of sorted){const prev=chain.at(-1);if(prev&&(n.vel<=0||prev.vel<=0||n.reattack||(n.start-prev.start-prev.dur)*spb>gap)){chains.push(chain);chain=[];}chain.push(n);}if(chain.length)chains.push(chain);
   for(const group of chains){if(group.length<2||group.some(n=>n.vel<=0))continue;
-   group.forEach(n=>used.add(n));material+=group.length;const first=group[0].start*spb,last=(group.at(-1).start+group.at(-1).dur)*spb,release=.045,begin=Math.max(0,Math.floor(first*sr)),end=Math.min(out.length,Math.ceil((last+release)*sr));let idx=0,phase=0,velocity=group[0].vel;
+   group.forEach(n=>used.add(n));material+=group.length;const first=group[0].start*spb,last=(group.at(-1).start+group.at(-1).dur)*spb,release=tr.type==='violin'?.18:.24,begin=Math.max(0,Math.floor(first*sr)),end=Math.min(out.length,Math.ceil((last+release)*sr));let idx=0,phase=0,velocity=group[0].vel;const tone=sustainedState();
    for(let i=begin;i<end;i++){
     const time=i/sr,local=time-first;while(idx<group.length-1&&time>=group[idx+1].start*spb)idx++;
     const n=group[idx],prev=group[Math.max(0,idx-1)],age=Math.max(0,time-n.start*spb),glide=clamp(Number.isFinite(+tr.glideMs)?+tr.glideMs:(tr.type==='synth'?25:0),0,120)/1000,window=Math.min(glide,n.dur*spb*.5),u=idx&&window>0?Math.min(1,age/window):1,blend=u*u*(3-2*u),midi=prev.midi+(n.midi-prev.midi)*blend;
     const vib=tr.type==='violin'?Math.sin(2*Math.PI*5.1*local)*.12*Math.min(1,Math.max(0,(local-.12)/.3)):0,f=440*2**((midi+vib-69)/12);phase=(phase+2*Math.PI*f/sr)%(2*Math.PI);const partial=h=>f*h<sr*.48?Math.sin(phase*h):0;
-    const w=tr.type==='synth'?.50*partial(1)+.22*partial(2)+.13*partial(3)+.08*partial(4)+.045*partial(5)+.025*partial(6):.44*partial(1)+.23*partial(2)+.13*partial(3)+.085*partial(4)+.05*partial(5)+.035*partial(6)+.018*partial(7)+.012*partial(8);
+    const w=sustainedSample(tr.type,f,local,velocity,tone);
     velocity+=(n.vel-velocity)*(1-Math.exp(-1/(sr*.008)));const a=Math.min(1,local/(tr.type==='violin'?.035:.015)),r=Math.max(0,Math.min(1,(last+release-time)/release)),env=a*a*(3-2*a)*r*r*(3-2*r);
     out[i]+=w*env*gain*velocity*.38;
    }
@@ -796,11 +867,11 @@ function mix(project){
  }
 
  for(const tr of project.tracks){const gain=tr.volume*(tr.type==='voice'?(Number.isFinite(+project.voiceBoost)?+project.voiceBoost:1.5):project.instrumentBoost),start=Math.floor(tr.recordStart*spb*sr);let synthNotes=tr.notes||[];if(tr.voice){if(tr.notes?.length){const rms=voiceRms(tr.voice),loose=[],linked=tr.notes.filter(n=>Number.isFinite(+n.sourceStartSec)&&Number.isFinite(+n.sourceDurSec)&&(!n.sourceTrackId||n.sourceTrackId===tr.id)).slice().sort((a,b)=>a.start-b.start),linkedIndex=new Map(linked.map((n,i)=>[n,i]));let rendered=0;for(const n of tr.notes){let blendIn=0,blendOut=0,idx=linkedIndex.get(n);if(idx!=null){const prev=linked[idx-1],next=linked[idx+1],st=n.start*spb,en=(n.start+n.dur)*spb;if(prev){const gap=st-(prev.start+prev.dur)*spb;if(gap>=-.020&&gap<=.050)blendIn=Math.min(.050,Math.max(.014,.018+Math.max(0,gap)*1.25))}if(next){const gap=next.start*spb-en;if(gap>=-.020&&gap<=.050)blendOut=Math.min(.050,Math.max(.014,.018+Math.max(0,gap)*1.25))}}if(renderVoiceNote(tr,n,gain,rms,blendIn,blendOut))rendered++;else loose.push(n)}material+=rendered;synthNotes=loose;if(!synthNotes.length)continue}else{material++;const ratio=tr.sampleRate/sr;for(let i=0;start+i<out.length;i++){const j=i*ratio,k=Math.floor(j);if(k>=tr.voice.length)break;const smp=tr.voiceMode!=='notes'?cubic(tr.voice,j):tr.voice[k]*(1-(j-k))+(tr.voice[k+1]||0)*(j-k);out[start+i]+=smp*gain}continue}}
-  const connected=renderConnected(tr,synthNotes,gain);for(const n of synthNotes){if(connected.has(n))continue;material++;const st=Math.floor(n.start*spb*sr),d=n.dur*spb,f=440*2**((n.midi-69)/12),tail=Math.min(tr.type==='violin'?.34:.12,Math.max(.001,d*(tr.type==='violin'?.48:.35))),end=Math.min(out.length,st+Math.ceil((d+tail)*sr));let bowedPhase=0;for(let i=st;i<end;i++){const t=(i-st)/sr,vibrato=tr.type==='violin'?Math.sin(2*Math.PI*(5.0+.22*Math.sin(2*Math.PI*.31*t))*t)*(.10+.10*Math.min(1,t/.8))*Math.min(1,Math.max(0,(t-.10)/.30)):0;bowedPhase+=2*Math.PI*f*Math.pow(2,vibrato/12)/sr;const ph=tr.type==='violin'?bowedPhase:2*Math.PI*f*t,partial=h=>f*h<sr*.48?Math.sin(ph*h):0,attack=Math.min(1,t/Math.min(tr.type==='violin'?.045:tr.type==='synth'?.015:.005,Math.max(.0001,d*.2))),release=t<=d?1:Math.max(0,1-(t-d)/tail);let w,env;if(tr.type==='drums'){if(t>.32)break;const dm=n.midi|0;if(dm===36){w=.90*Math.sin(2*Math.PI*(54*t+58*.030*(1-Math.exp(-t/.030))))+.10*noise();env=Math.exp(-t*17)}else if(dm===42||dm===46){w=noise()*(.68+.32*Math.sin(2*Math.PI*7200*t));env=Math.exp(-t*(dm===46?15:32))}else{w=.72*noise()+.28*Math.sin(2*Math.PI*185*t);env=Math.exp(-t*22)}}else if(tr.type==='synth'){w=.50*Math.sin(ph)+.22*partial(2)+.13*partial(3)+.08*partial(4)+.045*partial(5)+.025*partial(6);env=.78+.22*Math.exp(-t*7)}else if(tr.type==='piano'){w=.74*Math.sin(ph)+.19*partial(2)+.07*partial(3);env=Math.exp(-t*(1.5+f/650))}else if(tr.type==='bass'){w=.85*Math.sin(ph)+.12*partial(2)+.03*partial(3);env=Math.exp(-1.4*t)}else if(tr.type==='guitar'){w=.65*Math.sin(ph)+.21*partial(2)+.10*partial(3)+.04*partial(4);env=Math.exp(-3.5*t)}else if(tr.type==='violin'){w=.44*Math.sin(ph)+.23*partial(2)+.13*partial(3)+.085*partial(4)+.05*partial(5)+.035*partial(6)+.018*partial(7)+.012*partial(8)+(.006+.003*Math.min(1,t/.15))*noise();env=.965+.025*Math.sin(2*Math.PI*1.15*t)+.008*Math.sin(2*Math.PI*6.7*t)}else{w=Math.sin(ph);env=1}out[i]+=w*env*attack*release*gain*n.vel*.38}}
+  const connected=renderConnected(tr,synthNotes,gain);for(const n of synthNotes){if(connected.has(n))continue;material++;if(tr.type==='piano'||tr.type==='guitar'||tr.type==='bass'){renderAcoustic(tr,n,gain);continue;}if(tr.type==='violin'||tr.type==='synth'){renderSustained(tr,n,gain);continue;}if(tr.type==='drums'){renderDrum(tr,n,gain);continue;}const st=Math.floor(n.start*spb*sr),d=n.dur*spb,f=440*2**((n.midi-69)/12),tail=Math.min(tr.type==='violin'?.34:.12,Math.max(.001,d*(tr.type==='violin'?.48:.35))),end=Math.min(out.length,st+Math.ceil((d+tail)*sr));let bowedPhase=0;for(let i=st;i<end;i++){const t=(i-st)/sr,vibrato=tr.type==='violin'?Math.sin(2*Math.PI*(5.0+.22*Math.sin(2*Math.PI*.31*t))*t)*(.10+.10*Math.min(1,t/.8))*Math.min(1,Math.max(0,(t-.10)/.30)):0;bowedPhase+=2*Math.PI*f*Math.pow(2,vibrato/12)/sr;const ph=tr.type==='violin'?bowedPhase:2*Math.PI*f*t,partial=h=>f*h<sr*.48?Math.sin(ph*h):0,attack=Math.min(1,t/Math.min(tr.type==='violin'?.045:tr.type==='synth'?.015:.005,Math.max(.0001,d*.2))),release=t<=d?1:Math.max(0,1-(t-d)/tail);let w,env;if(tr.type==='drums'){if(t>.32)break;const dm=n.midi|0;if(dm===36){w=.90*Math.sin(2*Math.PI*(54*t+58*.030*(1-Math.exp(-t/.030))))+.10*noise();env=Math.exp(-t*17)}else if(dm===42||dm===46){w=noise()*(.68+.32*Math.sin(2*Math.PI*7200*t));env=Math.exp(-t*(dm===46?15:32))}else{w=.72*noise()+.28*Math.sin(2*Math.PI*185*t);env=Math.exp(-t*22)}}else if(tr.type==='synth'){w=.50*Math.sin(ph)+.22*partial(2)+.13*partial(3)+.08*partial(4)+.045*partial(5)+.025*partial(6);env=.78+.22*Math.exp(-t*7)}else if(tr.type==='piano'){w=.74*Math.sin(ph)+.19*partial(2)+.07*partial(3);env=Math.exp(-t*(1.5+f/650))}else if(tr.type==='bass'){w=.85*Math.sin(ph)+.12*partial(2)+.03*partial(3);env=Math.exp(-1.4*t)}else if(tr.type==='guitar'){w=.65*Math.sin(ph)+.21*partial(2)+.10*partial(3)+.04*partial(4);env=Math.exp(-3.5*t)}else if(tr.type==='violin'){w=.44*Math.sin(ph)+.23*partial(2)+.13*partial(3)+.085*partial(4)+.05*partial(5)+.035*partial(6)+.018*partial(7)+.012*partial(8)+(.006+.003*Math.min(1,t/.15))*noise();env=.965+.025*Math.sin(2*Math.PI*1.15*t)+.008*Math.sin(2*Math.PI*6.7*t)}else{w=Math.sin(ph);env=1}out[i]+=w*env*attack*release*gain*n.vel*.38}}
  }
 
  if(!material)return null;const master=project.masterBoost;
- if(project.tracks.some(tr=>tr.type==='voice'&&tr.voice&&tr.voiceMode!=='notes')){
+ if(project.tracks.some(tr=>tr.type!=='voice'||(tr.voice&&tr.voiceMode!=='notes'))){
   // Future peak envelope prevents boost-induced distortion without changing pitch or length.
   const look=Math.ceil(sr*.005),size=look+2,indices=new Int32Array(size),peaks=new Float32Array(size);let head=0,count=0,gain=1;
   const push=j=>{const v=Math.abs(out[j]*master);while(count&&peaks[(head+count-1)%size]<=v)count--;const tail=(head+count)%size;indices[tail]=j;peaks[tail]=v;count++;};
@@ -1302,7 +1373,7 @@ function demo(){const tr=currentTrack(),base=tr.type==='bass'?40:tr.type==='viol
 function blobToBase64(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=()=>reject(r.error);r.readAsDataURL(blob)})}
 async function exportProject(){
   try{setAudioStatus('録音を含むプロジェクトを作成中…');const recordings=[];for(const tr of state.tracks)if(tr.recordBlob)recordings.push({id:tr.id,mime:tr.recordBlob.type,base64:await blobToBase64(tr.recordBlob)});
-  const out={version:'3.16.0',state:metadata(),recordings};downloadBlob(new Blob([JSON.stringify(out)],{type:'application/json'}),'Kotoba-Music-v3.16.0-project.json');setAudioStatus('録音を含め書き出しました')}catch(e){toast('書出しに失敗しました。 '+e.message)}
+  const out={version:'3.18.0',state:metadata(),recordings};downloadBlob(new Blob([JSON.stringify(out)],{type:'application/json'}),'Kotoba-Music-v3.18.0-project.json');setAudioStatus('録音を含め書き出しました')}catch(e){toast('書出しに失敗しました。 '+e.message)}
 }
 async function importProject(file){
   if(recordPreparing||analysisBusy||mediaRecorder?.state==='recording')return toast('録音・解析が終わってから開いてください');
